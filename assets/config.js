@@ -1,3 +1,4 @@
 window.SITE_LINKS = {
-  discord: "https://discord.gg/dn4bvJtNN3"
+  mifronDiscord: "https://discord.gg/pUvhwDs8ub",
+  crewmateDiscord: "https://discord.gg/Dhd9YRykuP"
 };
