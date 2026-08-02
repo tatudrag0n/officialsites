@@ -11,15 +11,24 @@ document.addEventListener('DOMContentLoaded',()=>{
       menu.setAttribute('aria-expanded','false');
     }));
   }
+
   const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
     if(entry.isIntersecting) entry.target.classList.add('visible');
   }),{threshold:.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-  const discordUrl=(window.SITE_LINKS&&window.SITE_LINKS.discord)||window.DISCORD_INVITE||'#';
+
+  const links=window.SITE_LINKS||{};
+  const fallback=links.mifronDiscord||'#';
   document.querySelectorAll('[data-discord]').forEach(a=>{
+    const target=a.dataset.discord;
+    const discordUrl=target==='crewmate'
+      ? (links.crewmateDiscord||'#')
+      : (links.mifronDiscord||fallback);
+
     a.href=discordUrl;
     a.target='_blank';
     a.rel='noopener noreferrer';
+
     if(discordUrl==='#'){
       a.addEventListener('click',e=>{
         e.preventDefault();
