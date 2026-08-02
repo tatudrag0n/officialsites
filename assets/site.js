@@ -18,17 +18,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   const links=window.SITE_LINKS||{};
-  const fallback=links.mifronDiscord||'#';
   document.querySelectorAll('[data-discord]').forEach(a=>{
-    const target=a.dataset.discord;
-    const discordUrl=target==='crewmate'
-      ? (links.crewmateDiscord||'#')
-      : (links.mifronDiscord||fallback);
-
+    const key=a.dataset.discord==='crewmate'?'crewmateDiscord':'mifronDiscord';
+    const discordUrl=links[key]||'#';
     a.href=discordUrl;
     a.target='_blank';
     a.rel='noopener noreferrer';
-
     if(discordUrl==='#'){
       a.addEventListener('click',e=>{
         e.preventDefault();
@@ -36,4 +31,18 @@ document.addEventListener('DOMContentLoaded',()=>{
       });
     }
   });
+
+  // 旧表記EMを正式名称MPへ統一する。
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  const nodes=[];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    if(node.nodeValue&&node.nodeValue.includes('EM')){
+      node.nodeValue=node.nodeValue.replaceAll('EM','MP');
+    }
+  });
+  const description=document.querySelector('meta[name="description"]');
+  if(description&&description.content.includes('EM')){
+    description.content=description.content.replaceAll('EM','MP');
+  }
 });
