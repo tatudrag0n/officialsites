@@ -1,9 +1,314 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#ffffff"><title>Mifron | みんなでつくるMinecraftサーバー</title><meta name="description" content="Mifron公式ページ。EM経済、クエスト、ショップ、保護、FFA、Discord認証を統合したMinecraftサーバー。"><link rel="icon" href="../assets/mifron-favicon.png"><link rel="stylesheet" href="../assets/styles.css"><script src="../assets/config.js" defer></script><script src="../assets/site.js" defer></script></head><body><a class="skip" href="#main">本文へ移動</a><header class="site-header sub-header"><div class="shell nav"><a class="brand" href="../index.html"><img src="../assets/mct-wordmark-transparent.png" alt="MCT"><span class="brand-text">MCT<small>OFFICIAL</small></span></a><nav class="nav-links" aria-label="主要ナビゲーション"><a href="../index.html">MCT</a><a href="../mifron/" aria-current="page">Mifron</a><a href="../crewmate/">CREWMATE</a><a href="../texroot/">TEXROOT</a><a class="hot" data-discord href="#">Discord</a></nav><button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button></div></header>
-<main id="main"><section class="sub-hero"><div class="shell sub-hero-grid"><div class="reveal"><span class="kicker">Minecraft Server / MCT Brand 01</span><h1>Mifron</h1><p class="lead">採掘、建築、戦闘、交流、提案、投票。遊ぶだけでなく、次のアイテムや構造物を決めるところまで参加できる。「みんなでつくる」をコンセプトにした統合型Minecraftサーバーです。</p><div class="hero-actions"><a class="btn discord" data-discord href="#">Discordに参加</a><a class="btn" href="#systems">システムを見る</a></div></div><div class="icon-stage reveal"><img src="../assets/mifron-icon.webp" alt="Mifronアイコン"></div></div></section><div class="stat-ribbon"><div><b>EM</b><span>ゲーム内経済通貨</span></div><div><b>MP</b><span>Discord連携ポイント</span></div><div><b>提案・投票</b><span>新要素をみんなで決める</span></div><div><b>解放式</b><span>棚ショップの成長</span></div></div>
-<section class="section"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">Core Experience</span><h2>遊ぶほど、世界と自分が育つ。</h2></div><p>現行仕様と経済・クエスト設計を再同期し、プレイヤーが実際に体験する要素を中心に整理しています。</p></div><div class="feature-grid"><article class="feature reveal" data-num="01"><span class="tag">Economy</span><h3>EM経済</h3><p>100EM＝エメラルド1個を基準にした仮想通貨。ショップ、商人、クエスト、討伐、アスレ、ミニゲーム、オークションを横断して循環します。</p></article><article class="feature reveal" data-num="02"><span class="tag">Quest</span><h3>デイリー・週間類のクエスト</h3><p>デイリーとウィークリーは候補から5件を抽選。マンスリーは長期目標、スペシャルは条件達成で解放される隠し目標です。</p></article><article class="feature reveal" data-num="03"><span class="tag">Progress</span><h3>MVL・称号・転生</h3><p>採掘、建築、取引、プレイ時間、討伐、進捗を蓄積。称号や解放要素、全進捗達成後の転生へつながります。</p></article><article class="feature reveal" data-num="04"><span class="tag">Community</span><h3>フレンドとローカルチャット</h3><p>フレンド申請、承認、チャット、検索、オフラインメッセージに対応。半径50ブロックのローカルチャットで周囲の会話も整理します。</p></article><article class="feature reveal" data-num="05"><span class="tag">Safety</span><h3>チャンク保護</h3><p>専用保護ビーコンで拠点を守り、所有者や信頼済みプレイヤー以外の破壊・設置・コンテナ操作などを制限します。</p></article><article class="feature reveal" data-num="06"><span class="tag">Access</span><h3>Discord認証とMP</h3><p>参加前の6桁コード認証でゲーム内アカウントとDiscordを連携。Discordでの活動や企画参加を通じてMPを獲得し、コミュニティ内の継続的な参加を可視化します。</p></article></div></div></section>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>Mifron | 遊び、経済、対戦をつなぐMinecraftサーバー</title>
+  <meta name="description" content="Mifron公式ページ。MP経済、クエスト、ショップ、ワールドポータル、保護、FFA、Discord連携を統合したMinecraftサーバー。">
+  <link rel="icon" href="../assets/mifron-favicon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/config.js" defer></script>
+  <script src="../assets/site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">本文へ移動</a>
+  <header class="site-header sub-header">
+    <div class="shell nav">
+      <a class="brand" href="../index.html">
+        <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
+        <span class="brand-text">MCT<small>OFFICIAL</small></span>
+      </a>
+      <nav class="nav-links" aria-label="主要ナビゲーション">
+        <a href="../index.html">MCT</a>
+        <a href="../mifron/" aria-current="page">Mifron</a>
+        <a href="../crewmate/">CREWMATE</a>
+        <a href="../texroot/">TEXROOT</a>
+        <a class="hot" data-discord href="#">Discord</a>
+      </nav>
+      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
 
-<section class="section community-lab"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">Build Together</span><h2>遊ぶ人が、<br>つくる人になる。</h2></div><p>Mifronは完成品を一方的に提供するサーバーではありません。プレイヤーの声を、次のアップデートへ接続します。</p></div><div class="co-create-grid"><article class="co-create-card reveal"><span class="tag">MP</span><h3>Discord連携ポイント</h3><p>Discord認証によってMinecraftアカウントとコミュニティを結びます。イベント参加、企画への協力、コミュニティ活動などを通じてMPを獲得できる仕組みを設けます。</p><div class="mini-flow"><span>Discord認証</span><b>→</b><span>活動・参加</span><b>→</b><span>MP獲得</span></div></article><article class="co-create-card reveal"><span class="tag">Proposal</span><h3>新アイテム・新構造物の提案</h3><p>欲しいアイテム、探索したい構造物、改善してほしい仕組みをプレイヤー自身が提案できます。提案は管理側で確認され、採用候補として整理されます。</p></article><article class="co-create-card reveal"><span class="tag">Vote</span><h3>コミュニティ投票</h3><p>候補となった提案はDiscord上の投票へ。次に実装してほしい要素を、運営だけでなく参加者全体で選べる設計です。</p></article><article class="co-create-card accent-card reveal"><span class="tag">Concept</span><h3>「みんなでつくる」</h3><p>建築で世界をつくる。経済で流れをつくる。提案と投票で未来をつくる。Mifronでは、プレイヤー一人ひとりがサーバーの発展に参加します。</p></article></div></div></section>
-<section id="systems" class="section dark"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">Living Economy</span><h2>買う、売る、掘り当てる。</h2></div><p>同じ価格表を基準に、役割の異なる売買システムを組み合わせます。経済の便利さと、採掘・探索の価値を両立させます。</p></div><div class="systems"><article class="system-panel reveal featured-system"><span class="tag">Unlock Shop</span><h3>解放される棚ショップ</h3><p>最初からすべての商品が並ぶのではなく、スロットやアイテム入手をきっかけに新しい販売枠・商品カテゴリが解放されます。遊び続けるほど、中央広場の買い物体験そのものが成長します。</p><ul><li>アイテム入手で関連商品を解放</li><li>スロット報酬で新しい販売枠を発見</li><li>食料・戦闘・装飾・素材・ドロップ・貴重品などへ拡張</li></ul></article><article class="system-panel reveal"><span class="tag">Random</span><h3>樽ショップ</h3><p>ジャンク品と掘り出し物がランダムで並ぶショップ。通常枠85%、掘り出し物15%を基準に、耐久品は損耗と割引が発生します。</p><ul><li>低〜中価格帯を中心に抽選</li><li>高影響・超希少品は通常プールから除外</li></ul></article><article class="system-panel reveal"><span class="tag">Merchant</span><h3>Mifron商人</h3><p>赤・青・黄・紫の4タイプ。販売8枠・買取8枠を重み付き抽選し、1時間ごとに内容が変わります。</p><ul><li>赤：戦闘・探索向け</li><li>青：建築・通常素材</li><li>黄：サバイバルのレア品</li><li>紫：2%で出現する特殊商人</li></ul></article><article class="system-panel reveal"><span class="tag">Auction</span><h3>額縁オークション</h3><p>希少品や一点物をEMで競り合うプレイヤー間市場。最高入札額と自分の入札額を確認しながら参加できます。</p><ul><li>通常入札とスニーク入札</li><li>出品許可品のみオークション化</li></ul></article></div></div></section>
-<section class="section alt"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">Quest Design</span><h2>毎日から、長期目標まで。</h2></div><p>単純な戦闘だけに偏らず、採掘、建築、農業、探索、取引、アスレ、ミニゲーム、釣りなどを同じ経済に接続します。</p></div><div class="feature-grid"><article class="feature reveal" data-num="D"><span class="tag">Daily</span><h3>デイリー</h3><p>10候補から5件を抽選。全達成ボーナスを含め、目安1,500〜2,000EM/日の設計。</p></article><article class="feature reveal" data-num="W"><span class="tag">Weekly</span><h3>ウィークリー</h3><p>10候補から5件を抽選。週末プレイヤーも到達できる中期目標として設計。</p></article><article class="feature reveal" data-num="M"><span class="tag">Monthly</span><h3>マンスリー</h3><p>10件を固定表示。大型購入、転生準備、オークション参加の原資となる長期目標。</p></article><article class="feature reveal" data-num="S"><span class="tag">Special</span><h3>スペシャル</h3><p>条件発生型で原則一度きり。未解放時は「？？？」として表示され、探索や節目の達成感を作ります。</p></article><article class="feature reveal" data-num="!"><span class="tag">Fair Play</span><h3>不正対策</h3><p>直接討伐判定、AFK除外、反復抑制、リセット時の未受取失効などで、自動化による過剰報酬を抑えます。</p></article><article class="feature reveal" data-num="+"><span class="tag">Rebirth</span><h3>転生補正</h3><p>クエスト報酬では転生ボーナスを25%に圧縮し、最大+30%に制限。長期成長とインフレ対策を両立します。</p></article></div></div></section>
-<section class="section"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">FFA Arena</span><h2>高回転、低インフレ。<br>役割で戦うFFA。</h2></div><p>現行プラグインのコアキットと、仕様書にある拡張キット案を分けて掲載しています。消費アイテムはクールダウン式を基本とします。</p></div><h3 class="reveal" style="margin-bottom:18px">現行コアキット</h3><div class="kit-grid"><div class="kit reveal"><b>アーチャー</b><small>弓を主軸にした遠距離型</small></div><div class="kit reveal"><b>ソードマン</b><small>標準的な剣士・初期キット</small></div><div class="kit reveal"><b>シールダー</b><small>盾を活かす防御型</small></div><div class="kit reveal"><b>ランサー</b><small>槍と機動力を活かす型</small></div><div class="kit reveal"><b>ウォリアー</b><small>斧による高打点型</small></div><div class="kit reveal"><b>リボルバー</b><small>多装填クロスボウ型</small></div></div><h3 class="reveal" style="margin:42px 0 18px">追加設計案</h3><div class="kit-grid"><div class="kit reveal"><b>海の戦士</b><small>天候で変化するトライデント</small></div><div class="kit reveal"><b>重戦士</b><small>メイスと補充式ウィンドチャージ</small></div><div class="kit reveal"><b>ギャンブラー</b><small>ダメージと報酬が大きく変動</small></div><div class="kit reveal"><b>ケミスト</b><small>妨害ポーションの専門家</small></div><div class="kit reveal"><b>スナイパー</b><small>低速・超火力クロスボウ</small></div><div class="kit reveal"><b>ヴァンパイア</b><small>吸収と成長、昼間の弱点</small></div><div class="kit reveal"><b>グラップラー</b><small>無装備・高機動の格闘型</small></div><div class="kit reveal"><b>アサシン</b><small>一度きりの致命打と毒</small></div><div class="kit reveal"><b>ネクロマンサー</b><small>クールダウン式召喚</small></div><div class="kit reveal"><b>トラッパー</b><small>3種の感圧板トラップ</small></div><div class="kit reveal"><b>バグマニア</b><small>虫食いとシルバーフィッシュ</small></div></div><div class="notice reveal"><strong>FFA報酬設計</strong><br>1キル50EMを基準に、同じプレイヤーへの連続キルは獲得量を段階的に半減させる設計です。</div></div></section>
-<section class="section alt"><div class="shell"><div class="contact-panel reveal"><div><span class="eyebrow">Join Mifron</span><h2>世界をつくる側へ。</h2><p>Discordでは参加認証、MP、提案、投票、イベント告知をまとめて行います。Mifronの未来を決めるコミュニティへ参加してください。</p></div><a class="btn discord" data-discord href="#">Discordに参加</a></div><p class="disclaimer" style="margin-top:24px">Mifronは非公式のMinecraftサーバープロジェクトであり、Mojang StudiosまたはMicrosoftとの提携・承認・推奨関係はありません。EMやゲーム内報酬は現実通貨や譲渡可能な価値と交換できません。</p></div></section></main><footer class="footer"><div class="shell footer-grid"><div><img src="../assets/mct-wordmark-transparent.png" alt="MCT"><p class="legal">© 2026 MCT. All rights reserved.</p></div><div class="footer-links"><a href="../index.html">MCT</a><a href="../mifron/">Mifron</a><a href="../crewmate/">CREWMATE</a><a href="../texroot/">TEXROOT</a></div></div></footer></body></html>
+  <main id="main">
+    <section class="sub-hero">
+      <div class="shell sub-hero-grid">
+        <div class="reveal">
+          <span class="kicker">MifronPlugin / Current Specification</span>
+          <h1>Mifron</h1>
+          <p class="lead">採掘、建築、取引、クエスト、対戦、交流。Mifronは、ひとつの経済と複数の遊び方をワールドポータルでつなぐ、MCTのMinecraftサーバーです。</p>
+          <div class="hero-actions">
+            <a class="btn discord" data-discord href="#">Discordに参加</a>
+            <a class="btn" href="#systems">システムを見る</a>
+          </div>
+        </div>
+        <div class="icon-stage reveal">
+          <img src="../assets/mifron-icon.webp" alt="Mifronアイコン">
+        </div>
+      </div>
+    </section>
+
+    <div class="stat-ribbon">
+      <div><b>MP</b><span>メインゲーム内通貨</span></div>
+      <div><b>6ワールド</b><span>ポータルUIで移動</span></div>
+      <div><b>18キット</b><span>現行FFAラインナップ</span></div>
+      <div><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
+    </div>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Current Runtime</span><h2>世界を移動し、<br>遊び方を切り替える。</h2></div>
+          <p>現在のMifronPluginに登録されているワールド構成・ルール・コマンドを、プレイヤーが体験する順番に合わせて整理しています。</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature reveal" data-num="01">
+            <span class="tag">Hub</span>
+            <h3>メインロビー</h3>
+            <p>worldを拠点に、コンパスのテレポーターUIからBuild、Market、Athletic、Minigame、Survivalへ移動します。</p>
+          </article>
+          <article class="feature reveal" data-num="02">
+            <span class="tag">Survival</span>
+            <h3>サバイバル</h3>
+            <p>survivalワールドでは安全設定とチャンク保護を適用。TNTと溶岩による事故を抑え、自然再生成は許可チャンク単位で管理します。</p>
+          </article>
+          <article class="feature reveal" data-num="03">
+            <span class="tag">Build / Market</span>
+            <h3>建築と市場</h3>
+            <p>buildは建築、marketは売買のための専用ワールド。素材を集める場所と、経済を動かす場所を分けて使えます。</p>
+          </article>
+          <article class="feature reveal" data-num="04">
+            <span class="tag">Athletic / Minigame</span>
+            <h3>固定昼の遊戯ワールド</h3>
+            <p>AthleticとMinigameは固定昼のルール。アスレチック、複数のミニゲーム、FFAを同じサーバー内で遊べます。</p>
+          </article>
+          <article class="feature reveal" data-num="05">
+            <span class="tag">Inventory</span>
+            <h3>インベントリを分離</h3>
+            <p>Hub、Survival、FFAはインベントリグループを分離。装備、オフハンド、経験値、体力、満腹度、エンダーチェストも行き先ごとに管理します。</p>
+          </article>
+          <article class="feature reveal" data-num="06">
+            <span class="tag">Commands</span>
+            <h3>最初に使うコマンド</h3>
+            <p>サーバー一覧は /mf list、移動は /mf tp &lt;worldKey&gt;、チュートリアルは /tutorial。残高は /mf balance または /mf mp で確認できます。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="systems" class="section dark">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">MP Economy</span><h2>MPを中心に、<br>遊びの成果が循環する。</h2></div>
+          <p>クエスト、報酬、取引、FFAをひとつのMP経済へ接続。通常のエメラルドアイテムとMPを混同しない、サーバー側ウォレット方式です。</p>
+        </div>
+        <div class="systems">
+          <article class="system-panel reveal featured-system">
+            <span class="tag">Wallet</span>
+            <h3>MPウォレット</h3>
+            <p>MPは報酬・クエスト・取引・対戦などで受け取るゲーム内通貨です。通常のエメラルドを拾ってもMPへ自動変換されず、エメラルドはアイテムとして残ります。</p>
+            <ul>
+              <li>/mf balance または /mf mp で残高を確認</li>
+              <li>/mf pay でプレイヤー間送金</li>
+              <li>ショップ価格表はMP基準で管理</li>
+            </ul>
+          </article>
+          <article class="system-panel reveal">
+            <span class="tag">Shelf Shop</span>
+            <h3>棚ショップ</h3>
+            <p>管理側がショップワンドで棚を登録し、価格表に沿った商品を販売します。右クリックで作成、左クリックで削除。ショップ番号は連番で管理されます。</p>
+            <ul>
+              <li>保護エリアでも購入操作を許可</li>
+              <li>表示用アイテムや内部在庫を保護</li>
+              <li>スロットマシンは別システム</li>
+            </ul>
+          </article>
+          <article class="system-panel reveal">
+            <span class="tag">Barrel / Merchant</span>
+            <h3>樽ショップとMifron商人</h3>
+            <p>樽ショップは通常27枠と掘り出し物3枠。Mifron商人は赤・青・黄・紫の4タイプで、販売・買取の内容が時間ごとに入れ替わります。</p>
+            <ul>
+              <li>素材、食料、戦闘品、レア品を重み付き抽選</li>
+              <li>ランダム販売の更新間隔は60分</li>
+            </ul>
+          </article>
+          <article class="system-panel reveal">
+            <span class="tag">Auction</span>
+            <h3>プレイヤー間オークション</h3>
+            <p>一点物や希少品はオークションで競りに出せます。額縁ショップは実装対象ではなく、額縁はオークション表示に使う仕様です。</p>
+            <ul>
+              <li>出品手数料5%</li>
+              <li>通常入札100 MP、スニーク入札1,000 MP刻み</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Quest &amp; Progression</span><h2>毎日の行動を、<br>長期の成長へ。</h2></div>
+          <p>採掘だけに偏らず、建築、農業、探索、取引、アスレ、ミニゲーム、釣りまでを同じ進行システムへ接続します。</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature reveal" data-num="D">
+            <span class="tag">Daily</span>
+            <h3>デイリー</h3>
+            <p>10候補から5件を表示。採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りなどから毎日の目標が選ばれます。</p>
+          </article>
+          <article class="feature reveal" data-num="W">
+            <span class="tag">Weekly</span>
+            <h3>ウィークリー</h3>
+            <p>10候補から5件を表示。数千ブロックの採掘や建築、複数回の対戦・アスレなど、週単位で取り組む目標です。</p>
+          </article>
+          <article class="feature reveal" data-num="M">
+            <span class="tag">Monthly</span>
+            <h3>マンスリー</h3>
+            <p>固定目標で長期のプレイを支えます。進捗、取引、コミュニティ活動を積み上げ、MPや解放要素につなげます。</p>
+          </article>
+          <article class="feature reveal" data-num="S">
+            <span class="tag">Special</span>
+            <h3>スペシャル</h3>
+            <p>条件発生型の特別クエスト。探索や節目の達成を、通常のデイリーとは違う発見として楽しめます。</p>
+          </article>
+          <article class="feature reveal" data-num="!">
+            <span class="tag">Fair Play</span>
+            <h3>反復報酬を抑制</h3>
+            <p>ブロックや討伐の短時間反復、AFK、二重カウントを抑える判定を組み込み、クエスト報酬の偏りを減らします。</p>
+          </article>
+          <article class="feature reveal" data-num="+">
+            <span class="tag">Progress</span>
+            <h3>実績と転生</h3>
+            <p>実績報酬、称号、ショップやFFAの解放を積み上げ、全進捗の達成後は転生へ。転生ボーナスには上限と圧縮率を設定しています。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section community-lab">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Protection &amp; Creation</span><h2>守られた場所で、<br>世界を広げる。</h2></div>
+          <p>プレイヤーの建築と運営の拡張を両立するため、保護・構造物・提案を別々の仕組みとして管理します。</p>
+        </div>
+        <div class="co-create-grid">
+          <article class="co-create-card reveal">
+            <span class="tag">Protection</span>
+            <h3>中央エリアを保護</h3>
+            <p>Hubの中心部は4チャンク以上の保護範囲。建築、コンテナ、ドア、アイテムフレームなどを制限しながら、Mifronのショップや入札UIは利用できます。</p>
+          </article>
+          <article class="co-create-card reveal">
+            <span class="tag">Structure</span>
+            <h3>構造物を自動生成</h3>
+            <p>WorldEditが利用できる場合はclipboard、利用しない場合はrange方式で構造物を登録。空間・重複・保護範囲を確認してチャンク生成に参加させます。</p>
+          </article>
+          <article class="co-create-card reveal">
+            <span class="tag">Proposal</span>
+            <h3>提案は管理承認制</h3>
+            <p>タイトル、カスタムアイテム、構造物などの提案を受け付けます。内容は管理側が確認・承認してから反映し、ショップ商品は価格表で管理します。</p>
+          </article>
+          <article class="co-create-card accent-card reveal">
+            <span class="tag">Discord Link</span>
+            <h3>6桁コードでアカウント連携</h3>
+            <p>ゲーム内で発行した6桁コードをDiscordの認証チャンネルへ送信。コードは10分で失効し、Minoruブリッジが連携状態を確認します。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">FFA Arena</span><h2>18の役割で戦う、<br>現行FFA。</h2></div>
+          <p>FFAはminigameワールドの対戦コア。キットごとの武器・能力・食料を使い分け、短い戦闘を繰り返しながらMPと戦績を積み上げます。</p>
+        </div>
+        <div class="kit-grid">
+          <div class="kit reveal"><b>戦士</b><small>斧と近接火力</small></div>
+          <div class="kit reveal"><b>狩人</b><small>弓と少量の矢</small></div>
+          <div class="kit reveal"><b>騎士</b><small>槍と騎乗</small></div>
+          <div class="kit reveal"><b>リボルバー</b><small>6発装填クロスボウ</small></div>
+          <div class="kit reveal"><b>剣士</b><small>標準型の初期キット</small></div>
+          <div class="kit reveal"><b>シールダー</b><small>剣と盾の防御型</small></div>
+          <div class="kit reveal"><b>海の戦士</b><small>忠誠トライデント</small></div>
+          <div class="kit reveal"><b>重戦士</b><small>メイスと風のチャージ</small></div>
+          <div class="kit reveal"><b>ギャンブラー</b><small>ダメージが変動</small></div>
+          <div class="kit reveal"><b>ケミスト</b><small>妨害ポーション</small></div>
+          <div class="kit reveal"><b>スナイパー</b><small>単発・高威力</small></div>
+          <div class="kit reveal"><b>ヴァンパイア</b><small>吸血と日中ダメージ</small></div>
+          <div class="kit reveal"><b>グラップラー</b><small>無装備・高機動</small></div>
+          <div class="kit reveal"><b>アサシン</b><small>致命剣と毒</small></div>
+          <div class="kit reveal"><b>ネクロマンサー</b><small>最大3体を召喚</small></div>
+          <div class="kit reveal"><b>トラッパー</b><small>感圧板トラップ</small></div>
+          <div class="kit reveal"><b>バグマニア</b><small>シルバーフィッシュ</small></div>
+          <div class="kit reveal"><b>クラッシャー</b><small>近接クラッシュ型</small></div>
+        </div>
+        <div class="notice reveal">
+          <strong>FFAの共通ルール</strong><br>
+          /mf ffa leave で退出、/mf ffa stats で戦績を確認。食料クールダウンは15秒、ドロップ・拾得・ブロック操作は制限され、キル報酬は50 MP。同じ相手への連続キルは報酬が抑制されます。
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">FFA Field Items</span><h2>戦場に、<br>予測できない変化を。</h2></div>
+          <p>FFAでは一定間隔でフィールドアイテムが出現。レアリティとイベント効果が戦場の流れを変えます。</p>
+        </div>
+        <div class="systems">
+          <article class="system-panel reveal featured-system">
+            <span class="tag">Rarity</span>
+            <h3>5段階のレアリティ</h3>
+            <p>Common、Uncommon、Rare、Epic、Legendaryの重み付き抽選。アイテムは時間経過で消滅し、拾ったプレイヤーの判断が勝敗を分けます。</p>
+            <ul>
+              <li>出現間隔は150〜240秒</li>
+              <li>戦場アイテムの消滅は90秒</li>
+              <li>非FFA中の拾得は制限</li>
+            </ul>
+          </article>
+          <article class="system-panel reveal">
+            <span class="tag">Events</span>
+            <h3>天候と一時効果</h3>
+            <p>雨、雪、吹雪、バーサーク、スピード、アイアンボディ、オーバードライブなどの効果が発生します。</p>
+            <ul>
+              <li>ワンショットボウ、スカイスピア</li>
+              <li>MPフィーバー、タイムシフト</li>
+              <li>自分回復、全体回復</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="shell">
+        <div class="contact-panel reveal">
+          <div>
+            <span class="eyebrow">Join Mifron</span>
+            <h2>遊ぶ人から、<br>世界をつくる側へ。</h2>
+            <p>Discordでは参加認証、MP連携、提案、投票、イベント告知をまとめて行います。現行プラグインの仕様を一緒に育てるコミュニティへ参加してください。</p>
+          </div>
+          <a class="btn discord" data-discord href="#">Discordに参加</a>
+        </div>
+        <p class="disclaimer" style="margin-top:24px">MifronPluginは非公式のMinecraftサーバープラグインであり、Mojang StudiosまたはMicrosoftとの提携・承認・推奨関係はありません。MPやゲーム内報酬を現実通貨・譲渡可能な価値と交換する運用は行わず、MinecraftのEULAおよび関連ガイドラインに従って運営してください。現行コード基準: MifronPlugin 26.1.2-fixed-v15-inventory-groups。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <div>
+        <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
+        <p class="legal">© 2026 MCT. All rights reserved.</p>
+      </div>
+      <div class="footer-links">
+        <a href="../index.html">MCT</a>
+        <a href="../mifron/">Mifron</a>
+        <a href="../crewmate/">CREWMATE</a>
+        <a href="../texroot/">TEXROOT</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
