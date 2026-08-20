@@ -34,7 +34,7 @@
     <section class="sub-hero">
       <div class="shell sub-hero-grid">
         <div class="reveal">
-          <span class="kicker">MifronPlugin / Current Specification</span>
+          <span class="kicker">PLAYER GUIDE / MCT MIFRON</span>
           <h1>Mifron</h1>
           <p class="lead">採掘、建築、取引、クエスト、対戦、交流。Mifronは、ひとつの経済と複数の遊び方をワールドポータルでつなぐ、MCTのMinecraftサーバーです。</p>
           <div class="hero-actions">
@@ -58,8 +58,8 @@
     <section class="section">
       <div class="shell">
         <div class="section-head reveal">
-          <div><span class="eyebrow">Current Runtime</span><h2>世界を移動し、<br>遊び方を切り替える。</h2></div>
-          <p>現在のMifronPluginに登録されているワールド構成・ルール・コマンドを、プレイヤーが体験する順番に合わせて整理しています。</p>
+          <div><span class="eyebrow">Worlds &amp; Play</span><h2>世界を移動し、<br>遊び方を切り替える。</h2></div>
+          <p>初めて遊ぶ人が迷わないように、ワールドの役割とプレイヤー向けの操作をまとめています。</p>
         </div>
         <div class="feature-grid">
           <article class="feature reveal" data-num="01">
@@ -88,9 +88,9 @@
             <p>Hub、Survival、FFAはインベントリグループを分離。装備、オフハンド、経験値、体力、満腹度、エンダーチェストも行き先ごとに管理します。</p>
           </article>
           <article class="feature reveal" data-num="06">
-            <span class="tag">Commands</span>
-            <h3>最初に使うコマンド</h3>
-            <p>サーバー一覧は /mf list、移動は /mf tp &lt;worldKey&gt;、チュートリアルは /tutorial。残高は /mf balance または /mf mp で確認できます。</p>
+            <span class="tag">Getting Started</span>
+            <h3>迷ったらチュートリアル</h3>
+            <p>/tutorialで操作説明を再表示。/mf listでワールド一覧、/mf tp &lt;worldKey&gt;で移動できます。</p>
           </article>
         </div>
       </div>
@@ -100,36 +100,37 @@
       <div class="shell">
         <div class="section-head reveal">
           <div><span class="eyebrow">MP Economy</span><h2>MPを中心に、<br>遊びの成果が循環する。</h2></div>
-          <p>クエスト、報酬、取引、FFAをひとつのMP経済へ接続。通常のエメラルドアイテムとMPを混同しない、サーバー側ウォレット方式です。</p>
+          <p>クエスト・報酬・取引・FFAで得たMPを、ショップやオークションで使います。遊んだ成果が次の行動につながる経済です。</p>
         </div>
         <div class="systems">
           <article class="system-panel reveal featured-system">
             <span class="tag">Wallet</span>
-            <h3>MPウォレット</h3>
-            <p>MPは報酬・クエスト・取引・対戦などで受け取るゲーム内通貨です。通常のエメラルドを拾ってもMPへ自動変換されず、エメラルドはアイテムとして残ります。</p>
+            <h3>ウォレットの使い方</h3>
+            <p>手に持ったウォレットを左クリックすると所持MPを確認できます。棚ショップ・スロットではウォレットを持って右クリックして使います。ウォレット自体にアイテムは収納できません。</p>
             <ul>
-              <li>/mf balance または /mf mp で残高を確認</li>
-              <li>/mf pay でプレイヤー間送金</li>
-              <li>ショップ価格表はMP基準で管理</li>
+              <li>残高確認は左クリック</li>
+              <li>棚ショップの購入はウォレットを持って右クリック</li>
+              <li>FFA以外で死亡すると所持MPの50%を失う</li>
             </ul>
           </article>
           <article class="system-panel reveal">
             <span class="tag">Shelf Shop</span>
             <h3>棚ショップ</h3>
-            <p>管理側がショップワンドで棚を登録し、価格表に沿った商品を販売します。右クリックで作成、左クリックで削除。ショップ番号は連番で管理されます。</p>
+            <p>棚の商品は1個ずつ売買します。ウォレットを持って右クリックすると購入、販売したい商品を手に持って右クリックすると1個を売却できます。</p>
             <ul>
-              <li>保護エリアでも購入操作を許可</li>
-              <li>表示用アイテムや内部在庫を保護</li>
-              <li>スロットマシンは別システム</li>
+              <li>在庫があるときだけ購入可能</li>
+              <li>プレイヤーが売却すると共有在庫に1個追加</li>
+              <li>全ての棚で同じ商品在庫を共有</li>
             </ul>
           </article>
           <article class="system-panel reveal">
             <span class="tag">Barrel / Merchant</span>
             <h3>樽ショップとMifron商人</h3>
-            <p>樽ショップは通常27枠と掘り出し物3枠。Mifron商人は赤・青・黄・紫の4タイプで、販売・買取の内容が時間ごとに入れ替わります。</p>
+            <p>樽ショップの商品はすべて在庫1個。通常商品24枠と掘り出し物3枠が並び、商品を1つ買うたびに、その枠だけ別の商品へ入れ替わります。Mifron商人は4タイプで、品揃えが時間ごとに変化します。</p>
             <ul>
-              <li>素材、食料、戦闘品、レア品を重み付き抽選</li>
-              <li>ランダム販売の更新間隔は60分</li>
+              <li>樽を右クリックして商品一覧を開く</li>
+              <li>表示商品をクリックしてMPで購入</li>
+              <li>買うまで同じ商品が残る</li>
             </ul>
           </article>
           <article class="system-panel reveal">
@@ -189,29 +190,29 @@
     <section class="section community-lab">
       <div class="shell">
         <div class="section-head reveal">
-          <div><span class="eyebrow">Protection &amp; Creation</span><h2>守られた場所で、<br>世界を広げる。</h2></div>
-          <p>プレイヤーの建築と運営の拡張を両立するため、保護・構造物・提案を別々の仕組みとして管理します。</p>
+          <div><span class="eyebrow">Player Guide</span><h2>遊ぶ前に、<br>知っておきたいこと。</h2></div>
+          <p>管理者向けの設定ではなく、実際のプレイ中に必要になる操作とルールだけをまとめました。</p>
         </div>
         <div class="co-create-grid">
           <article class="co-create-card reveal">
-            <span class="tag">Protection</span>
-            <h3>中央エリアを保護</h3>
-            <p>Hubの中心部は4チャンク以上の保護範囲。建築、コンテナ、ドア、アイテムフレームなどを制限しながら、Mifronのショップや入札UIは利用できます。</p>
+            <span class="tag">Teleport &amp; Status</span>
+            <h3>移動とステータス</h3>
+            <p>テレポーターを右クリックすると移動先が目の前に表示され、表示されたアイテムを左クリックすると移動できます。ステータスはネザースターを右クリックします。</p>
           </article>
           <article class="co-create-card reveal">
-            <span class="tag">Structure</span>
-            <h3>構造物を自動生成</h3>
-            <p>WorldEditが利用できる場合はclipboard、利用しない場合はrange方式で構造物を登録。空間・重複・保護範囲を確認してチャンク生成に参加させます。</p>
+            <span class="tag">World Rules</span>
+            <h3>ワールドごとに持ち物が分かれる</h3>
+            <p>Hub、Survival、FFAではインベントリや装備などが分離されています。FFAへ入る前に、必要なアイテムを持ち込める場所か確認してください。</p>
           </article>
           <article class="co-create-card reveal">
-            <span class="tag">Proposal</span>
-            <h3>提案は管理承認制</h3>
-            <p>タイトル、カスタムアイテム、構造物などの提案を受け付けます。内容は管理側が確認・承認してから反映し、ショップ商品は価格表で管理します。</p>
+            <span class="tag">Survival</span>
+            <h3>サバイバルの注意</h3>
+            <p>SurvivalではTNTと溶岩を使えません。FFA以外で死亡するとMPを50%失うため、貴重なアイテムだけでなく残高にも注意が必要です。</p>
           </article>
           <article class="co-create-card accent-card reveal">
             <span class="tag">Discord Link</span>
-            <h3>6桁コードでアカウント連携</h3>
-            <p>ゲーム内で発行した6桁コードをDiscordの認証チャンネルへ送信。コードは10分で失効し、Minoruブリッジが連携状態を確認します。</p>
+            <h3>6桁コードで参加認証</h3>
+            <p>ゲーム内で発行した6桁コードをDiscordの認証チャンネルへ送信します。コードの有効期限は10分です。参加案内やイベント情報もDiscordで確認できます。</p>
           </article>
         </div>
       </div>
@@ -287,11 +288,11 @@
           <div>
             <span class="eyebrow">Join Mifron</span>
             <h2>遊ぶ人から、<br>世界をつくる側へ。</h2>
-            <p>Discordでは参加認証、MP連携、提案、投票、イベント告知をまとめて行います。現行プラグインの仕様を一緒に育てるコミュニティへ参加してください。</p>
+            <p>Discordでは参加認証、MP連携、提案、投票、イベント告知をまとめて行います。ゲーム内の案内、イベント情報、コミュニティのお知らせをDiscordで確認できます。</p>
           </div>
           <a class="btn discord" data-discord href="#">Discordに参加</a>
         </div>
-        <p class="disclaimer" style="margin-top:24px">MifronPluginは非公式のMinecraftサーバープラグインであり、Mojang StudiosまたはMicrosoftとの提携・承認・推奨関係はありません。MPやゲーム内報酬を現実通貨・譲渡可能な価値と交換する運用は行わず、MinecraftのEULAおよび関連ガイドラインに従って運営してください。現行コード基準: MifronPlugin 26.1.2-fixed-v15-inventory-groups。</p>
+        <p class="disclaimer" style="margin-top:24px">MifronPluginは非公式のMinecraftサーバープラグインであり、Mojang StudiosまたはMicrosoftとの提携・承認・推奨関係はありません。MPやゲーム内報酬を現実通貨・譲渡可能な価値と交換する運用は行わず、MinecraftのEULAおよび関連ガイドラインに従って運営してください。</p>
       </div>
     </section>
   </main>
