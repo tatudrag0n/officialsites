@@ -1,0 +1,6 @@
+/mifron https://mifron.mct-official.com/ 301
+/mifron/* https://mifron.mct-official.com/:splat 301
+/crewmate https://crewmate.mct-official.com/ 301
+/crewmate/* https://crewmate.mct-official.com/:splat 301
+/texroot https://texroot.mct-official.com/ 301
+/texroot/* https://texroot.mct-official.com/:splat 301
