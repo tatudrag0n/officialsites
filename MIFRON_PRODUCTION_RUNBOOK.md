@@ -13,6 +13,8 @@
 7. `Deploy Mifron Pages` を手動実行し、確認欄へ `DEPLOY_MIFRON` を入力する。
 8. `production` の承認を行い、最後のCanary確認が成功するまで完了扱いにしない。
 
+新しいPagesプロジェクトを作成した直後は、既存の `mifron.mct-official.com` が旧 `mct-mifron.pages.dev` を向いたままです。切替前にCloudflare Pagesの新しい `mifron` プロジェクトへ `mifron.mct-official.com` を追加し、DNSのCNAMEが新しい `mifron.pages.dev` を向いていることを確認します。確認後、`mifron.mct-official.com` のHTMLに `mifron-standalone-v1` マーカーとCSP/HSTSが返ることを検証します。新サイト確認前に旧プロジェクトを削除しないでください。
+
 Workflowは手動実行、確認語、環境承認、`main` 制限をすべて要求します。失敗した場合は再実行前にログとCloudflare側の状態を確認します。
 
 現在のリポジトリは所有者本人のみが共同編集者のため、`main` の必須PRレビューを有効にするとマージ不能になる可能性があります。また、GitHub FreeではPrivateリポジトリに必要なブランチ保護／Ruleset機能を利用できないため、Privateのままレビュー必須化する場合は、GitHub Pro / Team / Enterprise等の対象プランと信頼できるレビュアーを先に用意してください。準備後は `main` に必須PRレビュー1件・管理者にも適用・強制push禁止・削除禁止を設定してください。設定完了までは、手動公開Workflowと `production` 承認を必須の公開ゲートとして扱います。
