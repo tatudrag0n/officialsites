@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ inputs.confirm == 'DEPLOY_MIFRON' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm == 'DEPLOY_MIFRON' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production

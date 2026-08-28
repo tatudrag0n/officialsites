@@ -35,3 +35,5 @@ CLOUDFLARE_ACCOUNT_ID
 Cloudflare Pages側のプロジェクト名は必ず `mifron` と一致させます。Secrets未設定時はWorkflowが公開処理を停止します。
 
 本番環境 `production` には、所有者の承認と `main` ブランチ制限を設定しています。Secretsを登録しても、GitHub Actionsの環境承認を通過するまで公開処理は開始されません。
+
+なお、GitHubの管理者バイパス設定は公開REST APIの環境更新項目ではないため、APIからは変更していません。GitHubの `Settings` → `Environments` → `production` で「管理者が保護ルールをバイパスできる」設定を無効にしてください。設定変更後も、Workflowは手動実行・確認語・`production` 承認・`main` 制限を要求します。
