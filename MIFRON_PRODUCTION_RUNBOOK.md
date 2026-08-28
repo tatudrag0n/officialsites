@@ -19,6 +19,8 @@ Workflowは手動実行、確認語、環境承認、`main` 制限をすべて�
 
 支援販売は初期状態で無効です。提供内容・価格・返金処理・Minecraft Usage Guidelinesへの適合を運営で確認してから、決済事業者側の商品を作成します。
 
+有効化前に、必ず[Minecraft Usage Guidelines](https://www.minecraft.net/usage-guidelines)の最新版を確認してください。特に、支援特典が他プレイヤーへの競争上の優位やゲームプレイ上の不公平を生まないことを確認します。
+
 VM側の `/home/tatudragon0327/minoru-bot/.env` に、運営で確定した値だけを設定します。
 
 ```env
