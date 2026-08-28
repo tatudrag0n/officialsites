@@ -14,3 +14,22 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ�
 ## Discordリンク
 
 `assets/config.js` でDiscord招待URLを管理しています。
+
+## Mifronサイトの公開
+
+Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実行します。誤公開防止のため、入力欄へ `DEPLOY_MIFRON` と入力した場合だけ実行されます。
+
+リポジトリ設定には、次の非秘密Variableを登録します。
+
+```text
+MIFRON_PAGES_PROJECT=mifron
+```
+
+次の秘密情報はCloudflareのアカウント管理者がGitHub Secretsへ登録してください。チャットやリポジトリへ書き込まないでください。
+
+```text
+CLOUDFLARE_API_TOKEN
+CLOUDFLARE_ACCOUNT_ID
+```
+
+Cloudflare Pages側のプロジェクト名は必ず `mifron` と一致させます。Secrets未設定時はWorkflowが公開処理を停止します。
