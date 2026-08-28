@@ -37,6 +37,24 @@ jobs:
           test "$MIFRON_PAGES_PROJECT" = 'mifron' || { echo 'MIFRON_PAGES_PROJECT must be the allowlisted project name: mifron'; exit 1; }
           test -f mifron/index.html
 
+      - name: Ensure allowlisted Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          MIFRON_PAGES_PROJECT: ${{ vars.MIFRON_PAGES_PROJECT }}
+        run: |
+          set -euo pipefail
+          project_endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${MIFRON_PAGES_PROJECT}"
+          if curl --fail --silent --show-error \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            "$project_endpoint" -o /dev/null; then
+            echo 'The allowlisted Mifron Pages project already exists.'
+          else
+            echo 'Creating the allowlisted Mifron Pages project.'
+            npx --yes wrangler@4.127.0 pages project create "$MIFRON_PAGES_PROJECT" --production-branch main
+          fi
+
       - name: Deploy standalone Mifron site
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
