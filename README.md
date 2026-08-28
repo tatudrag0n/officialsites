@@ -19,6 +19,8 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ�
 
 Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実行します。誤公開防止のため、入力欄へ `DEPLOY_MIFRON` と入力した場合だけ実行されます。
 
+過去の `MCTsites.zip` 自動展開Workflowは、リポジトリ全体を削除して上書きする危険があり、現在の独立サイト公開方式と競合するため廃止しています。
+
 リポジトリ設定には、次の非秘密Variableを登録します。
 
 ```text
