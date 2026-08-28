@@ -1,0 +1,48 @@
+name: Validate Mifron Pages
+
+on:
+  pull_request:
+    paths:
+      - 'mifron/**'
+      - '.github/workflows/**'
+  push:
+    branches: [main]
+    paths:
+      - 'mifron/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mifron-pages-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate static release invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s mifron/index.html
+          test -s mifron/_headers
+          test -s mifron/robots.txt
+          test -s mifron/sitemap.xml
+          grep -q 'id="support"' mifron/index.html
+          grep -q 'rel="canonical"' mifron/index.html
+          grep -qi 'content-security-policy' mifron/_headers
+          grep -qi 'strict-transport-security' mifron/_headers
+          if grep -RInE '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|DISCORD_WEBHOOK_URL|SUPPORT_WEBHOOK_SECRET|BEGIN (RSA |OPENSSH )?PRIVATE KEY)' mifron; then
+            echo 'A secret-like value or secret variable name was found in the public site.' >&2
+            exit 1
+          fi
+          if grep -RInE '(src|action)="https?://' mifron/index.html; then
+            echo 'External asset or form action found; review CSP and privacy impact before merging.' >&2
+            exit 1
+          fi
