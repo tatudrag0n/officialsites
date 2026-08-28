@@ -43,3 +43,17 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           MIFRON_PAGES_PROJECT: ${{ vars.MIFRON_PAGES_PROJECT }}
         run: npx --yes wrangler@4.127.0 pages deploy ./mifron --project-name "$MIFRON_PAGES_PROJECT"
+
+      - name: Verify custom domain deployment
+        run: |
+          set -euo pipefail
+          body_file="$(mktemp)"
+          headers_file="$(mktemp)"
+          trap 'rm -f "$body_file" "$headers_file"' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-delay 6 \
+            --retry-all-errors https://mifron.mct-official.com/ -o "$body_file"
+          curl --fail --silent --show-error --retry 10 --retry-delay 6 \
+            --retry-all-errors --head https://mifron.mct-official.com/ -D "$headers_file" -o /dev/null
+          grep -q 'id="support"' "$body_file"
+          grep -qi '^content-security-policy:' "$headers_file"
+          grep -qi '^strict-transport-security:' "$headers_file"
