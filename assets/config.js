@@ -1,4 +1,3 @@
-window.SITE_LINKS = {
-  mifronDiscord: "https://discord.gg/pUvhwDs8ub",
-  crewmateDiscord: "https://discord.gg/Dhd9YRykuP"
-};
+// MCT本体にはブランド固有のDiscord招待URLを持たせない。
+// Mifron / CREWMATEの導線は各サイト側の設定で管理する。
+window.SITE_LINKS = {};
