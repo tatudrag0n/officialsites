@@ -4,11 +4,17 @@ on:
   pull_request:
     paths:
       - 'mifron/**'
+      - '404.html'
+      - 'assets/**'
+      - '_headers'
       - '.github/workflows/**'
   push:
     branches: [main]
     paths:
       - 'mifron/**'
+      - '404.html'
+      - 'assets/**'
+      - '_headers'
       - '.github/workflows/**'
 
 permissions:
@@ -30,6 +36,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -s 404.html
+          test -s assets/404.css
           test -s mifron/index.html
           test -s mifron/_headers
           test -s mifron/robots.txt
@@ -38,8 +46,12 @@ jobs:
           grep -q 'rel="canonical"' mifron/index.html
           grep -qi 'content-security-policy' mifron/_headers
           grep -qi 'strict-transport-security' mifron/_headers
-          if grep -RInE '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|DISCORD_WEBHOOK_URL|SUPPORT_WEBHOOK_SECRET|BEGIN (RSA |OPENSSH )?PRIVATE KEY)' mifron; then
+          if grep -RInE '(OPENAI_API_KEY|CLOUDFLARE_API_TOKEN|DISCORD_WEBHOOK_URL|SUPPORT_WEBHOOK_SECRET|BEGIN (RSA |OPENSSH )?PRIVATE KEY)' 404.html assets mifron; then
             echo 'A secret-like value or secret variable name was found in the public site.' >&2
+            exit 1
+          fi
+          if grep -nE 'style=' 404.html; then
+            echo 'Inline style found in the CSP-protected 404 page.' >&2
             exit 1
           fi
           if grep -RInE '(src|action)="https?://' mifron/index.html; then

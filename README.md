@@ -24,7 +24,7 @@ Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実�
 リポジトリ設定には、次の非秘密Variableを登録します。
 
 ```text
-MIFRON_PAGES_PROJECT=mifron
+MIFRON_PAGES_PROJECT=mct-mifron
 ```
 
 次の秘密情報はCloudflareのアカウント管理者がGitHub Secretsへ登録してください。チャットやリポジトリへ書き込まないでください。
@@ -34,7 +34,7 @@ CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 ```
 
-Cloudflare Pages側のプロジェクト名は必ず `mifron` と一致させます。Secrets未設定時はWorkflowが公開処理を停止します。
+Cloudflare Pages側のプロジェクト名は既存の `mct-mifron` と一致させます。Secrets未設定時はWorkflowが公開処理を停止します。
 
 本番環境 `production` には、所有者の承認と `main` ブランチ制限を設定しています。Secretsを登録しても、GitHub Actionsの環境承認を通過するまで公開処理は開始されません。
 
