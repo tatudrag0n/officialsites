@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const links=window.SITE_LINKS||{};
   document.querySelectorAll('[data-discord]').forEach(a=>{
-    const key=a.dataset.discord==='crewmate'?'crewmateDiscord':'mifronDiscord';
+    const key=a.dataset.discord==='crewmate'?'crewmateDiscord':a.dataset.discord==='mifron'?'mifronDiscord':null;
+    if(!key) return;
     const discordUrl=links[key]||'#';
     a.href=discordUrl;
     a.target='_blank';
