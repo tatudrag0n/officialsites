@@ -40,7 +40,7 @@ jobs:
       - name: Verify allowlisted Pages project exists
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           MIFRON_PAGES_PROJECT: ${{ vars.MIFRON_PAGES_PROJECT }}
         run: |
           set -euo pipefail
@@ -54,7 +54,7 @@ jobs:
       - name: Deploy standalone Mifron site
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           MIFRON_PAGES_PROJECT: ${{ vars.MIFRON_PAGES_PROJECT }}
         run: npx --yes wrangler@4.127.0 pages deploy ./mifron --project-name "$MIFRON_PAGES_PROJECT"
 
