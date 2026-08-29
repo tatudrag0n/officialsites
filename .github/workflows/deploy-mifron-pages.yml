@@ -34,7 +34,7 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing CLOUDFLARE_API_TOKEN'; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Missing CLOUDFLARE_ACCOUNT_ID'; exit 1; }
           test -n "$MIFRON_PAGES_PROJECT" || { echo 'Missing MIFRON_PAGES_PROJECT'; exit 1; }
-          test "$MIFRON_PAGES_PROJECT" = 'mifron' || { echo 'MIFRON_PAGES_PROJECT must be the allowlisted project name: mifron'; exit 1; }
+          test "$MIFRON_PAGES_PROJECT" = 'mct-mifron' || { echo 'MIFRON_PAGES_PROJECT must be the existing allowlisted project name: mct-mifron'; exit 1; }
           test -f mifron/index.html
 
       - name: Verify allowlisted Pages project exists

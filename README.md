@@ -24,7 +24,7 @@ Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実�
 リポジトリ設定には、次の非秘密Variableを登録します。
 
 ```text
-MIFRON_PAGES_PROJECT=mifron
+MIFRON_PAGES_PROJECT=mct-mifron
 ```
 
 次の秘密情報はCloudflareのアカウント管理者がGitHub Secretsへ登録してください。チャットやリポジトリへ書き込まないでください。
