@@ -8,7 +8,7 @@
 2. 必須レビュアーが設定されていることを確認する。
 3. 「管理者が保護ルールをバイパスできる」を無効にする。
 4. `production` のデプロイブランチ制限が `main` のみであることを確認する。
-5. `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をGitHubの `production` 環境Secretsへ登録する。チャットやリポジトリへ貼り付けない。
+5. `CLOUDFLARE_API_TOKEN` だけをGitHubの `production` 環境Secretへ登録する。アカウントIDは非秘密のRepository Variable `CLOUDFLARE_ACCOUNT_ID` として登録する。値をチャットやリポジトリへ貼り付けない。
 6. Repository variable `MIFRON_PAGES_PROJECT=mct-mifron` を確認する（既存の本番Pagesプロジェクト）。
 7. `Deploy Mifron Pages` を手動実行し、確認欄へ `DEPLOY_MIFRON` を入力する。
 8. `production` の承認を行い、最後のCanary確認が成功するまで完了扱いにしない。
