@@ -27,17 +27,18 @@ VM側の `/home/tatudragon0327/minoru-bot/.env` に、運営で確定した値�
 
 ```env
 SUPPORT_PAGE_URL=https://mifron.mct-official.com/#support
-SUPPORT_PROVIDER=tebex
-SUPPORT_SALES_ENABLED=true
-# SUPPORT_CATALOG_JSON は SUPPORT_FULFILLMENT.md の形式で、承認済みの商品値を設定する
-SUPPORT_WEBHOOK_ENABLED=true
+# 初期状態は販売OFF。決済事業者・規約・返金・sandbox検証の確定後にだけ運営判断で変更する
+SUPPORT_PROVIDER=
+SUPPORT_SALES_ENABLED=false
+# SUPPORT_CATALOG_JSON は承認済みの商品値を設定する（販売開始前は空欄のまま）
+SUPPORT_WEBHOOK_ENABLED=false
 SUPPORT_WEBHOOK_HOST=127.0.0.1
 SUPPORT_WEBHOOK_PORT=8125
-SUPPORT_WEBHOOK_SECRET=<provider-webhook-secret>
-SUPPORTER_ROLE_ID=<discord-role-id>
+# SUPPORT_WEBHOOK_SECRET=<provider-webhook-secret>
+# SUPPORTER_ROLE_ID=<discord-role-id>
 ```
 
-`<...>` は実値の投入例ではなく、VM管理者が安全な経路で置き換える項目です。設定後はBotを再起動し、購入ボタン・署名検証・重複イベント・返金・Supporterロール剥奪をテストします。販売設定が不完全な場合、Botは購入ボタンを表示しません。
+`<...>` は実値の投入例ではなく、VM管理者が安全な経路で置き換える項目です。販売開始前に`SUPPORT_SALES_ENABLED=false`と`SUPPORT_WEBHOOK_ENABLED=false`を維持します。販売を有効化する場合は、決済事業者・規約・返金・未成年者対応・Minecraft Usage Guidelinesの確認、sandbox検証、明示承認を先に完了し、その後にBotを再起動して購入ボタン・署名検証・重複イベント・返金・Supporterロール剥奪をテストします。販売設定が不完全な場合、Botは購入ボタンを表示しません。
 
 ## リリース前チェック
 
