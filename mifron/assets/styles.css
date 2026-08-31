@@ -60,16 +60,16 @@ html,body{background:var(--paper);color:var(--ink);font-family:Inter,"Noto Sans 
 @media(max-width:900px){.join-section .join-grid{grid-template-columns:1fr}}
 
 /* Contextual world photography: each image sits behind the feature it explains. */
-.worlds-showcase{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(90deg,var(--paper) 0%,rgba(255,254,247,.96) 42%,rgba(255,254,247,.68) 100%),url('mifron-athletic.png') 72% center/cover no-repeat}
-.worlds-showcase .feature{background:rgba(255,254,247,.88);backdrop-filter:blur(7px)}
-.economy-showcase{background-image:linear-gradient(rgba(9,13,29,.86),rgba(9,13,29,.92)),url('mifron-shelfshop.png'),url('mifron-slotshop.png');background-size:auto,62% 100%,42% 100%;background-position:center,left center,right center;background-repeat:no-repeat}
+.worlds-showcase{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(90deg,rgba(255,254,247,.96) 0%,rgba(255,254,247,.82) 40%,rgba(255,254,247,.28) 100%),url('mifron-athletic.png') 72% center/cover no-repeat}
+.worlds-showcase .feature{background:rgba(255,254,247,.8);backdrop-filter:blur(7px)}
+.section.dark.economy-showcase{background-color:#101731;background-image:linear-gradient(rgba(9,13,29,.58),rgba(9,13,29,.72)),url('mifron-shelfshop.png'),url('mifron-slotshop.png');background-size:auto,60% auto,43% auto;background-position:center,left center,right center;background-repeat:no-repeat}
 .economy-showcase .system-panel{background:rgba(12,18,35,.72);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18)}
-.ffa-showcase{background-image:linear-gradient(rgba(255,254,247,.9),rgba(255,254,247,.96)),url('mifron-ffa.png');background-size:cover;background-position:center;background-attachment:fixed}
-.ffa-showcase .kit{background:rgba(255,254,247,.9);backdrop-filter:blur(7px)}
+.ffa-showcase{background-image:linear-gradient(rgba(255,254,247,.65),rgba(255,254,247,.8)),url('mifron-ffa.png');background-size:cover;background-position:center;background-attachment:fixed}
+.ffa-showcase .kit{background:rgba(255,254,247,.84);backdrop-filter:blur(7px)}
 .kit-selector-preview{display:grid;grid-template-columns:minmax(260px,.75fr) minmax(420px,1.25fr);align-items:center;gap:46px;margin:0 0 54px;padding:32px;background:rgba(9,9,9,.92);color:var(--paper)}
 .kit-selector-preview h3{font-size:clamp(32px,4vw,56px);font-weight:300;line-height:1;margin:18px 0}
 .kit-selector-preview p{color:#d4d4ce;margin:0;max-width:480px}
 .kit-selector-preview .eyebrow{color:#d9d9d1}
 .kit-selector-preview img{display:block;width:100%;height:auto;image-rendering:auto;background:#e7e7e7;padding:14px}
-@media(max-width:900px){.worlds-showcase{background:linear-gradient(rgba(255,254,247,.84),rgba(255,254,247,.94)),url('mifron-athletic.png') center/cover no-repeat}.economy-showcase{background-size:auto,100% 52%,100% 52%;background-position:center,center top,center bottom}.ffa-showcase{background-attachment:scroll}.kit-selector-preview{grid-template-columns:1fr;gap:26px}.kit-selector-preview img{order:-1}}
+@media(max-width:900px){.worlds-showcase{background:linear-gradient(rgba(255,254,247,.7),rgba(255,254,247,.84)),url('mifron-athletic.png') center/cover no-repeat}.section.dark.economy-showcase{background-size:auto,100% auto,100% auto;background-position:center,center top,center bottom}.ffa-showcase{background-attachment:scroll}.kit-selector-preview{grid-template-columns:1fr;gap:26px}.kit-selector-preview img{order:-1}}
 @media(max-width:560px){.kit-selector-preview{margin-bottom:36px;padding:20px}.kit-selector-preview h3{font-size:36px}}
