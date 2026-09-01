@@ -73,3 +73,4 @@ html,body{background:var(--paper);color:var(--ink);font-family:Inter,"Noto Sans 
 .kit-selector-preview img{display:block;width:100%;height:auto;image-rendering:auto;background:#e7e7e7;padding:14px}
 @media(max-width:900px){.worlds-showcase{background:linear-gradient(rgba(255,254,247,.7),rgba(255,254,247,.84)),url('mifron-athletic.png') center/cover no-repeat}.section.dark.economy-showcase{background-size:auto,100% auto,100% auto;background-position:center,center top,center bottom}.ffa-showcase{background-attachment:scroll}.kit-selector-preview{grid-template-columns:1fr;gap:26px}.kit-selector-preview img{order:-1}}
 @media(max-width:560px){.kit-selector-preview{margin-bottom:36px;padding:20px}.kit-selector-preview h3{font-size:36px}}
+.mt-24{margin-top:24px}
