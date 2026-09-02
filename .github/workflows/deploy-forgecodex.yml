@@ -19,7 +19,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: production
     steps:
       - uses: actions/checkout@v5
       - name: Validate Cloudflare credentials
