@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mifron Quests - クエスト進捗 & 提案</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .quest-tree-container {
+      background: #1e1e1e;
+      border: 3px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      color: #fff;
+    }
+    .quest-node {
+      background: #2a2a2a;
+      border: 2px solid #555;
+      border-radius: 6px;
+      padding: 12px;
+      margin: 10px 0;
+      position: relative;
+    }
+    .quest-node.completed { border-color: #55ff55; background: #1a331a; }
+    .quest-node.locked { border-color: #888; opacity: 0.6; }
+    .quest-tabs button {
+      background: #333;
+      color: #fff;
+      padding: 10px 18px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .quest-tabs button.active { background: #55aa55; }
+    .proposal-form input, .proposal-form select, .proposal-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background: #222;
+      border: 1px solid #444;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="max-width: 900px; margin: 0 auto; padding: 20px;">
+    <h1>⚔️ Mifron 進捗型クエストシステム</h1>
+    <p>マイクラ内の進捗画面（Lキー）と連携するクエスト一覧と提案フォームです。</p>
+
+    <div class="quest-tabs">
+      <button class="active">定期クエスト (Daily/Weekly)</button>
+      <button>単発クエスト (Special)</button>
+      <button>隠しクエスト (Secret)</button>
+    </div>
+
+    <div class="quest-tree-container">
+      <h3>🌲 クエスト進捗ツリー</h3>
+      <div class="quest-node completed">
+        <h4>[完了] 新たな旅立ち (前提)</h4>
+        <p>条件: サーバーに初回ログインする / 報酬: 50 MP</p>
+      </div>
+      <div style="margin-left: 30px; border-left: 2px dashed #55ff55; padding-left: 15px;">
+        <div class="quest-node">
+          <h4>[進行中] 初めての商談</h4>
+          <p>条件: ONLINE SHOPでアイテムを1個購入する / 依存: 新たな旅立ち / 報酬: 100 MP</p>
+        </div>
+        <div class="quest-node locked">
+          <h4>[未解放] 凄腕の商人</h4>
+          <p>条件: 棚ショップで累計10回取引を行う / 依存: 初めての商談 / 報酬: 称号「若き商人」</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="quest-tree-container">
+      <h3>💡 クエスト提案フォーム</h3>
+      <p>あなたの考えたクエストをサーバーに実装できます！</p>
+      <form class="proposal-form" onsubmit="alert('提案を送信しました！（審査後に反映されます）'); return false;">
+        <label>クエスト名:</label>
+        <input type="text" placeholder="例: 深淵の探求者" required>
+
+        <label>クエスト種別:</label>
+        <select>
+          <option>単発クエスト</option>
+          <option>定期クエスト（デイリー/ウィークリー）</option>
+          <option>隠しクエスト</option>
+        </select>
+
+        <label>達成条件の種類:</label>
+        <select>
+          <option>アイテム入手 / 破壊</option>
+          <option>移動 / 特定バイオーム・座標到達</option>
+          <option>MP獲得 / 取引達成</option>
+          <option>特定進捗達成</option>
+          <option>累計ログイン</option>
+        </select>
+
+        <label>前提クエスト（依存関係）:</label>
+        <input type="text" placeholder="なし、または前提となるクエスト名">
+
+        <label>報酬内容（MP / アイテム / 称号）:</label>
+        <input type="text" placeholder="例: 300 MP + 称号「深淵の主」">
+
+        <button type="submit" style="background: #00aa00; color: #fff; padding: 12px; border: none; cursor: pointer; width: 100%;">クエストを提案する</button>
+      </form>
+    </div>
+    <p><a href="index.html" style="color: #55ff55;">← Mifron トップページに戻る</a></p>
+  </div>
+</body>
+</html>
