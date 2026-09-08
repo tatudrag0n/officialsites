@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mifron Proposals - 提案プラットフォーム</title>
+  <style>
+    body { background: #121212; color: #eee; font-family: sans-serif; margin: 0; padding: 20px; }
+    .proposal-container { max-width: 900px; margin: 0 auto; }
+    .proposal-card {
+      background: #1c1c1c; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .proposal-card.supporter-highlight {
+      border: 2px solid #ffaa00; background: linear-gradient(145deg, #2a2010 0%, #1c1c1c 100%);
+    }
+    .supporter-tag { background: #ffaa00; color: #000; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+    .vote-btn { background: #333; border: 1px solid #555; color: #fff; padding: 6px 16px; border-radius: 4px; cursor: pointer; margin-right: 8px; }
+    .vote-btn:hover { background: #555; color: #55ff55; }
+    .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; float: right; }
+    .status-open { background: #00aa00; color: #fff; }
+    .status-planned { background: #00aaaa; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="proposal-container">
+    <a href="./index.html" style="color: #55ffff; text-decoration: none;">← Mifron トップに戻る</a>
+    <h1 style="color: #ffff55;">💡 プレイヤー提案プラットフォーム</h1>
+    <p>Discordの提案機能をWebへ統合しました。サーバーの機能や仕様について自由に提案・投票ができます。</p>
+
+    <div style="background: #242424; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="margin-top: 0; color: #55ff55;">新規提案を投稿</h3>
+      <input type="text" id="propTitle" placeholder="提案タイトル" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box;">
+      <textarea id="propBody" placeholder="提案内容・理由・詳細" rows="4" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box;"></textarea>
+      <button onclick="postProposal()" style="padding: 10px 24px; background: #ffff55; color: #000; font-weight: bold; border: none; border-radius: 4px; cursor: pointer;">提案を送信</button>
+    </div>
+
+    <div id="proposal-list">
+      <div class="proposal-card supporter-highlight">
+        <span class="status-badge status-planned">実装予定</span>
+        <h3 style="margin: 0 0 10px 0; color: #ffaa00;">
+          棚ショップの取引停止時における自動撤去機能の導入
+          <span class="supporter-tag">MSP+ 優先提案</span>
+        </h3>
+        <p style="color: #ccc;">サバイバルワールドで放置されたショップが景観を損ねないよう、1ヶ月間利用のないショップを自動撤去してほしいです。</p>
+        <div style="margin-top: 15px;">
+          <button class="vote-btn" onclick="vote(this)">👍 賛成 (42)</button>
+          <button class="vote-btn" onclick="vote(this)">👎 反対 (2)</button>
+        </div>
+      </div>
+
+      <div class="proposal-card">
+        <span class="status-badge status-open">投票受付中</span>
+        <h3 style="margin: 0 0 10px 0; color: #ffff55;">特殊アイテム「スクラッチ」の当選確率と演出追加</h3>
+        <p style="color: #ccc;">紙から低確率で変化するスクラッチを使用した際、チャットやパーティクルで当たり演出が出るようにしてほしいです。</p>
+        <div style="margin-top: 15px;">
+          <button class="vote-btn" onclick="vote(this)">👍 賛成 (18)</button>
+          <button class="vote-btn" onclick="vote(this)">👎 反対 (1)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function postProposal() {
+      const title = document.getElementById('propTitle').value;
+      if (!title) return alert('タイトルを入力してください');
+      alert('提案を投稿しました！Discord連携アカウントによる確認後、一覧に反映されます。');
+      document.getElementById('propTitle').value = '';
+      document.getElementById('propBody').value = '';
+    }
+    function vote(btn) {
+      alert('投票を受け付けました！');
+    }
+  </script>
+</body>
+</html>

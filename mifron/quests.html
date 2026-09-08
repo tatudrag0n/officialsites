@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mifron Quests - 進捗・クエスト</title>
+  <style>
+    body { background: #15120e; color: #eee; font-family: 'Minecraft', 'Courier New', monospace; margin: 0; padding: 20px; }
+    .site-container { max-width: 960px; margin: 0 auto; }
+    .mc-advancement-window {
+      background: #2b2b2b;
+      border: 4px solid #4a4a4a;
+      box-shadow: inset 2px 2px 0 #1e1e1e, 0 8px 24px rgba(0,0,0,0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .mc-tabs { display: flex; background: #1e1e1e; border-bottom: 3px solid #4a4a4a; }
+    .mc-tab {
+      padding: 12px 24px; cursor: pointer; color: #aaa; border-right: 2px solid #333; background: #242424; font-weight: bold;
+    }
+    .mc-tab:hover, .mc-tab.active { color: #ffff55; background: #2b2b2b; }
+    .mc-viewport {
+      background: radial-gradient(circle, #2d261e 10%, #15120e 90%);
+      min-height: 480px; padding: 24px;
+    }
+    .mc-node-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .mc-node {
+      background: rgba(30, 30, 30, 0.9); border: 3px solid #555; border-radius: 6px; padding: 16px; color: #fff;
+    }
+    .mc-node.hidden-quest { border-color: #aa00aa; filter: blur(3px); transition: 0.3s; }
+    .mc-node.hidden-quest:hover { filter: none; }
+    .mc-node h3 { color: #ffff55; margin: 0 0 8px 0; font-size: 1.1rem; }
+    .mc-node p { font-size: 0.85rem; color: #ccc; margin: 4px 0; }
+    .mc-node .reward { color: #55ffff; font-size: 0.85rem; font-weight: bold; margin-top: 8px; }
+    .badge { display: inline-block; padding: 2px 6px; background: #444; font-size: 0.75rem; border-radius: 4px; margin-bottom: 8px; }
+    .propose-btn {
+      display: inline-block; background: #55ff55; color: #000; font-weight: bold; padding: 10px 20px;
+      border: none; border-radius: 6px; cursor: pointer; text-decoration: none; margin: 10px 0;
+    }
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75); justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-content {
+      background: #222; border: 3px solid #ffff55; padding: 24px; border-radius: 8px; max-width: 500px; width: 90%; color: #fff;
+    }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      width: 100%; padding: 8px; margin: 6px 0 14px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="site-container">
+    <a href="./index.html" style="color: #55ffff; text-decoration: none;">← Mifron トップに戻る</a>
+    <h1 style="color: #ffff55; margin-bottom: 5px;">📜 Mifron クエスト・進捗システム</h1>
+    <p style="color: #aaa;">マイクラ内の進捗画面（Lキー）と連動するクエスト一覧です。</p>
+    <button class="propose-btn" onclick="openModal()">＋ 新しいクエストを提案する</button>
+
+    <div class="mc-advancement-window">
+      <div class="mc-tabs">
+        <div class="mc-tab active" onclick="switchTab('periodic', event)">🌟 定期クエスト</div>
+        <div class="mc-tab" onclick="switchTab('single', event)">⚔️ 単発・チャレンジ</div>
+        <div class="mc-tab" onclick="switchTab('hidden', event)">🔒 隠しクエスト</div>
+      </div>
+      <div class="mc-viewport">
+        <div id="quest-grid" class="mc-node-grid"></div>
+      </div>
+    </div>
+
+    <div id="proposeModal" class="modal">
+      <div class="modal-content">
+        <h2 style="color: #ffff55; margin-top: 0;">クエストの新規提案</h2>
+        <form onsubmit="submitQuest(event)">
+          <label>クエスト種類</label>
+          <select id="qType">
+            <option value="periodic">定期クエスト（デイリー/ウィークリー）</option>
+            <option value="single">単発クエスト（スペシャル）</option>
+            <option value="hidden">隠しクエスト</option>
+          </select>
+          <label>クエスト名</label>
+          <input type="text" id="qTitle" required placeholder="例: 深海探検隊">
+          <label>前提クエスト（依存先）</label>
+          <input type="text" id="qParent" placeholder="なし、または前提クエスト名">
+          <label>達成条件（詳細）</label>
+          <input type="text" id="qCondition" required placeholder="例: 海底神殿到達、または原木x64伐採">
+          <label>報酬内容</label>
+          <input type="text" id="qReward" required placeholder="例: 500 MP + 特製スクラッチ x1">
+          <label>付与称号（任意）</label>
+          <input type="text" id="qTitleReward" placeholder="例: 【深海の支配者】">
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" onclick="closeModal()" style="padding: 8px 16px; background: #666; color: #fff; border: none; border-radius: 4px;">キャンセル</button>
+            <button type="submit" style="padding: 8px 16px; background: #55ff55; color: #000; font-weight: bold; border: none; border-radius: 4px;">送信</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sampleQuests = {
+      periodic: [
+        { title: 'デイリー木こり', desc: '原木を64個伐採する', reward: '100 MP', condition: '木材伐採 x64' },
+        { title: 'ウィークリー深層探検', desc: '深層岩領域で鉱石を100個採掘する', reward: '1,000 MP', condition: '鉱石採掘 x100' }
+      ],
+      single: [
+        { title: '最初の一歩', desc: '海ワールドのボーダー内を探索する', reward: '50 MP + 称号【漂流者】', condition: '海ワールド探索' },
+        { title: '市場の支配者', desc: 'サバイバルワールドで棚ショップを出店する', reward: '500 MP', parent: '最初の一歩', condition: '棚ショップ作成' }
+      ],
+      hidden: [
+        { title: '??? (隠しクエスト)', desc: '朽ちた剣にすべてのMAXエンチャントを刻む', reward: '特殊報酬 + 称号【古の勇者】', condition: '朽ちた剣MAXエンチャント' }
+      ]
+    };
+
+    let currentTab = 'periodic';
+
+    function renderQuests() {
+      const container = document.getElementById('quest-grid');
+      container.innerHTML = '';
+      const list = sampleQuests[currentTab] || [];
+      list.forEach(q => {
+        const div = document.createElement('div');
+        div.className = 'mc-node' + (currentTab === 'hidden' ? ' hidden-quest' : '');
+        div.innerHTML = `
+          <div class="badge">${q.parent ? '依存: ' + q.parent : '基本クエスト'}</div>
+          <h3>${q.title}</h3>
+          <p>${q.desc}</p>
+          <p style="color: #aaa;">条件: ${q.condition}</p>
+          <div class="reward">🎁 報酬: ${q.reward}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function switchTab(tab, e) {
+      currentTab = tab;
+      document.querySelectorAll('.mc-tab').forEach(el => el.classList.remove('active'));
+      e.target.classList.add('active');
+      renderQuests();
+    }
+
+    function openModal() { document.getElementById('proposeModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('proposeModal').style.display = 'none'; }
+    function submitQuest(e) {
+      e.preventDefault();
+      alert('クエスト提案を受け付けました！審査後にマイクラサーバーおよびサイト進捗ツリーに反映されます。');
+      closeModal();
+    }
+    renderQuests();
+  </script>
+</body>
+</html>
