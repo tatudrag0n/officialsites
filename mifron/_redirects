@@ -14,3 +14,10 @@
 /rules /#join 302
 /faq /#join 302
 /support /#support 302
+
+# New site pages
+/tutorial    /tutorial.html    302
+/quests      /quests/         302
+/proposals   /proposals/      302
+/quests/    /quests/index.html 302
+/proposals/  /proposals/index.html 302
