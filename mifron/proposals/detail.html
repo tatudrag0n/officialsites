@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>提案詳細 | Mifron</title>
+  <meta name="description" content="Mifronの提案詳細ページ。提案の内容、状態、投票数を確認できます。">
+  <link rel="icon" href="../assets/mifron-favicon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/proposals.css">
+  <script src="../assets/config.js" defer></script>
+</head>
+<body>
+  <header class="site-header sub-header">
+    <div class="shell nav">
+      <a class="brand" href="../">
+        <img src="../assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <span class="brand-text">Mifron</span>
+      </a>
+      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+        <a href="../">ホーム</a>
+        <a href="../tutorial.html">チュートリアル</a>
+        <a href="../quests/">クエスト</a>
+        <a href="./">提案</a>
+        <a href="../#join" class="discord">Discord</a>
+      </nav>
+      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="sub-hero">
+      <div class="shell">
+        <div class="reveal">
+          <span class="kicker">Mifron Proposal System</span>
+          <h1>提案詳細</h1>
+          <p class="lead" id="proposalTitle">読み込み中...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div id="proposalDetail" class="proposal-detail reveal">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>詳細情報を読み込み中...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <p class="legal">© 2026 MCT. All rights reserved. | <a href="../">MCT Official</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // URLから提案IDを取得
+    function getProposalIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    // 提案詳細を取得
+    async function fetchProposalDetail(proposalId) {
+      try {
+        const response = await fetch('/api/proposals');
+        if (!response.ok) throw new Error('Failed to fetch proposals');
+        const proposals = await response.json();
+        return proposals.find(p => p.id === proposalId);
+      } catch (error) {
+        console.error('Error fetching proposal detail:', error);
+        // デモデータを使用
+        return getDemoProposalDetail(proposalId);
+      }
+    }
+
+    function getDemoProposalDetail(proposalId) {
+      const demoProposals = {
+        'prop_001': {
+          id: 'prop_001',
+          title: '新しいFFAキットの追加',
+          description: '新しいFFAキットを追加してほしいです。アーチャー、タンク、サポートなどのバリエーションを増やしてください。現在のキットは18種類ですが、もっと多様性があれば面白いと思います。',
+          type: 'feature',
+          status: 'open',
+          author: 'Player1',
+          upvotes: 15,
+          priority: 'medium',
+          tags: ['FFA', 'キット', 'バリエーション'],
+          notes: '可能であれば、各キットに特殊能力を付与してほしいです。',
+          createdAt: new Date().toISOString()
+        },
+        'prop_002': {
+          id: 'prop_002',
+          title: 'ショップUIの改善',
+          description: 'ショップのUIをもっと使いやすくしてほしいです。アイテムの検索機能やカテゴリー分けを追加してください。現在のショップはバレルを使ったシステムですが、もっと直感的な操作ができるようになってほしいです。',
+          type: 'feature',
+          status: 'in_progress',
+          author: 'Player2',
+          upvotes: 23,
+          priority: 'high',
+          tags: ['ショップ', 'UI', 'UX'],
+          notes: '可能であれば、クリエイティブインベントリのようなUIを採用してほしいです。',
+          createdAt: new Date(Date.now() - 86400000).toISOString()
+        },
+        'prop_003': {
+          id: 'prop_003',
+          title: 'バグ: テレポートが動かない',
+          description: 'テレポートコマンドが動かないバグがあります。/tp コマンドを使ったときに「プレイヤーが見つかりません」というエラーが出ます。他のプレイヤーも同じ現象が起きています。',
+          type: 'bug',
+          status: 'completed',
+          author: 'Player3',
+          upvotes: 8,
+          priority: 'critical',
+          tags: ['バグ', 'テレポート', 'コマンド'],
+          notes: '再現手順: 1. /tp <player> と入力 2. Enterを押す 3. エラーが表示される',
+          createdAt: new Date(Date.now() - 172800000).toISOString()
+        }
+      };
+      return demoProposals[proposalId] || null;
+    }
+
+    function renderProposalDetail(proposal) {
+      if (!proposal) {
+        document.getElementById('proposalDetail').innerHTML = `
+          <div class="error-message">
+            <h2>❌ 提案が見つかりません</h2>
+            <p>指定された提案は存在しないか、削除されました。</p>
+            <a href="./" class="btn">提案一覧に戻る</a>
+          </div>
+        `;
+        return;
+      }
+
+      const statusClass = proposal.status === 'approved' ? 'approved' : 
+                         proposal.status === 'in_progress' ? 'in_progress' : 
+                         proposal.status === 'completed' ? 'completed' : 'rejected';
+
+      const detailHTML = `
+        <div class="proposal-detail-header">
+          <div class="proposal-badges">
+            <span class="proposal-type-badge">${getTypeLabel(proposal.type)}</span>
+            <span class="proposal-status-badge ${proposal.status}">${getStatusLabel(proposal.status)}</span>
+            ${proposal.priority ? `<span class="proposal-priority-badge ${proposal.priority}">${getPriorityLabel(proposal.priority)}</span>` : ''}
+          </div>
+          <h2>${proposal.title}</h2>
+          <p class="proposal-id">ID: ${proposal.id}</p>
+        </div>
+
+        <div class="proposal-detail-body">
+          <div class="proposal-section">
+            <h3>📝 説明</h3>
+            <p>${proposal.description}</p>
+          </div>
+
+          ${proposal.tags && proposal.tags.length > 0 ? `
+            <div class="proposal-section">
+              <h3>🏷️ タグ</h3>
+              <div class="tag-list">
+                ${proposal.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="proposal-section">
+            <h3>📊 状態</h3>
+            <p><strong>ステータス:</strong> ${getStatusLabel(proposal.status)}</p>
+            <p><strong>優先度:</strong> ${getPriorityLabel(proposal.priority)}</p>
+            <p><strong>投票数:</strong> ↑ ${proposal.upvotes || 0} vote${proposal.upvotes !== 1 ? 's' : ''}</p>
+          </div>
+
+          ${proposal.notes ? `
+            <div class="proposal-section">
+              <h3>ℹ️ 追加情報</h3>
+              <p>${proposal.notes}</p>
+            </div>
+          ` : ''}
+
+          <div class="proposal-section">
+            <h3>📅 作成情報</h3>
+            <p><strong>作成日:</strong> ${formatDate(proposal.createdAt)}</p>
+            <p><strong>提案者:</strong> ${proposal.author || '匿名'}</p>
+          </div>
+        </div>
+
+        <div class="proposal-detail-footer">
+          <a href="./" class="btn">提案一覧に戻る</a>
+          <button class="btn vote-btn" onclick="voteProposal('${proposal.id}')">
+            ↑ 投票する (${proposal.upvotes || 0})
+          </button>
+          ${proposal.status === 'open' ? `
+            <span class="status-note">⏳ この提案は現在審査中です。投票をして支援しよう！</span>
+          ` : ''}
+          ${proposal.status === 'in_progress' ? `
+            <span class="status-note">🔨 この提案は現在実装中です。</span>
+          ` : ''}
+          ${proposal.status === 'completed' ? `
+            <span class="status-note">✅ この提案は実装されました！</span>
+          ` : ''}
+        </div>
+      `;
+
+      document.getElementById('proposalDetail').innerHTML = detailHTML;
+      document.getElementById('proposalTitle').textContent = proposal.title;
+    }
+
+    function getTypeLabel(type) {
+      const labels = {
+        feature: '機能提案',
+        bug: 'バグ報告',
+        quest: 'クエスト提案',
+        other: 'その他'
+      };
+      return labels[type] || type;
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        open: '審査中',
+        in_progress: '実装中',
+        completed: '完了',
+        rejected: '却下'
+      };
+      return labels[status] || status;
+    }
+
+    function getPriorityLabel(priority) {
+      const labels = {
+        low: '低',
+        medium: '中',
+        high: '高',
+        critical: '緊急'
+      };
+      return labels[priority] || priority;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // 投票機能 (デモ用 - 実際の実装ではAPIを呼び出す)
+    function voteProposal(proposalId) {
+      alert('投票機能は現在準備中です。実装後、投票が可能になります。');
+    }
+
+    // 初期化
+    async function init() {
+      const proposalId = getProposalIdFromUrl();
+      
+      if (!proposalId) {
+        document.getElementById('proposalDetail').innerHTML = `
+          <div class="error-message">
+            <h2>❌ 提案IDが指定されていません</h2>
+            <p>提案一覧からアクセスしてください。</p>
+            <a href="./" class="btn">提案一覧に戻る</a>
+          </div>
+        `;
+        return;
+      }
+
+      const proposal = await fetchProposalDetail(proposalId);
+      renderProposalDetail(proposal);
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>クエスト詳細 | Mifron</title>
+  <meta name="description" content="Mifronのクエスト詳細ページ。条件、報酬、依存関係を確認できます。">
+  <link rel="icon" href="../assets/mifron-favicon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/quests.css">
+  <script src="../assets/config.js" defer></script>
+</head>
+<body>
+  <header class="site-header sub-header">
+    <div class="shell nav">
+      <a class="brand" href="../">
+        <img src="../assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <span class="brand-text">Mifron</span>
+      </a>
+      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+        <a href="../">ホーム</a>
+        <a href="../tutorial.html">チュートリアル</a>
+        <a href="./">クエスト</a>
+        <a href="../proposals/">提案</a>
+        <a href="../#join" class="discord">Discord</a>
+      </nav>
+      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="sub-hero">
+      <div class="shell">
+        <div class="reveal">
+          <span class="kicker">Mifron Quest System</span>
+          <h1>クエスト詳細</h1>
+          <p class="lead" id="questTitle">読み込み中...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div id="questDetail" class="quest-detail reveal">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>詳細情報を読み込み中...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    < TOD>    <div class="shell">
+      <p class="legal">© 2026 MCT. All rights reserved. | <a href="../">MCT Official</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // URLからクエストIDを取得
+    function getQuestIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    // クエスト詳細を取得
+    async function fetchQuestDetail(questId) {
+      try {
+        const response = await fetch('/api/quests');
+        if (!response.ok) throw new Error('Failed to fetch quests');
+        const quests = await response.json();
+        return quests.find(q => q.id === questId);
+      } catch (error) {
+        console.error('Error fetching quest detail:', error);
+        // デモデータを使用
+        return getDemoQuestDetail(questId);
+      }
+    }
+
+    function getDemoQuestDetail(questId) {
+      const demoQuests = {
+        'demo_001': {
+          id: 'demo_001',
+          name: '初心者の挑戦',
+          description: 'サーバーに初めてログインしよう！Mifronの世界へようこそ！',
+          condition: 'サーバーにログイン',
+          reward: 'MP: 100',
+          type: 'single',
+          status: 'approved',
+          dependencies: [],
+          difficulty: 'easy',
+          conditionTypes: ['login'],
+          rewardTypes: ['mp'],
+          createdAt: new Date().toISOString()
+        },
+        'demo_002': {
+          id: 'demo_002',
+          name: 'デイリー：モブ退治',
+          description: 'モブを10体倒してサーバーの安全を守ろう！',
+          condition: 'モブを10体倒す',
+          reward: 'MP: 50',
+          type: 'daily',
+          status: 'approved',
+          dependencies: [],
+          difficulty: 'normal',
+          conditionTypes: ['mob_kill'],
+          rewardTypes: ['mp'],
+          createdAt: new Date().toISOString()
+        },
+        'demo_003': {
+          id: 'demo_003',
+          name: 'ウィークリー：建築家',
+          description: '10x10以上の家を建てよう！クリエイティビティを発揮しよう！',
+          condition: '家を建てる (10x10以上)',
+          reward: 'MP: 200',
+          type: 'weekly',
+          status: 'approved',
+          dependencies: [],
+          difficulty: 'hard',
+          conditionTypes: ['block_break'],
+          rewardTypes: ['mp', 'item'],
+          createdAt: new Date().toISOString()
+        },
+        'demo_004': {
+          id: 'demo_004',
+          name: '隠し：真の冒険者',
+          description: '秘密の場所に到達し、真の冒険者の証を手に入れよう！',
+          condition: '特定の座標に到達',
+          reward: '称号: 真の冒険者',
+          type: 'hidden',
+          status: 'approved',
+          dependencies: ['demo_001'],
+          difficulty: 'very_hard',
+          conditionTypes: ['move'],
+          rewardTypes: ['title'],
+          unlockCondition: '初心者の挑戦をクリアした後、特定の座標に到達',
+          createdAt: new Date().toISOString()
+        }
+      };
+      return demoQuests[questId] || null;
+    }
+
+    function renderQuestDetail(quest) {
+      if (!quest) {
+        document.getElementById('questDetail').innerHTML = `
+          <div class="error-message">
+            <h2>❌ クエストが見つかりません</h2>
+            <p>指定されたクエストは存在しないか、削除されました。</p>
+            <a href="./" class="btn">クエスト一覧に戻る</a>
+          </div>
+        `;
+        return;
+      }
+
+      const statusClass = quest.status === 'approved' ? 'approved' : 
+                         quest.status === 'pending' ? 'pending' : 'rejected';
+
+      const detailHTML = `
+        <div class="quest-detail-header">
+          <div class="quest-badges">
+            <span class="quest-type-badge">${getTypeLabel(quest.type)}</span>
+            <span class="quest-difficulty-badge">${getDifficultyLabel(quest.difficulty)}</span>
+            <span class="quest-status-badge ${statusClass}">${getStatusLabel(quest.status)}</span>
+          </div>
+          <h2>${quest.name}</h2>
+          <p class="quest-id">ID: ${quest.id}</p>
+        </div>
+
+        <div class="quest-detail-body">
+          <div class="quest-section">
+            <h3>📝 説明</h3>
+            <p>${quest.description}</p>
+          </div>
+
+          <div class="quest-section">
+            <h3>🎯 成功条件</h3>
+            <p><strong>条件:</strong> ${quest.condition}</p>
+            ${quest.conditionTypes && quest.conditionTypes.length > 0 ? `
+              <p><strong>条件の種類:</strong> ${quest.conditionTypes.map(t => getConditionTypeLabel(t)).join(', ')}</p>
+            ` : ''}
+          </div>
+
+          <div class="quest-section">
+            <h3>🏆 報酬</h3>
+            <p><strong>報酬:</strong> ${quest.reward}</p>
+            ${quest.rewardTypes && quest.rewardTypes.length > 0 ? `
+              <p><strong>報酬の種類:</strong> ${quest.rewardTypes.map(t => getRewardTypeLabel(t)).join(', ')}</p>
+            ` : ''}
+            ${quest.proposedTitle ? `
+              <p><strong>提案される称号:</strong> ${quest.proposedTitle}</p>
+            ` : ''}
+          </div>
+
+          ${quest.dependencies && quest.dependencies.length > 0 ? `
+            <div class="quest-section">
+              <h3>🔗 依存関係</h3>
+              <p>このクエストを解放するには、以下のクエストを先にクリアする必要があります:</p>
+              <ul class="dependency-list">
+                ${quest.dependencies.map(depId => `<li>クエスト ID: ${depId}</li>`).join('')}
+              </ul>
+              <p class="note">⚠️ 依存先のクエストをクリアしてから挑戦してください。</p>
+            </div>
+          ` : ''}
+
+          ${quest.unlockCondition ? `
+            <div class="quest-section">
+              <h3>🔓 解放条件</h3>
+              <p>${quest.unlockCondition}</p>
+            </div>
+          ` : ''}
+
+          <div class="quest-section">
+            <h3>ℹ️ 追加情報</h3>
+            <p><strong>作成日:</strong> ${formatDate(quest.createdAt)}</p>
+            <p><strong>提案者:</strong> ${quest.author || '匿名'}</p>
+            ${quest.notes ? `<p><strong>備考:</strong> ${quest.notes}</p>` : ''}
+          </div>
+        </div>
+
+        <div class="quest-detail-footer">
+          <a href="./" class="btn">クエスト一覧に戻る</a>
+          ${quest.status === 'pending' ? `
+            <span class="status-note">⏳ このクエストは現在審査中です。承認されると公開されます。</span>
+          ` : ''}
+        </div>
+      `;
+
+      document.getElementById('questDetail').innerHTML = detailHTML;
+      document.getElementById('questTitle').textContent = quest.name;
+    }
+
+    function getTypeLabel(type) {
+      const labels = {
+        daily: 'デイリー',
+        weekly: 'ウィークリー',
+        single: '単発',
+        hidden: '隠し'
+      };
+      return labels[type] || type;
+    }
+
+    function getDifficultyLabel(difficulty) {
+      const labels = {
+        easy: '★☆☆☆☆ (易しい)',
+        normal: '★★☆☆☆ (普通)',
+        hard: '★★★☆☆ (難しい)',
+        very_hard: '★★★★☆ (非常に難しい)',
+        extreme: '★★★★★ (極難)'
+      };
+      return labels[difficulty] || difficulty;
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        pending: '審査中',
+        approved: '承認済み',
+        rejected: '却下'
+      };
+      return labels[status] || status;
+    }
+
+    function getConditionTypeLabel(type) {
+      const labels = {
+        item_obtain: 'アイテム入手',
+        mob_kill: 'モブ退治',
+        block_break: 'ブロック破壊',
+        move: '移動',
+        mp_gain: 'MP獲得',
+        advancement: '進捗達成',
+        login: '累計ログイン'
+      };
+      return labels[type] || type;
+    }
+
+    function getRewardTypeLabel(type) {
+      const labels = {
+        mp: 'MP',
+        item: 'アイテム',
+        title: '称号',
+        exp: '経験値'
+      };
+      return labels[type] || type;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // 初期化
+    async function init() {
+      const questId = getQuestIdFromUrl();
+      
+      if (!questId) {
+        document.getElementById('questDetail').innerHTML = `
+          <div class="error-message">
+            <h2>❌ クエストIDが指定されていません</h2>
+            <p>クエスト一覧からアクセスしてください。</p>
+            <a href="./" class="btn">クエスト一覧に戻る</a>
+          </div>
+        `;
+        return;
+      }
+
+      const quest = await fetchQuestDetail(questId);
+      renderQuestDetail(quest);
+    }
+
+    init();
+  </script>
+</body>
+</html>

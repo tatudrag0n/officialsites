@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>提案 | Mifron</title>
+  <meta name="description" content="Mifronのシステム改善提案一覧。新しいアイデアを提案しよう！">
+  <link rel="icon" href="../assets/mifron-favicon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/proposals.css">
+  <script src="../assets/config.js" defer></script>
+</head>
+<body>
+  <header class="site-header sub-header">
+    <div class="shell nav">
+      <a class="brand" href="../">
+        <img src="../assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <span class="brand-text">Mifron</span>
+      </a>
+      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+        <a href="../">ホーム</a>
+        <a href="../tutorial.html">チュートリアル</a>
+        <a href="../quests/">クエスト</a>
+        <a href="./" aria-current="page">提案</a>
+        <a href="../#join" class="discord">Discord</a>
+      </nav>
+      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="sub-hero">
+      <div class="shell">
+        <div class="reveal">
+          <span class="kicker">Mifron Proposal System</span>
+          <h1>提案一覧</h1>
+          <p class="lead">みんなのアイデアでMifronをより良くしよう！</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="./create.html">新しい提案を作成</a>
+            <a class="btn" href="../quests/propose.html">クエストを提案</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div>
+            <span class="eyebrow">💡 提案</span>
+            <h2>現在の提案</h2>
+          </div>
+          <p>各提案をクリックして詳細を確認しよう！</p>
+        </div>
+
+        <div class="proposal-filters reveal">
+          <button class="filter-btn active" data-filter="all">すべて</button>
+          <button class="filter-btn" data-filter="open">審査中</button>
+          <button class="filter-btn" data-filter="in_progress">実装中</button>
+          <button class="filter-btn" data-filter="completed">完了</button>
+          <button class="filter-btn" data-filter="rejected">却下</button>
+        </div>
+
+        <div class="proposal-grid" id="proposalGrid">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>提案を読み込み中...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="info-grid reveal">
+          <div class="info-card">
+            <h3>📝 提案の流れ</h3>
+            <ol>
+              <li>提案を作成する</li>
+              <li>スタッフが提案を審査する</li>
+              <li>承認された提案は実装される</li>
+              <li>完了した提案は公開される</li>
+            </ol>
+          </div>
+          <div class="info-card">
+            <h3>✨ 提案の種類</h3>
+            <ul>
+              <li><strong>機能提案</strong>: 新しい機能の追加</li>
+              <li><strong>バグ報告</strong>: バグの修正依頼</li>
+              <li><strong>クエスト提案</strong>: 新しいクエストの提案</li>
+              <li><strong>その他</strong>: その他の提案</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <p class="legal">© 2026 MCT. All rights reserved. | <a href="../">MCT Official</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // 提案データを取得
+    async function fetchProposals() {
+      try {
+        const response = await fetch('/api/proposals');
+        if (!response.ok) throw new Error('Failed to fetch proposals');
+        return await response.json();
+      } catch (error) {
+        console.error('Error fetching proposals:', error);
+        // デモデータを表示
+        return getDemoProposals();
+      }
+    }
+
+    function getDemoProposals() {
+      return [
+        {
+          id: 'prop_001',
+          title: '新しいFFAキットの追加',
+          description: '新しいFFAキットを追加してほしいです。アーチャー、タンク、サポートなどのバリエーションを増やしてください。',
+          type: 'feature',
+          status: 'open',
+          author: 'Player1',
+          upvotes: 15,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'prop_002',
+          title: 'ショップUIの改善',
+          description: 'ショップのUIをもっと使いやすくしてほしいです。アイテムの検索機能やカテゴリー分けを追加してください。',
+          type: 'feature',
+          status: 'in_progress',
+          author: 'Player2',
+          upvotes: 23,
+          createdAt: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: 'prop_003',
+          title: 'バグ: テレポートが動かない',
+          description: 'テレポートコマンドが動かないバグがあります。/tp コマンドを使ったときにエラーが出ます。',
+          type: 'bug',
+          status: 'completed',
+          author: 'Player3',
+          upvotes: 8,
+          createdAt: new Date(Date.now() - 172800000).toISOString()
+        },
+        {
+          id: 'prop_004',
+          title: '新しいクエスト: 鉱石コレクター',
+          description: '全ての鉱石を集めるクエストを追加してほしいです。報酬はMPと特殊アイテムを考えています。',
+          type: 'quest',
+          status: 'open',
+          author: 'Player4',
+          upvotes: 12,
+          createdAt: new Date(Date.now() - 259200000).toISOString()
+        },
+        {
+          id: 'prop_005',
+          title: 'Discord連携の強化',
+          description: 'Discordとの連携を強化してほしいです。サーバー内のイベントをDiscordに通知したり、Discordのロールに応じてゲーム内で特典を受けられるようにしてください。',
+          type: 'feature',
+          status: 'rejected',
+          author: 'Player5',
+          upvotes: 5,
+          createdAt: new Date(Date.now() - 345600000).toISOString()
+        }
+      ];
+    }
+
+    function renderProposals(proposals) {
+      const grid = document.getElementById('proposalGrid');
+      
+      if (!proposals || proposals.length === 0) {
+        grid.innerHTML = '<p class="no-proposals">現在の提案はありません。</p>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      
+      proposals.forEach(proposal => {
+        const proposalCard = document.createElement('article');
+        proposalCard.className = `proposal-card ${proposal.type} ${proposal.status}`;
+        proposalCard.dataset.type = proposal.type;
+        proposalCard.dataset.status = proposal.status;
+        
+        proposalCard.innerHTML = `
+          <div class="proposal-header">
+            <span class="proposal-type-badge">${getTypeLabel(proposal.type)}</span>
+            <span class="proposal-status-badge ${proposal.status}">${getStatusLabel(proposal.status)}</span>
+          </div>
+          <h3>${proposal.title}</h3>
+          <p class="proposal-description">${proposal.description}</p>
+          <div class="proposal-footer">
+            <span class="proposal-author">提案者: ${proposal.author || '匿名'}</span>
+            <span class="proposal-upvotes">↑ ${proposal.upvotes || 0} vote${proposal.upvotes !== 1 ? 's' : ''}</span>
+            <span class="proposal-date">${formatDate(proposal.createdAt)}</span>
+          </div>
+          <a href="./detail.html?id=${proposal.id}" class="proposal-link">詳細を確認</a>
+        `;
+
+        grid.appendChild(proposalCard);
+      });
+    }
+
+    function getTypeLabel(type) {
+      const labels = {
+        feature: '機能提案',
+        bug: 'バグ報告',
+        quest: 'クエスト提案',
+        other: 'その他'
+      };
+      return labels[type] || type;
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        open: '審査中',
+        in_progress: '実装中',
+        completed: '完了',
+        rejected: '却下'
+      };
+      return labels[status] || status;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    // フィルター機能
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const filter = btn.dataset.filter;
+        const cards = document.querySelectorAll('.proposal-card');
+        
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.status === filter) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 初期化
+    async function init() {
+      const proposals = await fetchProposals();
+      renderProposals(proposals);
+    }
+
+    init();
+  </script>
+</body>
+</html>

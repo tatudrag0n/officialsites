@@ -1,8 +1,486 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><title>チュートリアル | Mifron</title><link rel="stylesheet" href="assets/styles.css"></head>
-<body><header class="site-header sub-header"><div class="shell nav"><a class="brand" href="./">Mifron</a>
-<nav class="nav-links"><a href="./">ホーム</a><a href="./tutorial.html">チュートリアル</a><a href="./quests.html">クエスト</a><a href="./proposals.html">提案</a></nav></div></header>
-<main class="section"><div class="shell"><h2>チュートリアル</h2>
-<p>テレポーターは右クリックで行き先を出し、左クリックで移動します。エンドポータルフレームに使うと登録地点へ移動できます。</p>
-<p>OnlineShopは鉄ドアを右クリック。販売のみ。Survivalリスポーンは 0,101,0 です。/tell や /msg は使えません。</p>
-</div></main></body></html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>チュートリアル | Mifron</title>
+  <meta name="description" content="Mifronのチュートリアルページ。基本操作、コマンド、システムの使い方を解説します。">
+  <link rel="icon" href="assets/mifron-favicon.png">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/tutorial.css">
+  <script src="assets/config.js" defer></script>
+</head>
+<body>
+  <header class="site-header sub-header">
+    <div class="shell nav">
+      <a class="brand" href="./">
+        <img src="assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <span class="brand-text">Mifron</span>
+      </a>
+      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+        <a href="./">ホーム</a>
+        <a href="./tutorial.html" aria-current="page">チュートリアル</a>
+        <a href="./quests/">クエスト</a>
+        <a href="./proposals/">提案</a>
+        <a href="#join" class="discord">Discord</a>
+      </nav>
+      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="sub-hero tutorial-hero">
+      <div class="shell">
+        <div class="reveal">
+          <span class="kicker">Mifron Guide</span>
+          <h1>チュートリアル</h1>
+          <p class="lead">Mifronの世界へようこそ！ここでは基本的な操作方法を解説します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <nav class="tutorial-nav reveal">
+          <a href="#getting-started" class="nav-link">はじめに</a>
+          <a href="#basic-controls" class="nav-link">基本操作</a>
+          <a href="#commands" class="nav-link">コマンド</a>
+          <a href="#worlds" class="nav-link">ワールド</a>
+          <a href="#systems" class="nav-link">システム</a>
+          <a href="#tips" class="nav-link">ティップス</a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- はじめに -->
+    <section id="getting-started" class="section tutorial-section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">📖</span>
+          <h2>はじめに</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <p>Mifronは、Minecraft Java EditionとBedrock Editionに対応したサーバーです。Geyserを使用してBedrock Editionのプレイヤーも参加できます。</p>
+          
+          <div class="info-box">
+            <h3>🎮 サーバーに接続する</h3>
+            <ul>
+              <li><strong>Java Edition:</strong> <code>play.mct-official.com</code></li>
+              <li><strong>Bedrock Edition:</strong> <code>play.mct-official.com</code> (ポート: 19132)</li>
+            </ul>
+            <p>初回接続時は、Discord認証が必要です。Discordに参加して認証を完了させてください。</p>
+          </div>
+          
+          <div class="info-box">
+            <h3>📋 必要なもの</h3>
+            <ul>
+              <li>Minecraft (Java Edition 1.20.1以上 or Bedrock Edition)</li>
+              <li>Discordアカウント</li>
+              <li>インターネット接続</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 基本操作 -->
+    <section id="basic-controls" class="section tutorial-section alt">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">🎯</span>
+          <h2>基本操作</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <div class="info-box">
+            <h3>🗺️ 移動</h3>
+            <ul>
+              <li><strong>W:</strong> 前進</li>
+              <li><strong>A:</strong> 左</li>
+              <li><strong>S:</strong> 後退</li>
+              <li><strong>D:</strong> 右</li>
+              <li><strong>Space:</strong> ジャンプ</li>
+              <li><strong>Shift:</strong> しゃがむ/降りる</li>
+              <li><strong>マウス:</strong> 視点移動</li>
+            </ul>
+          </div>
+          
+          <div class="info-box">
+            <h3>⚒️ アイテム操作</h3>
+            <ul>
+              <li><strong>左クリック:</strong> 破壊/攻撃</li>
+              <li><strong>右クリック:</strong> 配置/使用</li>
+              <li><strong>数字キー (1-9):</strong> ホットバーのアイテムを選択</li>
+              <li><strong>E:</strong> インベントリを開く</li>
+              <li><strong>Q:</strong> アイテムを捨てる</li>
+              <li><strong>F5:</strong> 三人称視点</li>
+            </ul>
+          </div>
+          
+          <div class="info-box">
+            <h3>🔍 テレポート</h3>
+            <p><strong>テレポーター</strong>を使用すると、エンドポータルフレームにテレポートできます。</p>
+            <ol>
+              <li>テレポーターアイテムを手に持つ</li>
+              <li>エンドポータルフレームを右クリック</li>
+              <li>テレポート先を選択</li>
+            </ol>
+            <p class="note">⚠️ テレポートにはMPが必要な場合があります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- コマンド -->
+    <section id="commands" class="section tutorial-section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">⌨️</span>
+          <h2>コマンド</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <div class="info-box">
+            <h3>💬 チャットコマンド</h3>
+            <p>Mifronでは、個人チャットコマンド (<code>/tell</code>, <code>/msg</code> など) は使用できません。DiscordのVCを使用してください。</p>
+          </div>
+          
+          <div class="command-grid">
+            <div class="command-card">
+              <h4>/mf</h4>
+              <p>Mifronのメインコマンド</p>
+              <ul>
+                <li><code>/mf balance</code> - MP残高を確認</li>
+                <li><code>/mf pay &lt;player&gt; &lt;amount&gt;</code> - MPを送金</li>
+                <li><code>/mf build enter</code> - Buildワールドに入る</li>
+                <li><code>/mf build exit</code> - Buildワールドから出る</li>
+              </ul>
+            </div>
+            
+            <div class="command-card">
+              <h4>/merchant</h4>
+              <p>商人を操作</p>
+              <ul>
+                <li><code>/mf merchant spawn</code> - 商人を召喚</li>
+                <li><code>/mf merchant reroll</code> - 商人のアイテムをリロール</li>
+                <li><code>/mf merchant clear</code> - 商人を消去</li>
+              </ul>
+            </div>
+            
+            <div class="command-card">
+              <h4>/friend</h4>
+              <p>フレンドを管理</p>
+              <ul>
+                <li><code>/friend add &lt;player&gt;</code> - フレンドリクエストを送る</li>
+                <li><code>/friend accept &lt;player&gt;</code> - フレンドリクエストを承認</li>
+                <li><code>/friend remove &lt;player&gt;</code> - フレンドを削除</li>
+              </ul>
+            </div>
+            
+            <div class="command-card">
+              <h4>/quest</h4>
+              <p>クエストを管理</p>
+              <ul>
+                <li><code>/mf quest progress</code> - 進捗を確認</li>
+                <li><code>/mf quest propose</code> - クエストを提案</li>
+                <li><code>/mf quest cancel</code> - クエストをキャンセル</li>
+              </ul>
+            </div>
+            
+            <div class="command-card">
+              <h4>/shelfshop</h4>
+              <p>棚ショップを操作</p>
+              <ul>
+                <li><code>/mf shelfshop create</code> - 棚ショップを作成</li>
+                <li><code>/mf shelfshop remove</code> - 棚ショップを削除</li>
+                <li><code>/mf shelfshop list</code> - 棚ショップ一覧</li>
+              </ul>
+            </div>
+            
+            <div class="command-card">
+              <h4>/regen</h4>
+              <p>ワールド再生成を管理</p>
+              <ul>
+                <li><code>/mf regen allow &lt;radius&gt;</code> - 再生成を許可</li>
+                <li><code>/mf regen deny &lt;radius&gt;</code> - 再生成を拒否</li>
+                <li><code>/mf regen list</code> - 再生成状態を確認</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ワールド -->
+    <section id="worlds" class="section tutorial-section alt">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">🌍</span>
+          <h2>ワールド</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <div class="world-grid">
+            <div class="world-card">
+              <h3>🏠 Hub (メインワールド)</h3>
+              <p>スポーン地点のワールドです。ここから他のワールドへ移動できます。</p>
+              <ul>
+                <li>テレポーターで各ワールドに移動</li>
+                <li>ショップ、FFA、ミニゲームなどの施設あり</li>
+                <li>PvPは無効</li>
+              </ul>
+            </div>
+            
+            <div class="world-card">
+              <h3>⛏️ Survival</h3>
+              <p>サバイバルモードのワールドです。</p>
+              <ul>
+                <li>リスポーン地点: <code>0, 101, 0</code></li>
+                <li>TNTと溶岩は無効</li>
+                <li>自然再生成は除外制 (月一更新)</li>
+                <li>棚ショップを作成可能</li>
+              </ul>
+            </div>
+            
+            <div class="world-card">
+              <h3>🎨 Creative</h3>
+              <p>クリエイティブモードのワールドです。</p>
+              <ul>
+                <li>スーパーフラットワールド</li>
+                <li>WorldEdit使用可能 (制限あり)</li>
+                <li>共有ワールド (全プレイヤーが使用)</li>
+                <li>Buildワールドから移行</li>
+              </ul>
+            </div>
+            
+            <div class="world-card">
+              <h3>⚔️ FFA</h3>
+              <p>PvP専用のワールドです。</p>
+              <ul>
+                <li>18種類のキットが利用可能</li>
+                <li>死亡時にMPの50%を失う</li>
+                <li>キル報酬あり</li>
+                <li>特別なルールあり</li>
+              </ul>
+            </div>
+            
+            <div class="world-card">
+              <h3>🏃 Athletic</h3>
+              <p>アスレチック (パークール) ワールドです。</p>
+              <ul>
+                <li>クリエイティブ、自動ベスト、歴代1位、月間ランキング</li>
+                <li>報酬: MP</li>
+                <li>コースは定期的に更新</li>
+              </ul>
+            </div>
+            
+            <div class="world-card">
+              <h3>🎮 Minigame</h3>
+              <p>ミニゲームワールドです。</p>
+              <ul>
+                <li>様々なミニゲームが用意されています</li>
+                <li>報酬: MP</li>
+                <li>友達と一緒に楽しめます</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- システム -->
+    <section id="systems" class="section tutorial-section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">⚙️</span>
+          <h2>システム</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <div class="system-grid">
+            <div class="system-card">
+              <h3>💰 経済システム (MP)</h3>
+              <p>Mifronのメイン通貨です。</p>
+              <ul>
+                <li>クエスト、モブ退治、ショップなどで獲得</li>
+                <li>死亡時に50%を失う (FFAでは100%)</li>
+                <li><code>/mf balance</code> で残高確認</li>
+                <li><code>/mf pay &lt;player&gt; &lt;amount&gt;</code> で送金</li>
+              </ul>
+            </div>
+            
+            <div class="system-card">
+              <h3>🛒 ショップシステム</h3>
+              <p>様々なショップが用意されています。</p>
+              <ul>
+                <li><strong>商人:</strong> ランダムなアイテムを買取</li>
+                <li><strong>バレルショップ:</strong> 商品を陳列して販売</li>
+                <li><strong>ONLINE SHOP:</strong> 特殊アイテムを販売</li>
+                <li>購入樽・買取樽も利用可能</li>
+              </ul>
+            </div>
+            
+            <div class="system-card">
+              <h3>📜 クエストシステム</h3>
+              <p>様々なクエストに挑戦できます。</p>
+              <ul>
+                <li><strong>デイリー:</strong> 毎日リセット</li>
+                <li><strong>ウィークリー:</strong> 毎週リセット</li>
+                <li><strong>単発:</strong> 1回限り</li>
+                <li><strong>隠し:</strong> 特定条件で解放</li>
+              </ul>
+              <p>報酬: MP、アイテム、称号など</p>
+            </div>
+            
+            <div class="system-card">
+              <h3>🏆 FFAシステム</h3>
+              <p>PvP専用のシステムです。</p>
+              <ul>
+                <li>18種類のキット</li>
+                <li>キットは定期的に更新</li>
+                <li>キル報酬あり</li>
+                <li>死亡時にMPの50%を失う</li>
+              </ul>
+            </div>
+            
+            <div class="system-card">
+              <h3>📦 インベントリシステム</h3>
+              <p>Survivalワールドのインベントリは他のワールドでも使用できます。</p>
+              <ul>
+                <li>共有インベントリ</li>
+                <li>ワールド間でアイテムを持ち運び可能</li>
+                <li>一部のワールドでは個別インベントリ</li>
+              </ul>
+            </div>
+            
+            <div class="system-card">
+              <h3>🔄 再生成システム</h3>
+              <p>ワールドの再生成を管理します。</p>
+              <ul>
+                <li>除外制 (デフォルト: 許可)</li>
+                <li>月一更新</li>
+                <li>特定のチャンクのみ再生成</li>
+                <li><code>/mf regen</code> コマンドで管理</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ティップス -->
+    <section id="tips" class="section tutorial-section alt">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">💡</span>
+          <h2>ティップス</h2>
+        </div>
+        <div class="tutorial-content reveal">
+          <div class="tips-grid">
+            <div class="tip-card">
+              <h3>📌 最初にすること</h3>
+              <ol>
+                <li>Discordに参加する</li>
+                <li>サーバーに接続する</li>
+                <li>Discord認証を完了する</li>
+                <li>チュートリアルを読む (今ここで読んでいます！)</li>
+                <li>Hubで周りを確認する</li>
+              </ol>
+            </div>
+            
+            <div class="tip-card">
+              <h3>🎯 MPを稼ぐ方法</h3>
+              <ul>
+                <li>クエストをクリアする</li>
+                <li>モブを倒す</li>
+                <li>FFAでキルを取る</li>
+                <li>アスレチックでタイムを競う</li>
+                <li>ショップでアイテムを販売する</li>
+                <li>商人にアイテムを売る</li>
+              </ul>
+            </div>
+            
+            <div class="tip-card">
+              <h3>⚠️ 注意事項</h3>
+              <ul>
+                <li>個人チャットコマンド (<code>/tell</code>, <code>/msg</code>) は使用できません</li>
+                <li>Survivalワールド外ではモブはスポーンしません</li>
+                <li>TNTと溶岩はSurvivalワールドで無効です</li>
+                <li>WorldEditは制限されています</li>
+                <li>BANされた場合、ロールバックが行われます</li>
+              </ul>
+            </div>
+            
+            <div class="tip-card">
+              <h3>🔧 トラブルシューティング</h3>
+              <ul>
+                <li><strong>接続できない:</strong> サーバーが停止している可能性があります。Discordで確認してください。</li>
+                <li><strong>コマンドが動かない:</strong> コマンドのスペルを確認してください。大文字小文字に注意。</li>
+                <li><strong>アイテムが消えた:</strong> 死亡時はMPの50%を失います。FFAでは100%を失います。</li>
+                <li><strong>テレポートできない:</strong> テレポート先が許可されていない可能性があります。</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="info-box important">
+            <h3>📞 サポート</h3>
+            <p>何か困ったことがあれば、Discordのサポートチャンネルで質問してください。</p>
+            <p>バグを発見した場合は、提案システムで報告してください。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <p class="legal">© 2026 MCT. All rights reserved. | <a href="./">MCT Official</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // スムーススクロール
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+    
+    // ナビゲーションのアクティブ状態
+    const sections = document.querySelectorAll('.tutorial-section');
+    const navLinks = document.querySelectorAll('.tutorial-nav .nav-link');
+    
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.pageYOffset >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+    
+    // 初期状態を設定
+    const initialSection = document.querySelector('.tutorial-section');
+    if (initialSection) {
+      const initialId = initialSection.getAttribute('id');
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === '#' + initialId) {
+          link.classList.add('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
