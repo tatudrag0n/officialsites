@@ -1,10 +1,14 @@
-// Cloudflare Workers Functions middleware
+// Cloudflare Workers Functions middleware for Mifron API
 // This file handles routing for all API endpoints
+// Note: Paths will be /mifron/api/* when accessed via mifron.mct-official.com
 
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const path = url.pathname;
+  let path = url.pathname;
+
+  // Remove /mifron prefix if present (for multi-site routing)
+  path = path.replace(/^\/mifron/, '');
 
   // Route to appropriate handler based on path
   if (path.startsWith('/api/quests')) {
