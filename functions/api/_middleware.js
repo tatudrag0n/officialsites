@@ -1,31 +1,54 @@
-// Cloudflare Workers Functions middleware
-// This file handles routing for all API endpoints
+// Cloudflare Pages Functions - Unified API for Mifron
+// Handles all API requests from any domain
 
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const path = url.pathname;
+  const host = url.hostname.toLowerCase();
 
-  // Route to appropriate handler based on path
+  // Determine which site this request is for
+  let siteType = 'mifron'; // default
+  if (host.includes('crewmate.')) {
+    siteType = 'crewmate';
+  } else if (host.includes('texroot.')) {
+    siteType = 'texroot';
+  }
+  // mifron.mct-official.com or mct-official.com/mifron both map to mifron
+
+  // Route API requests
   if (path.startsWith('/api/quests')) {
-    return handleQuestsRequest(context, path, request);
+    return handleQuestsRequest(context, path, request, env);
   } else if (path.startsWith('/api/proposals')) {
-    return handleProposalsRequest(context, path, request);
+    return handleProposalsRequest(context, path, request, env);
   }
 
   // Return 404 for unknown routes
   return new Response(JSON.stringify({ error: 'Not found' }), {
     status: 404,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
   });
 }
 
-async function handleQuestsRequest(context, path, request) {
-  const { env } = context;
+// Handle OPTIONS for CORS preflight
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
+}
+
+async function handleQuestsRequest(context, path, request, env) {
   const method = request.method;
   
   if (method === 'GET') {
-    // Get all quests
     try {
       const list = await env.QUESTS.list();
       const quests = await Promise.all(
@@ -44,31 +67,34 @@ async function handleQuestsRequest(context, path, request) {
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
   } else if (method === 'POST') {
-    // Create new quest
     try {
       const body = await request.json();
       const questId = Date.now().toString();
       
-      // Validate required fields
       if (!body.name || !body.condition || !body.reward) {
         return new Response(JSON.stringify({ 
           error: 'Missing required fields: name, condition, reward' 
         }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
         });
       }
       
-      // Add metadata
       body.id = questId;
       body.createdAt = new Date().toISOString();
-      body.status = 'pending'; // pending, approved, rejected
-      body.type = body.type || 'single'; // single, daily, weekly, hidden
-      body.dependencies = body.dependencies || []; // Array of quest IDs
+      body.status = 'pending';
+      body.type = body.type || 'single';
+      body.dependencies = body.dependencies || [];
       
       await env.QUESTS.put(questId, JSON.stringify(body));
       
@@ -85,23 +111,27 @@ async function handleQuestsRequest(context, path, request) {
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
   }
   
   return new Response(JSON.stringify({ error: 'Method not allowed' }), {
     status: 405,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
   });
 }
 
-async function handleProposalsRequest(context, path, request) {
-  const { env } = context;
+async function handleProposalsRequest(context, path, request, env) {
   const method = request.method;
   
   if (method === 'GET') {
-    // Get all proposals
     try {
       const list = await env.PROPOSALS.list();
       const proposals = await Promise.all(
@@ -120,31 +150,34 @@ async function handleProposalsRequest(context, path, request) {
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
   } else if (method === 'POST') {
-    // Create new proposal
     try {
       const body = await request.json();
       const proposalId = Date.now().toString();
       
-      // Validate required fields
       if (!body.title || !body.description) {
         return new Response(JSON.stringify({ 
           error: 'Missing required fields: title, description' 
         }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
         });
       }
       
-      // Add metadata
       body.id = proposalId;
       body.createdAt = new Date().toISOString();
-      body.status = 'open'; // open, in_progress, completed, rejected
+      body.status = 'open';
       body.author = body.author || 'Anonymous';
-      body.type = body.type || 'feature'; // feature, bug, quest, other
+      body.type = body.type || 'feature';
       body.upvotes = 0;
       
       await env.PROPOSALS.put(proposalId, JSON.stringify(body));
@@ -162,25 +195,19 @@ async function handleProposalsRequest(context, path, request) {
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
   }
   
   return new Response(JSON.stringify({ error: 'Method not allowed' }), {
     status: 405,
-    headers: { 'Content-Type': 'application/json' }
-  });
-}
-
-// Handle OPTIONS for CORS preflight
-export async function onRequestOptions(context) {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+    headers: { 
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
     }
   });
 }
