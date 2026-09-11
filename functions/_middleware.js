@@ -18,26 +18,35 @@ export async function onRequest(context) {
   }
   // Default: mct-official.com serves from root
 
+  // If no site prefix matched, let Pages handle it normally
   if (!sitePrefix) {
     return next();
   }
 
-  // For static files, rewrite the path to include the site prefix and
-  // resolve it directly against the Pages static asset binding.
-  // NOTE: a plain fetch() here would re-enter this same middleware
-  // (same host), and Cloudflare's recursion guard would then fall back
-  // to serving the original (root) asset - which caused every subdomain
-  // to render the mct-official.com content. env.ASSETS.fetch() serves
-  // the asset directly without re-triggering middleware.
-  const newUrl = new URL(`${sitePrefix}${pathname}`, url.origin);
-  const assetRequest = new Request(newUrl, request);
-
-  let response = await env.ASSETS.fetch(assetRequest);
-
-  if (response.status === 404 && !pathname.endsWith('/') && !pathname.includes('.')) {
-    const fallbackUrl = new URL(`${sitePrefix}/index.html`, url.origin);
-    response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
+  // If env.ASSETS is not available, fall back to next()
+  if (!env || !env.ASSETS) {
+    console.error('env.ASSETS not available, falling back to next()');
+    return next();
   }
 
-  return response;
+  try {
+    // Rewrite the path to include the site prefix and
+    // resolve it directly against the Pages static asset binding.
+    const newUrl = new URL(`${sitePrefix}${pathname}`, url.origin);
+    const assetRequest = new Request(newUrl, request);
+
+    let response = await env.ASSETS.fetch(assetRequest);
+
+    // If the exact path returns 404 and it's a directory-like path,
+    // try serving index.html from that directory
+    if (response.status === 404 && !pathname.endsWith('/') && !pathname.includes('.')) {
+      const fallbackUrl = new URL(`${sitePrefix}/index.html`, url.origin);
+      response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Middleware error, falling back to next():', error);
+    return next();
+  }
 }
