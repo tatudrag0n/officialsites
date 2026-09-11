@@ -1,12 +1,16 @@
-# Cloudflare Pages configuration for the unified site
-# This repository uses Pages Functions under /functions.
-# Keep this file as the source of truth for Pages deployments.
-
 name = "officialsites-unified"
-pages_build_output_dir = "."
+main = "src/index.js"
 compatibility_date = "2026-09-11"
 
-# KV Namespace bindings for Mifron API
+# Static files for the unified official site.
+# The Worker rewrites each custom hostname to its site directory.
+[assets]
+directory = "."
+binding = "ASSETS"
+
+# Routes/domains are intentionally managed in the Cloudflare dashboard.
+# This prevents Wrangler from overwriting the Custom Domains configured there.
+
 [[kv_namespaces]]
 binding = "QUESTS"
 id = "d4ef57e2bf1e49ecb903748d1064c365"
