@@ -1,5 +1,5 @@
 // Cloudflare Pages Middleware - Multi-site static file routing
-// Simplest possible implementation using string paths
+// Explicit path handling for index.html
 
 export async function onRequest(context) {
   const { request, env, next } = context;
@@ -27,12 +27,20 @@ export async function onRequest(context) {
   }
 
   try {
-    // Pass path string directly to env.ASSETS.fetch()
-    const path = `/${sitePrefix}${pathname}`;
+    // Handle root path explicitly
+    let path = `/${sitePrefix}${pathname}`;
+    if (pathname === '/' || pathname === '') {
+      path = `/${sitePrefix}/index.html`;
+    }
+
     const response = await env.ASSETS.fetch(path);
 
-    if (response.status === 404 && !pathname.endsWith('/') && !pathname.includes('.')) {
-      return env.ASSETS.fetch(`/${sitePrefix}/index.html`);
+    // If still 404, try index.html fallback
+    if (response.status === 404 && !pathname.includes('.')) {
+      const fallback = await env.ASSETS.fetch(`/${sitePrefix}/index.html`);
+      if (fallback.status !== 404) {
+        return fallback;
+      }
     }
 
     return response;
