@@ -1,7 +1,10 @@
-# Cloudflare Pages Configuration for Unified Site
+# Cloudflare Pages configuration for the unified site
+# This repository uses Pages Functions under /functions.
+# Keep this file as the source of truth for Pages deployments.
+
 name = "officialsites-unified"
-main = "_middleware.js"
-compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+compatibility_date = "2026-09-11"
 
 # KV Namespace bindings for Mifron API
 [[kv_namespaces]]
@@ -11,7 +14,3 @@ id = "d4ef57e2bf1e49ecb903748d1064c365"
 [[kv_namespaces]]
 binding = "PROPOSALS"
 id = "6669782f077c4c699aad3eff402cc8da"
-
-# Pages configuration
-[pages]
-build_command = "echo 'No build needed for static site'"
