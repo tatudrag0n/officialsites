@@ -2,21 +2,13 @@
 // Routes static files based on hostname to appropriate site directory
 
 export async function onRequest(context) {
-  const { request } = context;
+  const { request, env, next } = context;
   const url = new URL(request.url);
   const host = url.hostname.toLowerCase();
   const pathname = url.pathname;
 
-  // Don't handle API requests here - let Pages Functions handle them automatically
-  // API requests to /api/* will be routed to functions/api/_middleware.js by Pages
-  if (pathname.startsWith('/api/')) {
-    // Let Pages Functions handle API routes
-    return fetch(request);
-  }
-
-  // Determine which site to serve based on hostname
   let sitePrefix = '';
-  
+
   if (host.includes('mifron.')) {
     sitePrefix = '/mifron';
   } else if (host.includes('crewmate.')) {
@@ -26,11 +18,26 @@ export async function onRequest(context) {
   }
   // Default: mct-official.com serves from root
 
-  // For static files, rewrite the path to include site prefix
-  const newUrl = new URL(`${sitePrefix}${pathname}`, `https://${host}`);
-  return fetch(new Request(newUrl, request));
-}
+  if (!sitePrefix) {
+    return next();
+  }
 
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|assets/|api/).*)']
-};
+  // For static files, rewrite the path to include the site prefix and
+  // resolve it directly against the Pages static asset binding.
+  // NOTE: a plain fetch() here would re-enter this same middleware
+  // (same host), and Cloudflare's recursion guard would then fall back
+  // to serving the original (root) asset - which caused every subdomain
+  // to render the mct-official.com content. env.ASSETS.fetch() serves
+  // the asset directly without re-triggering middleware.
+  const newUrl = new URL(`${sitePrefix}${pathname}`, url.origin);
+  const assetRequest = new Request(newUrl, request);
+
+  let response = await env.ASSETS.fetch(assetRequest);
+
+  if (response.status === 404 && !pathname.endsWith('/') && !pathname.includes('.')) {
+    const fallbackUrl = new URL(`${sitePrefix}/index.html`, url.origin);
+    response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
+  }
+
+  return response;
+}
