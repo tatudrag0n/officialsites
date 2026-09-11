@@ -7,6 +7,7 @@ compatibility_date = "2026-09-11"
 [assets]
 directory = "."
 binding = "ASSETS"
+run_worker_first = true
 
 # Routes/domains are intentionally managed in the Cloudflare dashboard.
 # This prevents Wrangler from overwriting the Custom Domains configured there.
