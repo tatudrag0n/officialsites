@@ -1,9 +1,9 @@
-# Cloudflare Pages configuration for unified site
+# Cloudflare Pages Configuration for Unified Site
 name = "officialsites-unified"
 main = "_middleware.js"
 compatibility_date = "2024-01-01"
 
-# KV Namespace bindings for Mifron
+# KV Namespace bindings for Mifron API
 [[kv_namespaces]]
 binding = "QUESTS"
 id = "d4ef57e2bf1e49ecb903748d1064c365"
