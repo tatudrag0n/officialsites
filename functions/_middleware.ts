@@ -5,16 +5,21 @@ export const onRequest: MiddlewareHandler = async ({ request, env }) => {
   const host = url.hostname
   
   if (host === 'mifron.mct-official.com') {
-    const path = url.pathname
-    const assetPath = `/mifron${path}`
+    const path = url.pathname === '/' ? '/mifron/index.html' : `/mifron${url.pathname}`
+    const newRequest = new Request(path, request)
     
-    const response = await env.ASSETS.fetch(assetPath)
-    
-    if (response.status === 404) {
-      return await env.ASSETS.fetch('/mifron/404.html')
+    try {
+      const response = await env.ASSETS.fetch(newRequest)
+      
+      if (response.status === 404) {
+        return await env.ASSETS.fetch('/mifron/404.html')
+      }
+      
+      return response
+    } catch (e) {
+      console.error('Error fetching asset:', e)
+      return new Response('Internal error', { status: 500 })
     }
-    
-    return response
   }
   
   return await env.ASSETS.fetch(request)
