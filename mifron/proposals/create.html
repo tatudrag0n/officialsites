@@ -3,19 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#fffef7">
   <title>提案作成 | Mifron</title>
-  <meta name="description" content="Mifronに新しい提案を作成しよう！機能提案、バグ報告、クエスト提案など。">
+  <meta name="description" content="Mifronに新しい提案を作成。テンプレートを選ぶだけで、機能提案・バグ報告・イベント企画をかんたんに入力できます。">
   <link rel="icon" href="../assets/mifron-favicon.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="stylesheet" href="../assets/proposals.css">
   <script src="../assets/config.js" defer></script>
+  <script src="../assets/site.js" defer></script>
+  <script src="../assets/proposals.js" defer></script>
 </head>
-<body>
+<body class="proposal-page">
+  <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header sub-header">
     <div class="shell nav">
       <a class="brand" href="../">
-        <img src="../assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <img class="brand-icon" src="../assets/mifron-icon.webp" alt="Mifron">
         <span class="brand-text">Mifron</span>
       </a>
       <nav class="nav-links" aria-label="メインサイトナビゲーション">
@@ -31,148 +34,95 @@
 
   <main id="main">
     <section class="sub-hero">
-      <div class="shell">
-        <div class="reveal">
-          <span class="kicker">Mifron Proposal System</span>
-          <h1>新しい提案を作成</h1>
-          <p class="lead">あなたのアイデアでMifronをより良くしよう！</p>
-        </div>
+      <div class="shell reveal">
+        <span class="kicker">Mifron Proposal System</span>
+        <h1>提案を作成</h1>
+        <p class="lead">テンプレートを選ぶと入力欄が自動で埋まります。あなたのアイデアでMifronをより良くしよう。</p>
       </div>
     </section>
 
     <section class="section">
       <div class="shell">
-        <div class="form-container reveal">
-          <form id="proposalForm" class="proposal-form">
-            <div class="form-section">
-              <h2>基本情報</h2>
-              
-              <div class="form-group">
-                <label for="proposalTitle">タイトル *</label>
-                <input type="text" id="proposalTitle" name="title" placeholder="例: 新しいFFAキットの追加" required>
-                <p class="hint">提案のタイトルを入力してください。</p>
-              </div>
+        <div class="proposal-form-panel reveal">
+          <h2>テンプレートからかんたん作成</h2>
+          <p class="panel-intro">近いテンプレートを選ぶと、項目の構成が自動で入ります。あとは内容を調整して送信するだけです。</p>
+          <div class="proposal-template-grid" id="proposalTemplateGrid" aria-label="提案テンプレート"></div>
 
-              <div class="form-group">
-                <label for="proposalDescription">説明 *</label>
-                <textarea id="proposalDescription" name="description" placeholder="例: 新しいFFAキットを追加してほしいです。アーチャー、タンク、サポートなどのバリエーションを増やしてください。" rows="5" required></textarea>
-                <p class="hint">提案の詳細な説明を入力してください。具体的に記載するほど採用されやすくなります。</p>
-              </div>
+          <form id="proposalForm" class="proposal-form" novalidate>
+            <div>
+              <label for="pf-title">タイトル *</label>
+              <input id="pf-title" name="title" type="text" required maxlength="160" placeholder="例: 新しいFFAキットの追加">
+            </div>
 
-              <div class="form-group">
-                <label for="proposalType">提案の種類 *</label>
-                <select id="proposalType" name="type" required>
+            <div>
+              <label for="pf-description">説明 *</label>
+              <textarea id="pf-description" name="description" required maxlength="3000" placeholder="提案の内容を具体的に書いてください。"></textarea>
+              <p class="hint">具体的に書くほど採用されやすくなります。</p>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="pf-type">提案の種類 *</label>
+                <select id="pf-type" name="type" required>
                   <option value="feature">機能提案</option>
                   <option value="bug">バグ報告</option>
                   <option value="quest">クエスト提案</option>
                   <option value="other">その他</option>
                 </select>
-                <p class="hint">提案の種類を選択してください。</p>
               </div>
-            </div>
-
-            <div class="form-section">
-              <h2>追加情報</h2>
-              
-              <div class="form-group">
-                <label for="proposalAuthor">提案者名</label>
-                <input type="text" id="proposalAuthor" name="author" placeholder="あなたの名前">
-                <p class="hint">提案者名を入力してください。省略した場合は「匿名」になります。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="proposalPriority">優先度</label>
-                <select id="proposalPriority" name="priority">
+              <div>
+                <label for="pf-priority">優先度</label>
+                <select id="pf-priority" name="priority">
                   <option value="low">低</option>
                   <option value="medium" selected>中</option>
                   <option value="high">高</option>
                   <option value="critical">緊急</option>
                 </select>
-                <p class="hint">この提案の優先度を選択してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="proposalTags">タグ (任意)</label>
-                <input type="text" id="proposalTags" name="tags" placeholder="例: FFA, ショップ, UI">
-                <p class="hint">関連するタグをカンマ区切りで入力してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="proposalNotes">備考</label>
-                <textarea id="proposalNotes" name="notes" placeholder="その他の備考があれば入力してください。" rows="3"></textarea>
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="form-row">
+              <div>
+                <label for="pf-author">提案者名</label>
+                <input id="pf-author" name="author" type="text" maxlength="60" placeholder="あなたの名前（省略可）">
+              </div>
+              <div>
+                <label for="pf-tags">タグ（任意）</label>
+                <input id="pf-tags" name="tags" type="text" placeholder="例: FFA, ショップ, UI">
+                <p class="hint">カンマ区切りで入力してください。</p>
+              </div>
+            </div>
+
+            <div>
+              <label for="pf-notes">備考（任意）</label>
+              <textarea id="pf-notes" name="notes" maxlength="1000" rows="2" placeholder="補足があれば入力してください。"></textarea>
+            </div>
+
+            <div class="proposal-form-actions">
               <button type="submit" class="btn primary">提案を作成する</button>
-              <a href="./" class="btn">キャンセル</a>
+              <a class="btn" href="./">キャンセル</a>
             </div>
           </form>
 
-          <div id="formMessage" class="form-message" style="display: none;"></div>
+          <div class="form-message" id="formMessage" hidden></div>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="shell">
-      <p class="legal">© 2026 MCT. All rights reserved. | <a href="../">MCT Official</a></p>
+    <div class="shell footer-grid">
+      <div>
+        <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
+        <p class="legal">© 2026 MCT. All rights reserved.</p>
+      </div>
+      <div class="footer-links">
+        <a href="../">Mifron</a>
+        <a href="../quests/">クエスト</a>
+        <a href="./">提案</a>
+        <a href="../tutorial.html">チュートリアル</a>
+      </div>
     </div>
   </footer>
-
-  <script>
-    // フォーム送信
-    document.getElementById('proposalForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const form = e.target;
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-
-      // タグを配列に変換
-      if (data.tags) {
-        data.tags = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-      } else {
-        data.tags = [];
-      }
-
-      // 追加データ
-      data.status = 'open';
-      data.upvotes = 0;
-      data.createdAt = new Date().toISOString();
-
-      // 送信
-      const messageDiv = document.getElementById('formMessage');
-      
-      try {
-        const response = await fetch('/api/proposals', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        
-        if (response.ok) {
-          messageDiv.textContent = '✅ 提案の作成が完了しました！審査後に実装が開始されます。';
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = '#4CAF50';
-          form.reset();
-        } else {
-          messageDiv.textContent = `❌ エラー: ${result.error || '提案に失敗しました'}`;
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = '#F44336';
-        }
-      } catch (error) {
-        console.error('Error submitting proposal:', error);
-        messageDiv.textContent = '❌ エラー: サーバーに接続できませんでした。後で再試行してください。';
-        messageDiv.style.display = 'block';
-        messageDiv.style.color = '#F44336';
-      }
-    });
-  </script>
 </body>
 </html>
