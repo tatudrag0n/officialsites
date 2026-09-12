@@ -157,3 +157,21 @@ html,body{background:var(--paper);color:var(--ink);font-family:Inter,"Noto Sans 
   .guides-grid{grid-template-columns:1fr}
   .command-grid,.world-grid,.system-grid,.tips-grid{grid-template-columns:1fr}
 }
+
+
+/* UX refinement: interaction-first Mifron UI */
+:root{--focus:#03624c}
+html{scroll-padding-top:88px}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.nav-links a{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.menu{min-width:48px;min-height:44px;cursor:pointer}
+.menu[aria-expanded="true"]{background:var(--focus);color:#fff}
+.btn,.copy-button{cursor:pointer;min-height:46px}
+.btn:active,.copy-button:active{transform:translateY(1px)}
+.join-card,.feature,.co-create-card{transition:background-color .18s ease,border-color .18s ease,transform .18s ease}
+.join-card:hover,.feature:hover,.co-create-card:hover{transform:translateY(-2px)}
+.stat-ribbon div{min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.tutorial-nav .nav-link{min-height:44px;display:inline-flex;align-items:center}
+@media(max-width:900px){.nav-links{padding:10px 20px 18px;gap:4px;max-height:calc(100vh - 68px);overflow:auto;box-shadow:0 16px 30px rgba(0,0,0,.08)}.nav-links a{justify-content:flex-start;width:100%;padding:10px 12px}.nav-links .hot{justify-content:center;margin-top:4px}.hero-actions{gap:10px}}
+@media(max-width:560px){.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .btn{width:100%}.stat-ribbon div{min-height:86px}}
+@media(prefers-reduced-motion:reduce){.join-card,.feature,.co-create-card,.btn,.copy-button{transition:none}}
