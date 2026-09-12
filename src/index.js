@@ -74,7 +74,7 @@ export default {
       return preparationResponse(PREPARING[host]);
     }
 
-    if (host !== "mifron.mct-official.com") {
+    if (host === "mct-official.com" || host === "www.mct-official.com") {\n      const path = url.pathname === "/" ? "/index.html" : url.pathname;\n      try {\n        const response = await env.ASSETS.fetch(new URL(`https://assets.local${path}`));\n        return response.status !== 404 ? response : new Response("Not Found", { status: 404 });\n      } catch (error) {\n        console.error("officialsites MCT asset error", error);\n        return new Response("Internal Server Error", { status: 500 });\n      }\n    }\n\n    if (host !== "mifron.mct-official.com") {
       return new Response("Not Found", {status:404});
     }
 
