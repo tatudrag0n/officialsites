@@ -60,7 +60,9 @@ jobs:
             echo 'Inline style found in the CSP-protected 404 page.' >&2
             exit 1
           fi
-          if grep -RInE '(src|action)="https?://' mifron/index.html; then
-            echo 'External asset or form action found; review CSP and privacy impact before merging.' >&2
+          # Allow only the Discord server widget as an explicitly reviewed external iframe.
+          # All other absolute src/action URLs remain blocked by this invariant.
+          if grep -nE '(src|action)="https?://' mifron/index.html | grep -vE 'src="https://discord\\.com/widget\\?'; then
+            echo 'Unapproved external asset or form action found; review CSP and privacy impact before merging.' >&2
             exit 1
           fi
