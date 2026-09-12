@@ -19,3 +19,10 @@ id = "d4ef57e2bf1e49ecb903748d1064c365"
 [[kv_namespaces]]
 binding = "PROPOSALS"
 id = "6669782f077c4c699aad3eff402cc8da"
+
+# Email Sending binding used to notify mifron@mct-official.com when a
+# proposal or quest proposal is submitted. The sending domain
+# (mct-official.com) must be onboarded to Email Sending first:
+#   npx wrangler email sending enable mct-official.com
+[[send_email]]
+name = "EMAIL"
