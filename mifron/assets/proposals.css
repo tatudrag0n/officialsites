@@ -6,9 +6,11 @@
   color: var(--ink);
 }
 
-.proposal-page .sub-hero { padding: 72px 0 40px; }
+.proposal-page .sub-hero { padding: 72px 0 44px; }
 .proposal-page .sub-hero h1 { font-size: clamp(52px, 9vw, 120px); font-weight: 300; letter-spacing: -0.06em; }
 .proposal-page .sub-hero .lead { color: var(--muted); max-width: 680px; }
+/* Remove the oversized hero image band on proposal pages. */
+.proposal-page .sub-hero:after { display: none; }
 .proposal-page .section { padding: 40px 0 90px; }
 
 .proposal-page .btn {

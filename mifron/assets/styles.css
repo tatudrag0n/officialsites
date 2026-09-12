@@ -178,3 +178,13 @@ html{scroll-padding-top:88px}
 @media(max-width:900px){.nav-links{padding:10px 20px 18px;gap:4px;max-height:calc(100vh - 68px);overflow:auto;box-shadow:0 16px 30px rgba(0,0,0,.08)}.nav-links a{justify-content:flex-start;width:100%;padding:10px 12px}.nav-links .hot{justify-content:center;margin-top:4px}.hero-actions{gap:10px}}
 @media(max-width:560px){.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .btn{width:100%}.stat-ribbon div{min-height:86px}}
 @media(prefers-reduced-motion:reduce){.join-card,.feature,.co-create-card,.btn,.copy-button{transition:none}}
+
+
+/* Community / navigation UX */
+.community-discord{background:var(--mist)}
+.community-discord-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:64px;align-items:center}
+.community-discord-copy{max-width:620px}.community-discord-copy h2{font-size:clamp(48px,6vw,84px);font-weight:300;line-height:.98;letter-spacing:-.055em;margin:0 0 24px}.community-discord-copy p{color:var(--muted);font-size:18px;max-width:560px}
+.discord-widget-wrap{width:350px;justify-self:end}.discord-widget-wrap iframe{display:block;width:350px;max-width:100%;height:500px;border:0;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.quick-actions{background:var(--paper)}.quick-actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.quick-action-card{position:relative;display:flex;flex-direction:column;gap:12px;min-height:230px;padding:32px;background:var(--mist);color:var(--ink);text-decoration:none;border-top:4px solid var(--ink);transition:transform .2s ease,background-color .2s ease}.quick-action-card:nth-child(2){border-top-color:var(--violet)}.quick-action-card:hover{transform:translateY(-4px);background:#fff}.quick-action-card strong{font-size:clamp(28px,3vw,42px);font-weight:300}.quick-action-card>span:not(.tag):not(.quick-arrow){color:var(--muted)}.quick-arrow{margin-top:auto;font-size:28px;font-weight:300}
+@media(max-width:900px){.community-discord-grid{grid-template-columns:1fr;gap:36px}.discord-widget-wrap{justify-self:start}.quick-actions-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.discord-widget-wrap,.discord-widget-wrap iframe{width:100%}.discord-widget-wrap iframe{height:500px}}
