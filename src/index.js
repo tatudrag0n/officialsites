@@ -60,10 +60,179 @@ async function fetchAsset(env, pathname) {
   return env.ASSETS.fetch(assetUrl(pathname));
 }
 
+const JSON_HEADERS = {
+  "content-type": "application/json; charset=UTF-8",
+  "cache-control": "no-store",
+};
+
+function jsonResponse(body, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+}
+
+function cleanText(value, maxLength) {
+  if (typeof value !== "string") return "";
+  return value.trim().slice(0, maxLength);
+}
+
+function cleanList(value, allowed, maxItems = 12) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => typeof item === "string" && allowed.includes(item))
+    .slice(0, maxItems);
+}
+
+function isPlainObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+async function readKvList(namespace) {
+  const list = await namespace.list();
+  const records = await Promise.all(
+    list.keys.map(async (key) => {
+      const data = await namespace.get(key.name);
+      if (!data) return null;
+      try {
+        return JSON.parse(data);
+      } catch {
+        return null;
+      }
+    })
+  );
+  return records.filter((record) => record !== null);
+}
+
+async function handleQuestsApi(request, env) {
+  if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
+
+  if (request.method === "GET") {
+    return jsonResponse(await readKvList(env.QUESTS));
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+  if (!isPlainObject(body)) return jsonResponse({ error: "Invalid body" }, 400);
+
+  const quest = {
+    id: `quest_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    name: cleanText(body.name, 120),
+    description: cleanText(body.description, 2000),
+    condition: cleanText(body.condition, 500),
+    reward: cleanText(body.reward, 300),
+    type: ["daily", "weekly", "single", "hidden"].includes(body.type) ? body.type : "single",
+    difficulty: ["easy", "normal", "hard", "very_hard", "extreme"].includes(body.difficulty)
+      ? body.difficulty
+      : "normal",
+    conditionTypes: cleanList(body.conditionTypes, [
+      "item_obtain",
+      "mob_kill",
+      "block_break",
+      "move",
+      "mp_gain",
+      "advancement",
+      "login",
+    ]),
+    rewardTypes: cleanList(body.rewardTypes, ["mp", "item", "title", "exp"]),
+    dependencies: Array.isArray(body.dependencies)
+      ? body.dependencies
+          .filter((dep) => typeof dep === "string")
+          .map((dep) => dep.trim().slice(0, 80))
+          .filter(Boolean)
+          .slice(0, 12)
+      : [],
+    unlockCondition: cleanText(body.unlockCondition, 500),
+    proposedTitle: cleanText(body.proposedTitle, 120),
+    author: cleanText(body.author, 60) || "匿名",
+    notes: cleanText(body.notes, 1000),
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  if (!quest.name || !quest.condition || !quest.reward) {
+    return jsonResponse(
+      { error: "Missing required fields: name, condition, reward" },
+      400
+    );
+  }
+
+  await env.QUESTS.put(quest.id, JSON.stringify(quest));
+  return jsonResponse({ success: true, id: quest.id }, 201);
+}
+
+async function handleProposalsApi(request, env) {
+  if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
+
+  if (request.method === "GET") {
+    return jsonResponse(await readKvList(env.PROPOSALS));
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+  if (!isPlainObject(body)) return jsonResponse({ error: "Invalid body" }, 400);
+
+  const proposal = {
+    id: `prop_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    title: cleanText(body.title, 160),
+    description: cleanText(body.description, 3000),
+    type: ["feature", "bug", "quest", "other"].includes(body.type) ? body.type : "feature",
+    priority: ["low", "medium", "high", "critical"].includes(body.priority)
+      ? body.priority
+      : "medium",
+    tags: Array.isArray(body.tags)
+      ? body.tags
+          .filter((tag) => typeof tag === "string")
+          .map((tag) => tag.trim().slice(0, 30))
+          .filter(Boolean)
+          .slice(0, 8)
+      : [],
+    author: cleanText(body.author, 60) || "匿名",
+    notes: cleanText(body.notes, 1000),
+    status: "open",
+    upvotes: 0,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (!proposal.title || !proposal.description) {
+    return jsonResponse(
+      { error: "Missing required fields: title, description" },
+      400
+    );
+  }
+
+  await env.PROPOSALS.put(proposal.id, JSON.stringify(proposal));
+  return jsonResponse({ success: true, id: proposal.id }, 201);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const host = url.hostname.toLowerCase();
+
+    if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) {
+      return handleQuestsApi(request, env);
+    }
+
+    if (
+      url.pathname === "/api/proposals" ||
+      url.pathname.startsWith("/api/proposals/")
+    ) {
+      return handleProposalsApi(request, env);
+    }
 
     if (PREPARING[host]) {
       return preparationResponse(PREPARING[host]);
