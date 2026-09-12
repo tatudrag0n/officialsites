@@ -483,3 +483,14 @@
 .quest-card:nth-child(4) { animation-delay: 0.4s; }
 .quest-card:nth-child(5) { animation-delay: 0.5s; }
 .quest-card:nth-child(6) { animation-delay: 0.6s; }
+
+
+/* Quest page: keep the interface compact and image-free */
+.quest-page main img,.quest-page .sub-hero:after{display:none!important}
+.quest-page .quest-hero{padding:64px 0 54px;text-align:left;background:var(--mist);color:var(--ink)}
+.quest-page .quest-hero h1{background:none;-webkit-text-fill-color:initial;color:var(--ink);font-size:clamp(52px,7vw,88px);font-weight:300;letter-spacing:-.06em}
+.quest-page .quest-hero .lead{color:var(--muted);max-width:680px}
+.quest-page .quest-filters{position:sticky;top:76px;z-index:10;padding:12px 0;margin-bottom:28px;background:rgba(255,254,247,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.quest-page .filter-btn{min-height:44px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px}.quest-page .filter-btn.active,.quest-page .filter-btn:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.quest-page .quest-card{border:1px solid var(--line);border-left-width:4px;border-radius:0;background:var(--paper);color:var(--ink);box-shadow:none}.quest-page .quest-card h3{color:var(--ink)}.quest-page .quest-description{color:var(--muted)}.quest-page .quest-condition,.quest-page .quest-reward{color:var(--muted)}.quest-page .quest-link{background:var(--ink);color:var(--paper);border-radius:999px}.quest-page .quest-link:hover{background:var(--focus,#03624c)}
+@media(max-width:900px){.quest-page .quest-filters{top:68px}}
