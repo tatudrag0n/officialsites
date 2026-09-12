@@ -3,19 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#0c0e13">
   <title>クエスト提案 | Mifron</title>
-  <meta name="description" content="Mifronに新しいクエストを提案しよう！依存関係、条件、報酬を設定できます。">
+  <meta name="description" content="Mifronに新しいクエストを提案しよう。テンプレートを使えば、条件・報酬・依存関係をかんたんに入力できます。">
   <link rel="icon" href="../assets/mifron-favicon.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="stylesheet" href="../assets/quests.css">
   <script src="../assets/config.js" defer></script>
+  <script src="../assets/site.js" defer></script>
+  <script src="../assets/quests.js" defer></script>
 </head>
-<body>
+<body class="quest-page">
+  <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header sub-header">
     <div class="shell nav">
       <a class="brand" href="../">
-        <img src="../assets/mifron-icon.webp" alt="Mifron" style="width: 32px; height: 32px;">
+        <img class="brand-icon" src="../assets/mifron-icon.webp" alt="Mifron">
         <span class="brand-text">Mifron</span>
       </a>
       <nav class="nav-links" aria-label="メインサイトナビゲーション">
@@ -31,260 +34,149 @@
 
   <main id="main">
     <section class="sub-hero">
-      <div class="shell">
-        <div class="reveal">
-          <span class="kicker">Mifron Quest System</span>
-          <h1>クエストを提案する</h1>
-          <p class="lead">あなたのアイデアでMifronをより楽しくしよう！</p>
-        </div>
+      <div class="shell reveal">
+        <span class="kicker">Mifron Quest System</span>
+        <h1>クエストを提案</h1>
+        <p class="lead">テンプレートを選ぶと入力欄が自動で埋まります。あなたのアイデアでMifronのクエストを増やそう。</p>
       </div>
     </section>
 
     <section class="section">
       <div class="shell">
-        <div class="form-container reveal">
-          <form id="questForm" class="quest-form">
-            <div class="form-section">
-              <h2>基本情報</h2>
-              
-              <div class="form-group">
-                <label for="questName">クエスト名 *</label>
-                <input type="text" id="questName" name="name" placeholder="例: 初心者の挑戦" required>
-                <p class="hint">クエストの名前を入力してください。</p>
+        <div class="mc-window reveal">
+          <div class="mc-titlebar">
+            <span class="mc-title">クエスト提案フォーム</span>
+            <a class="mc-progress" href="./">クエスト一覧へ戻る</a>
+          </div>
+          <div class="mc-panel">
+            <div class="mc-propose-view">
+              <div class="mc-propose-intro">
+                <h3>テンプレートからかんたん提案</h3>
+                <p>近いテンプレートを選ぶと入力欄が自動で埋まります。あとは内容を調整して送信するだけです。</p>
               </div>
+              <div class="quest-template-grid" id="questTemplateGrid" aria-label="クエスト提案テンプレート"></div>
 
-              <div class="form-group">
-                <label for="questDescription">説明 *</label>
-                <textarea id="questDescription" name="description" placeholder="例: サーバーに初めてログインしよう！" rows="3" required></textarea>
-                <p class="hint">クエストの詳細な説明を入力してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="questType">クエストの種類 *</label>
-                <select id="questType" name="type" required>
-                  <option value="single">単発クエスト</option>
-                  <option value="daily">デイリークエスト</option>
-                  <option value="weekly">ウィークリークエスト</option>
-                  <option value="hidden">隠しクエスト</option>
-                </select>
-                <p class="hint">クエストの種類を選択してください。隠しクエストは特定条件を満たすと解放されます。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="questDifficulty">難易度 *</label>
-                <select id="questDifficulty" name="difficulty" required>
-                  <option value="easy">★☆☆☆☆ (易しい)</option>
-                  <option value="normal" selected>★★☆☆☆ (普通)</option>
-                  <option value="hard">★★★☆☆ (難しい)</option>
-                  <option value="very_hard">★★★★☆ (非常に難しい)</option>
-                  <option value="extreme">★★★★★ (極難)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-section">
-              <h2>成功条件</h2>
-              
-              <div class="form-group">
-                <label for="questCondition">条件 *</label>
-                <input type="text" id="questCondition" name="condition" placeholder="例: モブを10体倒す" required>
-                <p class="hint">クエストを達成するための条件を具体的に入力してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label>条件の種類</label>
-                <div class="checkbox-group">
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="item_obtain"> アイテム入手
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="mob_kill"> モブ退治
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="block_break"> ブロック破壊
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="move"> 移動
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="mp_gain"> MP獲得
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="advancement"> 進捗達成
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="conditionTypes" value="login"> 累計ログイン
-                  </label>
+              <form id="questProposalForm" class="quest-form" novalidate>
+                <div class="form-row">
+                  <div>
+                    <label for="qp-name">クエスト名 *</label>
+                    <input id="qp-name" name="name" type="text" required maxlength="120" placeholder="例: デイリー：採掘チャレンジ">
+                  </div>
+                  <div>
+                    <label for="qp-type">種類 *</label>
+                    <select id="qp-type" name="type" required>
+                      <option value="daily">デイリー</option>
+                      <option value="weekly">ウィークリー</option>
+                      <option value="single" selected>単発</option>
+                      <option value="hidden">隠し</option>
+                    </select>
+                  </div>
                 </div>
-                <p class="hint">該当する条件の種類にチェックを入れてください。</p>
-              </div>
-            </div>
 
-            <div class="form-section">
-              <h2>報酬</h2>
-              
-              <div class="form-group">
-                <label for="questReward">報酬 *</label>
-                <input type="text" id="questReward" name="reward" placeholder="例: MP: 100" required>
-                <p class="hint">プレイヤーが受け取る報酬を入力してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label>報酬の種類</label>
-                <div class="checkbox-group">
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="rewardTypes" value="mp"> MP
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="rewardTypes" value="item"> アイテム
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="rewardTypes" value="title"> 称号
-                  </label>
-                  <label class="checkbox-label">
-                    <input type="checkbox" name="rewardTypes" value="exp"> 経験値
-                  </label>
+                <div>
+                  <label for="qp-desc">説明 *</label>
+                  <textarea id="qp-desc" name="description" required maxlength="2000" placeholder="どんなクエストか、どうすれば達成できるかを書いてください。"></textarea>
                 </div>
-              </div>
 
-              <div class="form-group" id="titleProposalGroup" style="display: none;">
-                <label for="proposedTitle">提案する称号</label>
-                <input type="text" id="proposedTitle" name="proposedTitle" placeholder="例: 真の冒険者">
-                <p class="hint">報酬に称号を選択した場合、新しい称号名を提案してください。</p>
-              </div>
+                <div class="form-row">
+                  <div>
+                    <label for="qp-condition">成功条件 *</label>
+                    <input id="qp-condition" name="condition" type="text" required maxlength="500" placeholder="例: 石を128個採掘する">
+                  </div>
+                  <div>
+                    <label for="qp-reward">報酬 *</label>
+                    <input id="qp-reward" name="reward" type="text" required maxlength="300" placeholder="例: MP: 120">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div>
+                    <label for="qp-difficulty">難易度 *</label>
+                    <select id="qp-difficulty" name="difficulty" required>
+                      <option value="easy">★☆☆☆☆ 易しい</option>
+                      <option value="normal" selected>★★☆☆☆ 普通</option>
+                      <option value="hard">★★★☆☆ 難しい</option>
+                      <option value="very_hard">★★★★☆ 非常に難しい</option>
+                      <option value="extreme">★★★★★ 極難</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="qp-author">提案者名</label>
+                    <input id="qp-author" name="author" type="text" maxlength="60" placeholder="あなたの名前（省略可）">
+                  </div>
+                </div>
+
+                <fieldset>
+                  <legend>条件の種類（任意）</legend>
+                  <div class="check-grid">
+                    <label><input type="checkbox" name="conditionTypes" value="item_obtain"> アイテム入手</label>
+                    <label><input type="checkbox" name="conditionTypes" value="mob_kill"> モブ退治</label>
+                    <label><input type="checkbox" name="conditionTypes" value="block_break"> ブロック破壊</label>
+                    <label><input type="checkbox" name="conditionTypes" value="move"> 移動</label>
+                    <label><input type="checkbox" name="conditionTypes" value="mp_gain"> MP獲得</label>
+                    <label><input type="checkbox" name="conditionTypes" value="advancement"> 進捗達成</label>
+                    <label><input type="checkbox" name="conditionTypes" value="login"> 累計ログイン</label>
+                  </div>
+                </fieldset>
+
+                <fieldset>
+                  <legend>報酬の種類（任意）</legend>
+                  <div class="check-grid">
+                    <label><input type="checkbox" name="rewardTypes" value="mp"> MP</label>
+                    <label><input type="checkbox" name="rewardTypes" value="item"> アイテム</label>
+                    <label><input type="checkbox" name="rewardTypes" value="title"> 称号</label>
+                    <label><input type="checkbox" name="rewardTypes" value="exp"> 経験値</label>
+                  </div>
+                </fieldset>
+
+                <div id="questTitleGroup" hidden>
+                  <label for="qp-title">提案する称号</label>
+                  <input id="qp-title" name="proposedTitle" type="text" maxlength="120" placeholder="例: 真の冒険者">
+                </div>
+
+                <div class="form-row">
+                  <div>
+                    <label for="qp-deps">前提クエストID（任意）</label>
+                    <input id="qp-deps" name="dependencies" type="text" placeholder="例: daily_login, daily_mine">
+                  </div>
+                  <div>
+                    <label for="qp-unlock">解放条件（隠し用・任意）</label>
+                    <input id="qp-unlock" name="unlockCondition" type="text" maxlength="500" placeholder="例: 特定の座標に到達する">
+                  </div>
+                </div>
+
+                <div>
+                  <label for="qp-notes">備考（任意）</label>
+                  <textarea id="qp-notes" name="notes" maxlength="1000" rows="2" placeholder="補足があれば入力してください。"></textarea>
+                </div>
+
+                <div class="quest-form-actions">
+                  <button type="submit" class="btn primary">クエストを提案する</button>
+                  <a class="btn" href="./">キャンセル</a>
+                </div>
+              </form>
+
+              <div class="form-message" id="questFormMessage" hidden></div>
             </div>
-
-            <div class="form-section">
-              <h2>依存関係</h2>
-              
-              <div class="form-group">
-                <label for="questDependencies">依存するクエスト (任意)</label>
-                <input type="text" id="questDependencies" name="dependencies" placeholder="例: demo_001, demo_002">
-                <p class="hint">このクエストを解放するためにクリアする必要があるクエストのIDをカンマ区切りで入力してください。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="unlockCondition">解放条件 (隠しクエスト用)</label>
-                <input type="text" id="unlockCondition" name="unlockCondition" placeholder="例: 特定の座標に到達">
-                <p class="hint">隠しクエストの場合、解放される条件を入力してください。</p>
-              </div>
-            </div>
-
-            <div class="form-section">
-              <h2>追加情報</h2>
-              
-              <div class="form-group">
-                <label for="questAuthor">提案者名</label>
-                <input type="text" id="questAuthor" name="author" placeholder="あなたの名前">
-                <p class="hint">提案者名を入力してください。省略した場合は「匿名」になります。</p>
-              </div>
-
-              <div class="form-group">
-                <label for="questNotes">備考</label>
-                <textarea id="questNotes" name="notes" placeholder="その他の備考があれば入力してください。" rows="3"></textarea>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn primary">クエストを提案する</button>
-              <a href="./" class="btn">キャンセル</a>
-            </div>
-          </form>
-
-          <div id="formMessage" class="form-message" style="display: none;"></div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="shell">
-      <p class="legal">© 2026 MCT. All rights reserved. | <a href="../">MCT Official</a></p>
+    <div class="shell footer-grid">
+      <div>
+        <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
+        <p class="legal">© 2026 MCT. All rights reserved.</p>
+      </div>
+      <div class="footer-links">
+        <a href="../">Mifron</a>
+        <a href="./">クエスト</a>
+        <a href="../proposals/">提案</a>
+        <a href="../tutorial.html">チュートリアル</a>
+      </div>
     </div>
   </footer>
-
-  <script>
-    // 称号チェックボックスの状態に応じて入力フィールドを表示
-    const rewardCheckboxes = document.querySelectorAll('input[name="rewardTypes"]');
-    const titleProposalGroup = document.getElementById('titleProposalGroup');
-
-    rewardCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        const isTitleChecked = Array.from(rewardCheckboxes).some(cb => cb.value === 'title' && cb.checked);
-        titleProposalGroup.style.display = isTitleChecked ? 'block' : 'none';
-      });
-    });
-
-    // フォーム送信
-    document.getElementById('questForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const form = e.target;
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-
-      // チェックボックスの値を配列に変換
-      const conditionTypes = [];
-      const rewardTypes = [];
-      
-      document.querySelectorAll('input[name="conditionTypes"]:checked').forEach(cb => {
-        conditionTypes.push(cb.value);
-      });
-      
-      document.querySelectorAll('input[name="rewardTypes"]:checked').forEach(cb => {
-        rewardTypes.push(cb.value);
-      });
-
-      // 依存関係を配列に変換
-      if (data.dependencies) {
-        data.dependencies = data.dependencies.split(',').map(id => id.trim()).filter(id => id);
-      } else {
-        data.dependencies = [];
-      }
-
-      // 追加データ
-      data.conditionTypes = conditionTypes;
-      data.rewardTypes = rewardTypes;
-      data.status = 'pending';
-      data.createdAt = new Date().toISOString();
-
-      // 提案する称号を追加
-      if (data.proposedTitle) {
-        data.proposedTitle = data.proposedTitle;
-      }
-
-      // 送信
-      const messageDiv = document.getElementById('formMessage');
-      
-      try {
-        const response = await fetch('/api/quests', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-        
-        if (response.ok) {
-          messageDiv.textContent = '✅ クエストの提案が完了しました！審査後に公開されます。';
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = '#4CAF50';
-          form.reset();
-          titleProposalGroup.style.display = 'none';
-        } else {
-          messageDiv.textContent = `❌ エラー: ${result.error || '提案に失敗しました'}`;
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = '#F44336';
-        }
-      } catch (error) {
-        console.error('Error submitting quest:', error);
-        messageDiv.textContent = '❌ エラー: サーバーに接続できませんでした。後で再試行してください。';
-        messageDiv.style.display = 'block';
-        messageDiv.style.color = '#F44336';
-      }
-    });
-  </script>
 </body>
 </html>
