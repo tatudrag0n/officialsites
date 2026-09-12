@@ -101,6 +101,71 @@ async function readKvList(namespace) {
   return records.filter((record) => record !== null);
 }
 
+// Proposal notifications are emailed to the Mifron operations inbox.
+// Override with the PROPOSAL_NOTIFY_TO / PROPOSAL_NOTIFY_FROM environment
+// variables if the receiving or sending address changes.
+const NOTIFY_TO = "mifron@mct-official.com";
+const NOTIFY_FROM_EMAIL = "noreply@mct-official.com";
+const NOTIFY_FROM_NAME = "Mifron 提案通知";
+
+function escapeHtml(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, (character) => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[character];
+  });
+}
+
+function buildNotificationBody(rows) {
+  const text = rows.map(([label, value]) => `${label}: ${value || "-"}`).join("\n");
+  const html = rows
+    .map(
+      ([label, value]) =>
+        `<tr><th align="left" style="padding:4px 12px 4px 0;vertical-align:top">${escapeHtml(
+          label
+        )}</th><td style="padding:4px 0">${escapeHtml(value || "-").replace(
+          /\n/g,
+          "<br>"
+        )}</td></tr>`
+    )
+    .join("");
+  return { text, html: `<table>${html}</table>` };
+}
+
+// Sends the notification and never throws: a saved proposal must still be
+// reported as successful even if the email service is unavailable.
+async function sendProposalNotification(env, subject, rows) {
+  if (!env.EMAIL || typeof env.EMAIL.send !== "function") {
+    console.warn("EMAIL binding is not configured; skipping proposal notification.");
+    return false;
+  }
+
+  const { text, html } = buildNotificationBody(rows);
+  try {
+    await env.EMAIL.send({
+      to: env.PROPOSAL_NOTIFY_TO || NOTIFY_TO,
+      from: {
+        email: env.PROPOSAL_NOTIFY_FROM || NOTIFY_FROM_EMAIL,
+        name: NOTIFY_FROM_NAME,
+      },
+      subject,
+      text,
+      html: `<h2>${escapeHtml(subject)}</h2>${html}`,
+    });
+    return true;
+  } catch (error) {
+    console.error(
+      "Proposal notification email failed:",
+      (error && (error.code || error.message)) || error
+    );
+    return false;
+  }
+}
+
 async function handleQuestsApi(request, env) {
   if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
 
@@ -163,7 +228,30 @@ async function handleQuestsApi(request, env) {
   }
 
   await env.QUESTS.put(quest.id, JSON.stringify(quest));
-  return jsonResponse({ success: true, id: quest.id }, 201);
+
+  const notified = await sendProposalNotification(
+    env,
+    `[Mifron クエスト提案] ${quest.name}`,
+    [
+      ["種別", "クエスト提案"],
+      ["クエスト名", quest.name],
+      ["種類", quest.type],
+      ["難易度", quest.difficulty],
+      ["成功条件", quest.condition],
+      ["報酬", quest.reward],
+      ["提案者", quest.author],
+      ["説明", quest.description],
+      ["前提クエスト", quest.dependencies.join(", ")],
+      ["解放条件", quest.unlockCondition],
+      ["提案称号", quest.proposedTitle],
+      ["備考", quest.notes],
+      ["ID", quest.id],
+      ["受信日時", quest.createdAt],
+      ["詳細", `https://mifron.mct-official.com/quests/detail.html?id=${quest.id}`],
+    ]
+  );
+
+  return jsonResponse({ success: true, id: quest.id, notified }, 201);
 }
 
 async function handleProposalsApi(request, env) {
@@ -215,7 +303,26 @@ async function handleProposalsApi(request, env) {
   }
 
   await env.PROPOSALS.put(proposal.id, JSON.stringify(proposal));
-  return jsonResponse({ success: true, id: proposal.id }, 201);
+
+  const notified = await sendProposalNotification(
+    env,
+    `[Mifron 提案] ${proposal.title}`,
+    [
+      ["種別", "提案"],
+      ["タイトル", proposal.title],
+      ["種類", proposal.type],
+      ["優先度", proposal.priority],
+      ["提案者", proposal.author],
+      ["タグ", proposal.tags.join(", ")],
+      ["説明", proposal.description],
+      ["備考", proposal.notes],
+      ["ID", proposal.id],
+      ["受信日時", proposal.createdAt],
+      ["詳細", `https://mifron.mct-official.com/proposals/detail.html?id=${proposal.id}`],
+    ]
+  );
+
+  return jsonResponse({ success: true, id: proposal.id, notified }, 201);
 }
 
 export default {
