@@ -47,3 +47,21 @@
 .featured-system{position:relative;background:linear-gradient(145deg,rgba(111,53,255,.16),rgba(255,176,0,.08))}
 .featured-system:after{content:"UNLOCK";position:absolute;right:18px;top:14px;font-size:10px;letter-spacing:.2em;font-weight:900;color:#ffd16a}
 @media(max-width:900px){.co-create-grid{grid-template-columns:1fr}}
+
+/* MCT corporate refresh — shared typography and hierarchy */
+:root{--mct-ink:#111216;--mct-paper:#f7f7f4;--mct-line:#d8d9dc;--mct-muted:#676a72;--mct-accent:#6d35ff}
+body{background:var(--mct-paper);font-family:"Helvetica Neue","Avenir Next","Noto Sans JP",Arial,sans-serif;letter-spacing:-.01em}
+.site-header{background:rgba(247,247,244,.96);border-bottom:1px solid var(--mct-line)}
+.brand{gap:11px}.brand img{height:28px;padding:3px 6px;background:#fff}.brand .brand-text{font-family:"Avenir Next","Helvetica Neue",sans-serif;font-size:15px;letter-spacing:.08em}.brand .brand-text small{font-size:7px;letter-spacing:.09em;white-space:nowrap}
+.nav-links a{font-family:"Avenir Next","Noto Sans JP",sans-serif;font-size:11px;letter-spacing:.04em}
+.hero{min-height:700px;background:var(--mct-paper)}.hero:before{background-image:linear-gradient(rgba(17,18,22,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(17,18,22,.045) 1px,transparent 1px);background-size:56px 56px}.hero:after{opacity:.1}
+.kicker{color:#666970;font-family:"Avenir Next",sans-serif;font-size:10px;letter-spacing:.16em}.kicker:before{background:var(--mct-ink);width:28px;height:2px}.site-role{display:block;margin-top:10px;color:#92949a;font:700 9px/1.2 "Avenir Next",sans-serif;letter-spacing:.18em}
+h1{font-family:"Avenir Next","Helvetica Neue","Noto Sans JP",sans-serif;font-weight:700;letter-spacing:-.075em}h1 em{font-style:normal;font-weight:400}.lead{font-size:17px;line-height:1.7;color:#45474e}
+.hero-card{background:#fff;border:1px solid var(--mct-line);box-shadow:none;clip-path:none;border-radius:2px}.hero-card:before{height:4px;background:var(--mct-ink)}.hero-card img{max-height:190px}.hero-index{position:absolute;top:22px;right:26px;font:700 9px/1 "Avenir Next",sans-serif;letter-spacing:.16em;color:#999}
+.caption strong{font-family:"Avenir Next","Helvetica Neue",sans-serif;font-size:19px;letter-spacing:-.04em}.eyebrow{font-size:9px;letter-spacing:.16em;color:#777a80}
+.section{padding:96px 0}.section.alt{background:#fff}.section-head h2,.contact-panel h2{font-family:"Avenir Next","Helvetica Neue","Noto Sans JP",sans-serif;font-weight:650;letter-spacing:-.065em}.section-head p{font-size:14px}.manifesto{font-family:"Avenir Next","Noto Sans JP",sans-serif;font-weight:600;letter-spacing:-.045em}.manifesto>span{font:700 9px/1 "Avenir Next",sans-serif;letter-spacing:.18em;color:#777a80}
+.fact{box-shadow:none;clip-path:none}.fact b{font-family:"Avenir Next",sans-serif;font-weight:600}
+.brand-grid{gap:1px}.brand-card{border:1px solid var(--mct-line);border-radius:0;clip-path:none;box-shadow:none;min-height:360px;padding:28px}.brand-card:hover{transform:none;box-shadow:none;background:#fafafa}.brand-card h3{font-family:"Avenir Next","Helvetica Neue",sans-serif;font-weight:650;letter-spacing:-.05em}.brand-card p{font-size:13px;line-height:1.8}.brand-card.mifron{background:#fff}.brand-card.crewmate{background:#fafafa}.brand-card.texroot{background:#f6f6f4}
+.contact-panel{background:var(--mct-ink);color:#fff;border:0;box-shadow:none;clip-path:none;border-radius:2px}.contact-panel:before{background:#fff}.contact-panel p{color:#aaaeb7}.contact-panel .eyebrow{color:#aaaeb7}.contact-panel .btn{background:#fff;color:#111;border-color:#fff;box-shadow:none}
+.footer{background:var(--mct-paper);border-top:1px solid var(--mct-line)}.footer img{height:24px}.footer-company{font:600 10px/1.4 "Avenir Next",sans-serif;letter-spacing:.05em;color:#55585f;margin:5px 0}.legal{font-size:10px}
+@media(max-width:560px){.brand .brand-text small{font-size:6px}.site-role{font-size:8px}h1{letter-spacing:-.07em}.hero{min-height:auto}.section{padding:64px 0}}
