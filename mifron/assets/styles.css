@@ -307,3 +307,14 @@ body{background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,sy
   .stat-ribbon div{border-right:0;border-bottom:1px solid #383a40}
   .hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .btn{width:100%}
 }
+
+
+/* MCT corporate typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+.brand-text{font-family:Inter,"Noto Sans JP",sans-serif;letter-spacing:.04em;line-height:1.05}
+.brand-text small{font-family:Inter,sans-serif;font-size:7px;letter-spacing:.08em;white-space:nowrap}
+.hero-product{display:block;margin-top:7px;font-family:Inter,"Noto Sans JP",sans-serif;font-size:10px;font-weight:700;letter-spacing:.13em;color:#777980;text-transform:uppercase}
+.sub-hero h1,.section-head h2,.community-discord-copy h2,.contact-panel h2{font-family:Inter,"Noto Sans JP",sans-serif;font-feature-settings:"ss01" 1;letter-spacing:-.07em}
+.lead{font-family:"Noto Sans JP",sans-serif;font-weight:500}
+.footer-company{margin:5px 0 0;font-family:Inter,"Noto Sans JP",sans-serif;font-size:11px;font-weight:600;letter-spacing:.02em;color:#55575e}
+@media(max-width:560px){.hero-product{font-size:9px}.brand-text small{font-size:6px}}
