@@ -98,3 +98,12 @@ p{max-width:68ch}
 .footer{padding:30px 0}.footer-links{gap:8px 16px}.footer a{font-size:11px}
 @media(max-width:900px){.hero-grid,.mission-grid{grid-template-columns:1fr}.hero-grid{padding:64px 0}.hero-card{min-height:330px}.fact-grid{grid-template-columns:repeat(3,1fr)}.brand-grid{grid-template-columns:1fr}.brand-card{min-height:250px}.section{padding:70px 0}}
 @media(max-width:560px){.nav{height:66px}.brand .brand-text{font-size:13px}.brand .brand-text small{font-size:6px}.hero h1{font-size:clamp(44px,13vw,66px)}.lead{font-size:16px}.hero-grid{gap:38px}.hero-card{padding:24px}.section-head{gap:20px}.section-head h2{font-size:40px}.mission-grid{gap:30px}.manifesto{font-size:31px}.fact-grid{grid-template-columns:1fr 1fr}.fact:last-child{grid-column:1/-1}.section{padding:60px 0}}
+
+/* Japanese-first / angular Latin typography */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+body{font-family:"IBM Plex Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+h1,h2,h3,p,.lead,.manifesto{font-family:"IBM Plex Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+.brand-text,.brand-text small,.kicker,.site-role,.eyebrow,.code,.go,.btn,.fact b,.footer-company,.legal{font-family:"Rajdhani","IBM Plex Sans JP",sans-serif}
+.brand-text{font-weight:700;letter-spacing:.045em}.brand-text small{font-weight:600;letter-spacing:.09em}
+.kicker,.site-role,.eyebrow,.code,.go{letter-spacing:.11em}
+h1,h2,h3{letter-spacing:-.045em}
