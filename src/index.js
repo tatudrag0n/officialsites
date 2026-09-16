@@ -68,6 +68,21 @@ h1{font-size:clamp(64px,22vw,110px);margin:22px 0 28px}
 .panel{padding:22px}
 footer{width:min(100% - 28px,1180px);flex-direction:column}
 }
+
+/* MCT corporate system for preparation pages */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+:root{--bg:#f7f7f4;--panel:#fff;--line:#d8d9dc;--muted:#676a72;--text:#111216}
+body{background:var(--bg);font-family:Inter,"Noto Sans JP","Helvetica Neue",sans-serif;letter-spacing:-.01em}
+.nav{padding:22px 0;border-bottom:1px solid var(--line)}
+.brand{letter-spacing:.1em}.mark{border-radius:2px;background:#111216;color:#fff;border-color:#111216}.nav-link{color:#676a72;font-size:11px;font-weight:700}
+main{padding:76px 0 100px}.eyebrow{color:#676a72;font-size:9px;letter-spacing:.16em}.eyebrow:before{background:#111216}
+h1{font-weight:700;letter-spacing:-.085em}.lead{font-weight:600;letter-spacing:-.035em}
+.copy{font-size:13px;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:2px;box-shadow:none}
+.btn{border-radius:2px;border-color:#111216;background:#fff;color:#111216}.btn.primary{background:#111216;color:#fff;border-color:#111216}
+.status{border-color:var(--line)}.meta-row span:first-child{color:#888b92}
+footer{color:#676a72;border-color:var(--line)}
+@media(max-width:760px){main{padding:52px 0 64px}}
 </style>
 </head>
 <body>
