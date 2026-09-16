@@ -69,7 +69,37 @@ h1{font-size:clamp(64px,22vw,110px);margin:22px 0 28px}
 footer{width:min(100% - 28px,1180px);flex-direction:column}
 }
 
-/* MCT corporate system for preparation pages */
+/* Clarity-first preparation pages */
+:root{--accent:${accent};--accent-soft:${accentSoft};--bg:#fff;--panel:#f7f8fa;--line:#dfe1e5;--muted:#626771;--text:#16181d}
+*{box-sizing:border-box}
+html{background:#fff}
+body{margin:0;min-height:100vh;color:var(--text);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;background:#fff;line-height:1.8;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.page{min-height:100vh;display:flex;flex-direction:column}
+.nav{width:min(1180px,calc(100% - 40px));margin:auto;padding:18px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.04em}
+.mark{width:30px;height:30px;border:1px solid #16181d;border-radius:6px;display:grid;place-items:center;background:#16181d;color:#fff;font-size:10px}
+.nav-link{text-decoration:none;color:#626771;font-size:11px;font-weight:600}
+main{width:min(1180px,calc(100% - 40px));margin:auto;flex:1;display:grid;align-items:center;padding:72px 0 92px}
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:clamp(40px,7vw,88px);align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#626771;font-size:9px;font-weight:700;letter-spacing:.13em}
+.eyebrow:before{content:"";width:22px;height:2px;background:#16181d}
+h1{font-size:clamp(56px,9vw,108px);line-height:1;letter-spacing:-.075em;margin:20px 0 24px;font-weight:700}
+.lead{font-size:clamp(19px,2.1vw,27px);line-height:1.6;letter-spacing:-.025em;max-width:700px;margin:0;font-weight:600}
+.copy{color:var(--muted);line-height:1.8;max-width:650px;margin:16px 0 0;font-size:13px}
+.panel{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:24px;box-shadow:none}
+.status{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.status strong{font-size:11px;letter-spacing:.08em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.meta{display:grid;gap:14px;padding-top:18px}
+.meta-row{display:flex;justify-content:space-between;gap:20px;font-size:12px}
+.meta-row span:first-child{color:#858991}.meta-row span:last-child{text-align:right}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 17px;border-radius:6px;border:1px solid #16181d;background:#fff;color:#16181d;text-decoration:none;font-size:11px;font-weight:700;transition:.18s ease}
+.btn.primary{background:#16181d;color:#fff;border-color:#16181d}.btn:hover{transform:translateY(-1px)}
+footer{width:min(1180px,calc(100% - 40px));margin:auto;padding:20px 0 26px;color:#777b83;font-size:10px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
+footer a{text-decoration:none;color:inherit}
+@media(max-width:760px){.nav{width:min(100% - 28px,1180px);padding:16px 0}main{width:min(100% - 28px,1180px);padding:54px 0 68px}.hero{grid-template-columns:1fr;gap:36px}h1{font-size:clamp(52px,16vw,78px);margin:18px 0 22px}.lead{font-size:18px}.panel{padding:20px}footer{width:min(100% - 28px,1180px);flex-direction:column}}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
 :root{--bg:#f7f7f4;--panel:#fff;--line:#d8d9dc;--muted:#676a72;--text:#111216}
 body{background:var(--bg);font-family:Inter,"Noto Sans JP","Helvetica Neue",sans-serif;letter-spacing:-.01em}
