@@ -85,8 +85,8 @@ function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function readKvList(namespace) {
-  const list = await namespace.list();
+async function readKvList(namespace, prefix, limit = 100) {
+  const list = await namespace.list({ prefix, limit });
   const records = await Promise.all(
     list.keys.map(async (key) => {
       const data = await namespace.get(key.name);
@@ -99,6 +99,22 @@ async function readKvList(namespace) {
     })
   );
   return records.filter((record) => record !== null);
+}
+
+const RATE_LIMIT_WINDOW_SECONDS = 600;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+
+async function enforceRateLimit(request, namespace, bucket) {
+  if (!namespace) return false;
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const window = Math.floor(Date.now() / (RATE_LIMIT_WINDOW_SECONDS * 1000));
+  const key = `__rl:${bucket}:${window}:${ip.slice(0, 100)}`;
+  const current = Number.parseInt((await namespace.get(key)) || "0", 10);
+  if (current >= RATE_LIMIT_MAX_REQUESTS) return true;
+  await namespace.put(key, String(current + 1), {
+    expirationTtl: RATE_LIMIT_WINDOW_SECONDS + 60,
+  });
+  return false;
 }
 
 // Proposal notifications are emailed to the Mifron operations inbox.
@@ -170,11 +186,15 @@ async function handleQuestsApi(request, env) {
   if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.QUESTS));
+    return jsonResponse(await readKvList(env.QUESTS, "quest_", 100));
   }
 
   if (request.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  if (await enforceRateLimit(request, env.QUESTS, "quests")) {
+    return jsonResponse({ error: "Too many requests. Try again later." }, 429);
   }
 
   let body;
@@ -258,11 +278,15 @@ async function handleProposalsApi(request, env) {
   if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.PROPOSALS));
+    return jsonResponse(await readKvList(env.PROPOSALS, "prop_", 100));
   }
 
   if (request.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  if (await enforceRateLimit(request, env.PROPOSALS, "proposals")) {
+    return jsonResponse({ error: "Too many requests. Try again later." }, 429);
   }
 
   let body;

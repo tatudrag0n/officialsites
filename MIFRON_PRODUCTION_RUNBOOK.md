@@ -9,13 +9,13 @@
 3. 「管理者が保護ルールをバイパスできる」を無効にする。
 4. `production` のデプロイブランチ制限が `main` のみであることを確認する。
 5. `CLOUDFLARE_API_TOKEN` だけをGitHubの `production` 環境Secretへ登録する。アカウントIDは非秘密のRepository Variable `CLOUDFLARE_ACCOUNT_ID` として登録する。値をチャットやリポジトリへ貼り付けない。
-6. Repository variable `MIFRON_PAGES_PROJECT=mct-mifron` を確認する（既存の本番Pagesプロジェクト）。
-7. `Deploy Mifron Pages` を手動実行し、確認欄へ `DEPLOY_MIFRON` を入力する。
-8. `production` の承認を行い、最後のCanary確認が成功するまで完了扱いにしない。
+6. `wrangler.toml` が現行のWorkers Static Assets構成（Worker名 `officialsites`、`main = "src/index.js"`）と一致することを確認する。
+7. `Deploy officialsites Worker` Workflowを確認し、`production` 環境承認後にデプロイする。現在のWorkflowは `main` へのpushでも実行されるため、production環境の保護ルールを必ず確認する。
+8. `mifron.mct-official.com`、`crewmate.mct-official.com`、`texroot.mct-official.com` の3ホストをCanary確認し、すべて成功するまで完了扱いにしない。
 
-Workflowは手動実行、確認語、環境承認、`main` 制限をすべて要求します。失敗した場合は再実行前にログとCloudflare側の状態を確認します。
+現行の公開基盤はCloudflare PagesではなくWorkers Static Assetsです。`MIFRON_PAGES_PROJECT` の設定やPages専用のデプロイ手順は使用しません。Workflow失敗時は再実行前にログとCloudflare側の状態を確認します。
 
-現在のリポジトリは所有者本人のみが共同編集者のため、`main` の必須PRレビューを有効にするとマージ不能になる可能性があります。また、GitHub FreeではPrivateリポジトリに必要なブランチ保護／Ruleset機能を利用できないため、Privateのままレビュー必須化する場合は、GitHub Pro / Team / Enterprise等の対象プランと信頼できるレビュアーを先に用意してください。準備後は `main` に必須PRレビュー1件・管理者にも適用・強制push禁止・削除禁止を設定してください。設定完了までは、手動公開Workflowと `production` 承認を必須の公開ゲートとして扱います。
+現在のリポジトリは所有者本人のみが共同編集者のため、`main` の必須PRレビューを有効にするとマージ不能になる可能性があります。また、GitHub FreeではPrivateリポジトリに必要なブランチ保護／Ruleset機能を利用できない場合があるため、Privateのままレビュー必須化する場合は、利用中のGitHubプランで利用可能な保護機能と信頼できるレビュアーを先に確認してください。準備後は `main` に必須PRレビュー1件・管理者にも適用・強制push禁止・削除禁止を設定してください。設定完了までは、手動公開Workflowと `production` 承認を必須の公開ゲートとして扱います。
 
 ## 支援導線の有効化
 
