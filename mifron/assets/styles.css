@@ -1,15 +1,14 @@
 @charset "UTF-8";
 
+/* Mifron uses the same visual system as MCT / CREWMATE / TEXROOT. */
+@import url("../../assets/styles.css");
+
 /* ============================================================
-   Mifron サブサイト スタイル
-   ルート /assets/styles.css（共通デザインシステム）の上に重ねる
-   Mifron固有のスタイルのみを定義する。
-   - スクリーンショット・ゲーム画像には依存しない
-   - 日本語読みやすさを最優先（Line-height 1.8、フォント16px以上の入力欄）
-   - モバイル前提のレイアウト
+   Mifron サブサイト固有スタイル
+   共通デザインはルート /assets/styles.css を使用し、
+   Mifron固有の情報・操作だけをここで調整する。
    ============================================================ */
 
-/* ---------- ブランドヘッダー ---------- */
 .brand .brand-icon {
   height: 30px;
   width: auto;
@@ -19,7 +18,6 @@
   border-radius: 0;
 }
 
-/* ---------- ヒーロー接続カード ---------- */
 .join-address {
   margin-top: 16px;
   padding: 12px 14px;
@@ -36,7 +34,6 @@
 }
 .hero-status .copy-button { margin-top: 12px; width: 100%; }
 
-/* ---------- 必須ラベル ---------- */
 .req {
   display: inline-block;
   margin-left: 6px;
@@ -49,27 +46,18 @@
   vertical-align: middle;
 }
 
-/* ---------- 提案ページ ---------- */
 .proposal-form-wrap { max-width: 760px; }
 .mc-propose-intro h2 { font-size: 20px; margin-bottom: 6px; }
 .mc-propose-intro p { font-size: 13.5px; color: var(--muted); margin-bottom: 16px; }
 
-/* ---------- クエスト詳細 / 提案共通 ---------- */
 .quest-template-icon { font-size: 20px; line-height: 1; }
 .quest-detail-slot { max-width: 760px; }
 .detail-footer-note { margin-top: 20px; font-size: 13px; }
 .detail-footer-note a { color: var(--mifron); }
-
-/* ---------- 見出しアクセント ---------- */
 .accent-feature { border-top: 4px solid var(--mifron); }
-
-/* ---------- 免責事項 ---------- */
 .disclaimer { margin-top: 26px; font-size: 11.5px; line-height: 1.8; color: #77797f; }
-
-/* ---------- ヒーロー内テキスト列 ---------- */
 .hero-copy { min-width: 0; }
 
-/* ---------- サブページ（提案・詳細）のヘッダー/ヒーロー ---------- */
 .sub-header { border-bottom: 1px solid var(--line); background: var(--card); }
 .sub-hero {
   padding: clamp(32px, 7vw, 64px) 0 clamp(24px, 5vw, 40px);
@@ -77,8 +65,6 @@
 }
 .sub-hero h1 { margin: 10px 0 12px; }
 
-/* ---------- 出現アニメーション（JS有効時のみ） ----------
-   .visible が付かない（JS無効）環境でも必ず表示される。 */
 .reveal { opacity: 1; }
 .reveal.visible { animation: reveal-in .5s ease both; }
 @keyframes reveal-in {
@@ -89,8 +75,5 @@
   .reveal.visible { animation: none; }
 }
 
-/* ---------- クエストページの土台 ---------- */
 .quest-page { background: var(--paper); }
-
-/* ---------- 404ページ ---------- */
 .simple-hero { min-height: 100vh; }
