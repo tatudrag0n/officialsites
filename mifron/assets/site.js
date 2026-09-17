@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded',()=>{
+  const ui=document.createElement('link');
+  ui.rel='stylesheet';
+  ui.href='assets/ui-fix.css';
+  document.head.appendChild(ui);
+
   const menu=document.querySelector('.menu');
   const nav=document.querySelector('.nav-links');
   if(menu&&nav){
