@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
-  <title>MCT Official | 創作と遊びに、技術で新しい入口を</title>
-  <meta name="description" content="MCT公式サイト。Mifronと、準備中のCREWMATE・TEXROOTを展開する総合クリエイティブ・テックブランド。">
+  <title>MCT Official | 創作と遊びに、技術で入口を。</title>
+  <meta name="description" content="MCT公式サイト。Minecraftサーバー「Mifron」を運営し、クリエイターコミュニティ「CREWMATE」、テックブランド「TEXROOT」を展開する総合クリエイティブ・テックグループ。">
   <link rel="icon" href="assets/mifron-favicon.png">
   <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/config.js" defer></script>
@@ -13,14 +13,123 @@
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
-  <header class="site-header"><div class="shell nav"><a class="brand" href="/"><img src="assets/mct-wordmark-transparent.png" alt="MCT"><span class="brand-text">MCT<small>Minerva Creative Technologies</small></span></a><nav class="nav-links" aria-label="主要ナビゲーション"><a href="/" aria-current="page">MCT</a><a href="https://mifron.mct-official.com/">Mifron</a><a href="https://crewmate.mct-official.com/">CREWMATE</a><a href="https://texroot.mct-official.com/">TEXROOT</a></nav><button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button></div></header>
+  <header class="site-header">
+    <div class="shell nav">
+      <a class="brand" href="/" aria-current="page"><img src="assets/mct-wordmark-transparent.png" alt="MCT"><span class="brand-text">MCT<small>Minerva Creative Technologies</small></span></a>
+      <nav class="nav-links" aria-label="ブランド">
+        <a href="https://mifron.mct-official.com/">Mifron</a>
+        <a href="https://crewmate.mct-official.com/">CREWMATE</a>
+        <a href="https://texroot.mct-official.com/">TEXROOT</a>
+      </nav>
+      <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
   <main id="main">
-    <section class="hero"><div class="shell hero-grid"><div class="reveal"><span class="kicker">MCT — Minerva Creative Technologies</span><span class="site-role">クリエイティブ・テクノロジー</span><h1>創作と遊びに、<br><em>技術で入口を。</em></h1><p class="lead">ICTを、創作と遊びの入口へ。<br>Mifronを展開し、CREWMATE・TEXROOTを開発しています。</p><div class="hero-actions"><a class="btn primary" href="#brands">ブランドを見る →</a><a class="btn" href="#mission">MCTについて →</a></div></div><div class="hero-card reveal"><div class="hero-index">MCT / 2026</div><img src="assets/mct-wordmark-transparent.png" alt="MCTロゴ"><div class="caption"><span class="eyebrow">Minerva Creative Technologies</span><strong>創作のための技術</strong></div></div></div></section>
-    <div class="angle-band"></div>
-    <section id="mission" class="section"><div class="shell mission-grid"><div class="manifesto reveal"><span>理念</span><br>全ての人にICTを。<br><mark>創作をもっと楽しく、もっと自由に。</mark><br>遊びを通じて、人と世界をより良く。</div><div class="fact-grid reveal"><div class="fact"><b>3</b><span>ブランド</span></div><div class="fact"><b>1</b><span>稼働プロダクト</span></div><div class="fact"><b>2</b><span>準備中プロジェクト</span></div></div></div></section>
-    <section id="brands" class="section alt"><div class="shell"><div class="section-head reveal"><div><span class="eyebrow">Brands</span><h2>3つのブランド。<br>1つの思想。</h2></div><p>ゲーム、クリエイター、テクノロジー。<br>領域ごとにブランドを分け、同じ思想で育てます。</p></div><div class="brand-grid"><a class="brand-card mifron reveal" href="https://mifron.mct-official.com/"><span class="code">01 / Minecraft Server</span><h3>Mifron</h3><p>Discord連携、MP、提案・投票、経済、クエスト、解放式ショップ、FFAを統合した「みんなでつくる」Minecraftサーバー。</p><span class="go">Mifron公式サイトへ →</span></a><a class="brand-card crewmate reveal" href="https://crewmate.mct-official.com/"><span class="code">02 / Creator Community / 準備中</span><h3>CREWMATE</h3><p>クリエイター同士の交流と制作活動を支える構想。現在、公開に向けて準備中です。</p><span class="go">準備中 / 見る →</span></a><a class="brand-card texroot reveal" href="https://texroot.mct-official.com/"><span class="code">03 / PC & Technology / 準備中</span><h3>TEXROOT</h3><p>PCや電化製品を扱うテックブランド構想。現在、公開に向けて準備中です。</p><span class="go">準備中 / 見る →</span></a></div></div></section>
-    
+    <!-- 視線の起点: 左上 -->
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="kicker">MCT — Minerva Creative Technologies</p>
+          <h1>創作と遊びに、<br><em>技術で入口を。</em></h1>
+          <p class="lead">ゲーム、クリエイター、テクノロジー。<br>3つのブランドで、参加したくなる入口をつくります。</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#brands">ブランドを見る</a>
+            <a class="btn" href="https://mifron.mct-official.com/">Mifronで遊ぶ</a>
+          </div>
+        </div>
+        <!-- 視線の着地点: 右下に稼働状況 -->
+        <aside class="hero-status" aria-label="現在の状況">
+          <p class="status-line"><span class="dot dot-live" aria-hidden="true"></span>稼働中</p>
+          <dl class="status-list">
+            <div><dt>Mifron</dt><dd>Minecraftサーバー / 公開中</dd></div>
+            <div><dt>CREWMATE</dt><dd>準備中</dd></div>
+            <div><dt>TEXROOT</dt><dd>準備中</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section id="brands" class="section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">事業</p>
+            <h2>3つのブランド</h2>
+          </div>
+          <p>領域ごとにブランドを分け、同じ思想で育てています。</p>
+        </div>
+        <div class="brand-grid">
+          <a class="brand-card mifron" href="https://mifron.mct-official.com/">
+            <div class="brand-card-head">
+              <span class="brand-no">01</span>
+              <span class="brand-tag">Minecraftサーバー</span>
+            </div>
+            <h3>Mifron</h3>
+            <p>採掘・建築・取引・対戦をひとつの経済「MP」でつなぐ、提案と投票でみんなでつくるサーバー。Java / Bedrock対応。</p>
+            <span class="go">Mifron公式サイトへ<span aria-hidden="true">→</span></span>
+          </a>
+          <a class="brand-card crewmate" href="https://crewmate.mct-official.com/">
+            <div class="brand-card-head">
+              <span class="brand-no">02</span>
+              <span class="brand-tag">クリエイターコミュニティ</span>
+            </div>
+            <h3>CREWMATE</h3>
+            <p>クリエイター同士の交流と制作活動を支える構想。作品とプロジェクトが動き出す場所を目指して準備中です。</p>
+            <span class="go">詳細を見る<span aria-hidden="true">→</span></span>
+          </a>
+          <a class="brand-card texroot" href="https://texroot.mct-official.com/">
+            <div class="brand-card-head">
+              <span class="brand-no">03</span>
+              <span class="brand-tag">PC &amp; テクノロジー</span>
+            </div>
+            <h3>TEXROOT</h3>
+            <p>PCや電化製品を扱うテックブランド構想。技術を試し、プロダクトへ変える場所を目指して準備中です。</p>
+            <span class="go">詳細を見る<span aria-hidden="true">→</span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="mission">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">理念</p>
+            <h2>全ての人にICTを。</h2>
+          </div>
+          <p>創作をもっと楽しく、もっと自由に。遊びを通じて、人と世界をより良くすることを目的とします。</p>
+        </div>
+        <div class="value-grid">
+          <div class="value-card">
+            <h3>遊びの入口</h3>
+            <p>Mifronでは、ゲーム内の案内から提案・投票まで、参加したその日から動ける導線を整えています。</p>
+          </div>
+          <div class="value-card">
+            <h3>つくる循環</h3>
+            <p>プレイヤーの提案が仕様になり、実装が次の遊びを生む。この循環を、サーバー運営から始めています。</p>
+          </div>
+          <div class="value-card">
+            <h3>技術で支える</h3>
+            <p>インフラ・ツール・データ設計まで自前で構築し、体験の質を技術で下支えします。</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer class="footer"><div class="shell footer-grid"><div><img src="assets/mct-wordmark-transparent.png" alt="MCT"><p class="footer-company">MCT — Minerva Creative Technologies</p><p class="legal">© 2026 MCT. All rights reserved.</p></div><div class="footer-links"><a href="/">MCT</a><a href="https://mifron.mct-official.com/">Mifron</a><a href="https://crewmate.mct-official.com/">CREWMATE（準備中）</a><a href="https://texroot.mct-official.com/">TEXROOT（準備中）</a></div></div></footer>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <div class="footer-brand">
+        <img src="assets/mct-wordmark-transparent.png" alt="MCT">
+        <p class="legal">© 2026 MCT. All rights reserved.</p>
+      </div>
+      <nav class="footer-links" aria-label="フッター">
+        <a href="https://mifron.mct-official.com/">Mifron</a>
+        <a href="https://crewmate.mct-official.com/">CREWMATE（準備中）</a>
+        <a href="https://texroot.mct-official.com/">TEXROOT（準備中）</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>

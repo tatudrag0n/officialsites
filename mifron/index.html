@@ -2,16 +2,16 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="mifron-site" content="mifron-standalone-v1">
-  <meta name="theme-color" content="#fffef7">
-  <title>Mifron | 遊び、経済、対戦をつなぐMinecraftサーバー</title>
-  <meta name="description" content="Mifron公式ページ。FFA、Survival、クエスト、ショップ、イベント、プレイヤー参加型の提案・投票が楽しめるJava / Bedrock対応Minecraftサーバー。">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="mifron-site" content="mifron-standalone-v2">
+  <meta name="theme-color" content="#fafaf7">
+  <title>Mifron | みんなでつくるMinecraftサーバー</title>
+  <meta name="description" content="Mifron公式サイト。Java / Bedrock対応のMinecraftサーバー。採掘・建築・取引・FFA・クエストをひとつの経済「MP」でつなぎ、提案と投票でサーバーをみんなでつくります。">
   <link rel="canonical" href="https://mifron.mct-official.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Mifron">
   <meta property="og:title" content="Mifron | みんなでつくるMinecraftサーバー">
-  <meta property="og:description" content="FFA、Survival、イベント、提案・投票を楽しめるJava / Bedrock対応Minecraftサーバー。">
+  <meta property="og:description" content="採掘・建築・取引・FFA・クエストをひとつの経済「MP」でつなぐ、Java / Bedrock対応Minecraftサーバー。">
   <meta property="og:url" content="https://mifron.mct-official.com/">
   <meta property="og:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.png">
   <meta name="twitter:card" content="summary">
@@ -19,433 +19,324 @@
   <meta name="twitter:description" content="遊び方を選び、提案と投票で次の変化をつくるMinecraftサーバー。">
   <meta name="twitter:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.png">
   <link rel="icon" href="assets/mifron-favicon.png">
-  <link rel="stylesheet" href="assets/styles.css?v=20260916-corporate-flow">
+  <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/config.js" defer></script>
   <script src="assets/site.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">本文へ移動</a>
-  <header class="site-header sub-header">
+  <header class="site-header">
     <div class="shell nav">
       <a class="brand" href="https://mct-official.com/">
         <img src="assets/mct-wordmark-transparent.png" alt="MCT">
-        <span class="brand-text">MCT<small>MINERVA CREATIVE TECHNOLOGIES</small></span>
+        <span class="brand-text">MCT<small>Minerva Creative Technologies</small></span>
       </a>
-      <nav class="nav-links" aria-label="主要ナビゲーション">
+      <nav class="nav-links" id="nav-panel" aria-label="主要ナビゲーション">
         <a href="https://mct-official.com/">MCT</a>
         <a href="./" aria-current="page">Mifron</a>
         <a href="https://crewmate.mct-official.com/">CREWMATE</a>
         <a href="https://texroot.mct-official.com/">TEXROOT</a>
-        <a href="#join">参加方法</a>
-        <a href="#support">運営を応援</a>
         <a href="./tutorial.html">チュートリアル</a>
         <a href="./quests/">クエスト</a>
         <a href="./proposals/">提案</a>
         <a class="hot" data-discord href="#">Discord</a>
       </nav>
-      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
     </div>
   </header>
 
   <main id="main">
-    <section class="sub-hero">
-      <div class="shell sub-hero-grid">
-        <div class="reveal">
-          <span class="kicker">MCT — MINERVA CREATIVE TECHNOLOGIES</span><span class="hero-product">MIFRON / MINECRAFT SERVER</span>
+    <!-- 左上: 接続 → 右下: Discord -->
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="kicker">Minecraftサーバー</p>
           <h1>Mifron</h1>
-          <p class="lead">採掘・建築・取引・クエスト・対戦。ひとつの経済でつながる、MCTのMinecraftサーバー。</p>
+          <p class="lead">採掘、建築、取引、対戦。ひとつの経済「MP」でつながるサーバー。遊び方は自分で選び、次の変化はみんなで決めます。</p>
           <div class="hero-actions">
             <a class="btn discord" data-discord href="#">Discordに参加</a>
-            <a class="btn" href="#systems">システム</a>
-            <a class="btn" href="./tutorial.html">遊び方</a>
+            <a class="btn" href="#systems">システムを見る</a>
           </div>
         </div>
-        <div class="icon-stage reveal">
-          <img src="assets/mifron-icon.webp" alt="Mifronアイコン">
-        </div>
+        <aside class="hero-status" aria-label="接続情報">
+          <p class="status-line"><span class="dot dot-live" aria-hidden="true"></span>参加方法</p>
+          <dl class="status-list">
+            <div><dt>Java / Bedrock</dt><dd>同じアドレス</dd></div>
+            <div><dt>Bedrock版</dt><dd>ポート <strong data-join-value="port">19132</strong></dd></div>
+            <div><dt>対応</dt><dd>Geyser連携</dd></div>
+          </dl>
+          <p class="join-address" aria-label="サーバーアドレス"><strong data-join-value="java">play.mct-official.com</strong></p>
+          <button class="copy-button" type="button" data-copy-join="java">アドレスをコピー</button>
+        </aside>
       </div>
     </section>
 
-    <section class="section join-section" id="join">
+    <!-- 参加の流れ -->
+    <section class="section alt" id="join">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Start</span><h2>参加する。</h2></div>
-          <p>Java / Bedrock対応。接続後はロビーから遊び方を選択。認証・イベントはDiscordへ。</p>
-        </div>
-        <div class="join-grid">
-          <article class="join-card join-card-server reveal"><span class="tag">Java / Bedrock 共通</span><h3 data-join-value="java">play.mct-official.com</h3><p>どちらのエディションでも同じアドレスです。Bedrock版のみポート <strong data-join-value="port">19132</strong> を指定してください。</p><button class="copy-button" type="button" data-copy-join="java">アドレスをコピー</button></article>
-          <article class="join-card reveal"><span class="tag">Discord</span><h3>参加案内・投票・イベント</h3><p>認証、提案、投票、開催中のイベントはDiscordで確認できます。</p><a class="btn discord" data-discord href="#">Discordに参加</a></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section community-discord" id="discord-community">
-      <div class="shell community-discord-grid">
-        <div class="community-discord-copy reveal">
-          <span class="eyebrow">Community</span>
-          <h2>Discord。</h2>
-          <p>認証・イベント・提案・投票・更新情報を集約。</p>
-          <div class="hero-actions">
-            <a class="btn primary" data-discord href="#">Discordに参加</a>
-            <a class="btn" href="./proposals/">提案を見る</a>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">はじめての方</p>
+            <h2>3ステップで参加</h2>
           </div>
+          <p>認証とイベントの受付はDiscordで行います。</p>
         </div>
-        <div class="discord-widget-wrap reveal">
-          <iframe src="https://discord.com/widget?id=1511014329342754907&amp;theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" title="Mifron Discordサーバーウィジェット"></iframe>
+        <div class="feature-grid">
+          <article class="feature"><span class="tag">STEP 1</span><h3>Discordに参加</h3><p>招待リンクから参加します。参加認証、イベント告知、提案と投票はすべてDiscordで行われます。</p></article>
+          <article class="feature"><span class="tag">STEP 2</span><h3>6桁コードで認証</h3><p>初回接続時のキック画面に6桁コードが表示されます。Discordの認証チャンネルへ数字だけ送信してください。</p></article>
+          <article class="feature"><span class="tag">STEP 3</span><h3>再接続して遊ぶ</h3><p>認証完了後、もう一度接続するとそのまま遊べます。ロビーからテレポーターで各ワールドへ移動します。</p></article>
         </div>
       </div>
     </section>
 
-    <div class="stat-ribbon">
-      <div><b>MP</b><span>メインゲーム内通貨</span></div>
-      <div><b>6ワールド</b><span>ポータルUIで移動</span></div>
-      <div><b>18キット</b><span>現行FFAラインナップ</span></div>
+    <!-- 統計 -->
+    <div class="stat-ribbon" aria-label="サーバー概要">
+      <div><b>6エリア</b><span>テレポーターで移動</span></div>
+      <div><b>18キット</b><span>FFAラインナップ</span></div>
+      <div><b>59種</b><span>クエスト</span></div>
       <div><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
     </div>
 
-    <section class="section worlds-showcase">
+    <!-- ワールド -->
+    <section class="section" id="worlds">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Worlds</span><h2>6つの遊び場。</h2></div>
-          <p>役割を分け、ポータルで切り替える。</p>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">ワールド</p>
+            <h2>遊び場を選ぶ</h2>
+          </div>
+          <p>テレポーターを右クリックすると移動先が目の前に表示され、アイテムを左クリックすると移動できます。迷ったら <strong>/mf list</strong> で一覧、<strong>/mf tp &lt;ワールド名&gt;</strong> で移動。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature reveal" data-num="01">
-            <span class="tag">Hub</span>
-            <h3>メインロビー</h3>
-            <p>worldを拠点に、コンパスのテレポーターUIからBuild、Market、Athletic、Minigame、Survivalへ移動します。</p>
-          </article>
-          <article class="feature reveal" data-num="02">
-            <span class="tag">Survival</span>
-            <h3>サバイバル</h3>
-            <p>survivalワールドではTNTと溶岩を使えません。自然再生成は許可リストに登録されたチャンクだけが対象で、許可されていないチャンクは再生成されません。</p>
-          </article>
-          <article class="feature reveal" data-num="03">
-            <span class="tag">Build / Market</span>
-            <h3>建築と市場</h3>
-            <p>buildはプレイヤーごとの専用建築ワールド、marketは売買のための専用ワールド。素材を集める場所と、経済を動かす場所を分けて使えます。</p>
-          </article>
-          <article class="feature reveal" data-num="04">
-            <span class="tag">Athletic / Minigame</span>
-            <h3>固定昼の遊戯ワールド</h3>
-            <p>Market・Athletic・Minigameは固定昼のルール。アスレチック、複数のミニゲーム、FFAを同じサーバー内で遊べます。</p>
-          </article>
-          <article class="feature reveal" data-num="05">
-            <span class="tag">Inventory</span>
-            <h3>インベントリを分離</h3>
-            <p>Hub、Survival、FFAはインベントリグループを分離。装備、オフハンド、経験値、体力、満腹度、エンダーチェストも行き先ごとに管理します。</p>
-          </article>
-          <article class="feature reveal" data-num="06">
-            <span class="tag">Getting Started</span>
-            <h3>迷ったらチュートリアル</h3>
-            <p>/tutorialで操作説明を再表示。/mf listでワールド一覧、/mf tp &lt;worldKey&gt;で移動できます。</p>
-          </article>
+          <article class="feature"><span class="tag">Hub</span><h3>ロビー</h3><p>拠点となるワールド。テレポーターから各ワールドへ移動します。</p></article>
+          <article class="feature"><span class="tag">Survival</span><h3>サバイバル</h3><p>メインの生活ワールド。TNTと溶岩は使えません。OnlineShopはこのワールド限定です。</p></article>
+          <article class="feature"><span class="tag">Creative</span><h3>建築</h3><p>/mf build enter で入れるプレイヤーごとのフラットワールド。WorldEditが使え、完成した建築は提出して承認されるとSurvivalへ設置できます。</p></article>
+          <article class="feature"><span class="tag">Athletic</span><h3>アスレチック</h3><p>計測付きコース。クリア、自己ベスト、歴代1位、月間ランキングにMP報酬が設定されています。</p></article>
+          <article class="feature"><span class="tag">Minigame</span><h3>ミニゲーム</h3><p>複数のミニゲームを遊べるワールド。一部のミニゲームはMPの納品によって解放されます。</p></article>
+          <article class="feature"><span class="tag">FFA</span><h3>対戦</h3><p>18キットのPvPモード。キルでMPを獲得し、戦績は /mf ffa stats で確認できます。</p></article>
+        </div>
+        <div class="notice">
+          <strong>ワールドごとに持ち物が分かれます</strong>
+          <p>Survival系・通常系でインベントリ、装備、経験値、満腹度が別管理です。全ワールドでKeepInventoryが有効ですが、FFAは除きます。</p>
         </div>
       </div>
     </section>
 
-    <section id="systems" class="section dark economy-showcase">
+    <!-- 経済 -->
+    <section class="section dark" id="systems">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Economy</span><h2>MPでつながる。</h2></div>
-          <p>クエスト・取引・FFAの成果を、ショップとオークションへ。</p>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">経済</p>
+            <h2>MPでつながる</h2>
+          </div>
+          <p>討伐、進捗、クエスト、取引、アスレ、ミニゲームなどで増減します。残高は0〜20億MP、FFA以外で死亡すると所持MPの50%を失います（端数切り捨て）。</p>
         </div>
         <div class="systems">
-          <article class="system-panel reveal featured-system">
+          <article class="system-panel featured-system">
             <span class="tag">Wallet</span>
-            <h3>ウォレットの使い方</h3>
-            <p>手に持ったウォレットを左クリックすると所持MPを確認できます。棚ショップ・スロットではウォレットを持って右クリックして使います。ウォレット自体にアイテムは収納できません。</p>
+            <h3>ウォレット</h3>
+            <p>初回参加時に配布される専用アイテムです。収納には使えません。</p>
             <ul>
-              <li>残高確認は左クリック</li>
-              <li>棚ショップの購入はウォレットを持って右クリック</li>
-              <li>FFA以外で死亡すると所持MPの50%を失う</li>
+              <li>左クリック: MP残高を確認</li>
+              <li>棚ショップ・スロット・オークションで持って右クリック: 使用</li>
+              <li>送金は /mf pay &lt;プレイヤー&gt; &lt;金額&gt;</li>
             </ul>
           </article>
-          <article class="system-panel reveal">
+          <article class="system-panel">
             <span class="tag">Shelf Shop</span>
             <h3>棚ショップ</h3>
-            <p>棚の商品は1個ずつ売買します。ウォレットを持って右クリックすると購入、販売したい商品を手に持って右クリックすると1個を売却できます。</p>
+            <p>棚の3枠に並ぶアイテムは商品の見本です。同じ素材の在庫は全棚で共有され、プレイヤーの売却で増え、購入で減ります。</p>
             <ul>
-              <li>在庫があるときだけ購入可能</li>
-              <li>プレイヤーが売却すると共有在庫に1個追加</li>
-              <li>全ての棚で同じ商品在庫を共有</li>
+              <li>ウォレットを持って右クリック: 購入</li>
+              <li>見本と同じアイテムを持って右クリック: 1個売却</li>
+              <li>Mifron専用アイテムとワンドは売却不可</li>
             </ul>
           </article>
-          <article class="system-panel reveal">
+          <article class="system-panel">
             <span class="tag">Barrel / Merchant</span>
-            <h3>樽ショップとMifron商人</h3>
-            <p>樽ショップの商品はすべて在庫1個。通常商品24枠と掘り出し物3枠が並び、商品を1つ買うたびに、その枠だけ別の商品へ入れ替わります。Mifron商人は4タイプで、品揃えが時間ごとに変化します。</p>
-            <ul>
-              <li>樽を右クリックして商品一覧を開く</li>
-              <li>表示商品をクリックしてMPで購入</li>
-              <li>買うまで同じ商品が残る</li>
-            </ul>
+            <h3>樽ショップと商人</h3>
+            <p>樽ショップは27商品（先頭3枠が掘り出し物）を並べ、買った枠だけ新しい商品に入れ替わります。商人はSurvivalの中央広場の外に生成され、クリックで1個、Shift+クリックで一括取引。</p>
           </article>
-          <article class="system-panel reveal">
+          <article class="system-panel">
             <span class="tag">Auction</span>
-            <h3>プレイヤー間オークション</h3>
-            <p>一点物や希少品はオークションで競りに出せます。額縁ショップは実装対象ではなく、額縁はオークション表示に使う仕様です。</p>
+            <h3>オークション</h3>
+            <p>額縁にアイテムを置いて出品します。入札MPは即時に預かり、最高額を更新されると自動で返金。終了後、落札者と出品者へ自動配送されます。</p>
             <ul>
-              <li>出品手数料5%</li>
-              <li>通常入札100 MP、スニーク入札1,000 MP刻み</li>
+              <li>通常入札 +100 MP / スニーク入札 +1,000 MP</li>
+              <li>出品者は自分の商品へ入札できません</li>
+            </ul>
+          </article>
+          <article class="system-panel">
+            <span class="tag">Slot</span>
+            <h3>スロット</h3>
+            <p>賭け金を先払いし、棚の3列をそれぞれ右クリックして止めるスロットマシンです。</p>
+            <ul>
+              <li>賭け金: Easy 100 / Normal 1,000 / Hard 10,000 / Expert 100,000 MP</li>
+              <li>赤石3つで無料再抽選（最大8回）</li>
+              <li>ダイヤ当選で次の10回はジャックポットモード</li>
+            </ul>
+          </article>
+          <article class="system-panel">
+            <span class="tag">OnlineShop</span>
+            <h3>OnlineShop</h3>
+            <p>参加時に配布される専用アイテムから開ける、カタログ式の購入ショップです。建材・鉱石・戦闘・道具・食料などのカテゴリから購入できます。</p>
+            <ul>
+              <li>Survivalワールド限定</li>
+              <li>一部の商品には購入クールダウンあり</li>
             </ul>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="section" id="support">
+    <!-- 便利アイテム -->
+    <section class="section" id="items">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Support</span><h2>運営を支える。</h2></div>
-          <p>任意の支援。ゲーム内性能に影響しない特典のみ。</p>
-        </div>
-        <div class="systems">
-          <article class="system-panel reveal featured-system">
-            <span class="tag">Non Pay-to-Win</span>
-            <h3>支援特典の方針</h3>
-            <p>候補はDiscordのサポーターロール、プロフィールバッジ、装飾・コスメティックです。FFA、Survival、MP、ショップの有利不利は変えません。</p>
-            <ul>
-              <li>無料プレイヤーも主要コンテンツを利用可能</li>
-              <li>ゲーム内性能・経済倍率・戦闘優位なし</li>
-              <li>返金・利用条件を公開してから販売開始</li>
-            </ul>
-          </article>
-          <article class="system-panel reveal">
-            <span class="tag">安全な支援</span>
-            <h3>支援ページは準備完了後に公開</h3>
-            <p data-support-pending>現在は支援受付を開始していません。決済事業者・価格・返金条件・特典内容を確認し、公開HTTPS決済ページを設定した後に購入導線を表示します。</p>
-            <p>購入履歴、返金・チャージバック時の特典停止、非P2Wの特典範囲を明示します。</p>
-            <a class="btn primary" data-support-link href="#" hidden>支援ページを開く</a>
-            <a class="btn" href="https://www.minecraft.net/usage-guidelines" target="_blank" rel="noopener noreferrer">利用ガイドライン</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Progression</span><h2>毎日を、成長へ。</h2></div>
-          <p>採掘・建築・農業・探索・取引・遊戯を進行へ接続。</p>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">アイテム</p>
+            <h2>持っているだけで便利</h2>
+          </div>
+          <p>参加時に自動で配布・更新されます。なくした場合は再接続で再配布されます。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature reveal" data-num="D">
-            <span class="tag">Daily</span>
-            <h3>デイリー</h3>
-            <p>10候補から5件を表示。採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りなどから毎日の目標が選ばれます。</p>
-          </article>
-          <article class="feature reveal" data-num="W">
-            <span class="tag">Weekly</span>
-            <h3>ウィークリー</h3>
-            <p>10候補から5件を表示。数千ブロックの採掘や建築、複数回の対戦・アスレなど、週単位で取り組む目標です。</p>
-          </article>
-          <article class="feature reveal" data-num="M">
-            <span class="tag">Monthly</span>
-            <h3>マンスリー</h3>
-            <p>固定目標で長期のプレイを支えます。進捗、取引、コミュニティ活動を積み上げ、MPや解放要素につなげます。</p>
-          </article>
-          <article class="feature reveal" data-num="S">
-            <span class="tag">Special</span>
-            <h3>スペシャル</h3>
-            <p>条件発生型の特別クエスト。探索や節目の達成を、通常のデイリーとは違う発見として楽しめます。</p>
-          </article>
-          <article class="feature reveal" data-num="!">
-            <span class="tag">Fair Play</span>
-            <h3>反復報酬を抑制</h3>
-            <p>ブロックや討伐の短時間反復、AFK、二重カウントを抑える判定を組み込み、クエスト報酬の偏りを減らします。</p>
-          </article>
-          <article class="feature reveal" data-num="+">
-            <span class="tag">Progress</span>
-            <h3>実績と転生</h3>
-            <p>実績報酬、称号、ショップやFFAの解放を積み上げ、全進捗の達成後は転生へ。転生ボーナスには上限と圧縮率を設定しています。</p>
-          </article>
+          <article class="feature"><span class="tag">ウォレット</span><h3>MP残高を確認</h3><p>左クリックで残高表示。ショップやスロットでは持って右クリックで支払います。</p></article>
+          <article class="feature"><span class="tag">ステータス</span><h3>自分の記録を見る</h3><p>右クリックでステータスUIを開きます。進捗、転生、称号、討伐数を確認できます。</p></article>
+          <article class="feature"><span class="tag">テレポーター</span><h3>ワールドへ移動</h3><p>右クリックで移動先を表示し、アイテムを左クリックで移動。エンドポータルフレームに使うと登録地点へ移動します。</p></article>
+          <article class="feature"><span class="tag">クエスト本</span><h3>クエストを確認</h3><p>右クリックでクエスト一覧を開きます。デイリー・ウィークリーの進捗もここから確認できます。</p></article>
+          <article class="feature"><span class="tag">OnlineShop</span><h3>カタログ購入</h3><p>右クリックで商品一覧を開きます。Survivalワールドでのみ使用できます。</p></article>
+          <article class="feature"><span class="tag">フレンド</span><h3>チャットと申請</h3><p>フレンドUIから申請の承認やフレンドチャットができます。/friend コマンドでも操作できます。</p></article>
         </div>
       </div>
     </section>
 
-    <section class="section quick-actions">
+    <!-- クエスト -->
+    <section class="section alt" id="quest">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Explore</span><h2>次の行動。</h2></div>
-          <p>クエストと提案へ、直接アクセス。</p>
-        </div>
-        <div class="quick-actions-grid">
-          <a class="quick-action-card reveal" href="./quests/"><span class="tag">QUEST</span><strong>クエストを見る</strong><span>現在のクエスト一覧と詳細を確認</span><span class="quick-arrow">→</span></a>
-          <a class="quick-action-card reveal" href="./proposals/"><span class="tag">PROPOSAL</span><strong>提案を見る</strong><span>提案を確認・新しいアイデアを投稿</span><span class="quick-arrow">→</span></a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section community-lab">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Play Guide</span><h2>遊ぶ前に。</h2></div>
-          <p>操作・ルール・認証を要点だけ掲載。</p>
-        </div>
-        <div class="co-create-grid">
-          <article class="co-create-card reveal">
-            <span class="tag">Teleport &amp; Status</span>
-            <h3>移動とステータス</h3>
-            <p>テレポーターを右クリックすると移動先が目の前に表示され、表示されたアイテムを左クリックすると移動できます。ステータスはネザースターを右クリックします。</p>
-          </article>
-          <article class="co-create-card reveal">
-            <span class="tag">World Rules</span>
-            <h3>ワールドごとに持ち物が分かれる</h3>
-            <p>Hub、Survival、FFAではインベントリや装備などが分離されています。FFAへ入る前に、必要なアイテムを持ち込める場所か確認してください。</p>
-          </article>
-          <article class="co-create-card reveal">
-            <span class="tag">Survival</span>
-            <h3>サバイバルの注意</h3>
-            <p>SurvivalではTNTと溶岩を使えません。FFA以外で死亡するとMPを50%失うため、貴重なアイテムだけでなく残高にも注意が必要です。</p>
-          </article>
-          <article class="co-create-card accent-card reveal">
-            <span class="tag">Discord Link</span>
-            <h3>6桁コードで参加認証</h3>
-            <p>初回接続時のキック画面に表示された6桁コードを、Discordの認証チャンネルへ数字だけ送信します。認証完了後、もう一度Mifronへ接続してください。参加案内やイベント情報もDiscordで確認できます。</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section ffa-showcase">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">FFA</span><h2>18キットで戦う。</h2></div>
-          <p>武器・能力・食料を使い分け、MPと戦績を積み上げる対戦モード。</p>
-        </div>
-        <figure class="kit-selector-preview reveal">
+        <div class="section-head">
           <div>
-            <span class="eyebrow">Kit Selection</span>
-            <h3>ここからキットを選ぶ。</h3>
-            <p>FFA入口のキット選択を操作すると、この一覧が開きます。使いたい役割を選ぶと、そのままFFAへ参加できます。</p>
+            <p class="eyebrow">クエスト</p>
+            <h2>毎日の目標が報酬になる</h2>
           </div>
-          <img src="assets/mifron-kit-select.png" alt="FFAキット選択画面">
-        </figure>
+          <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件固定表示、スペシャルは条件発生型です。反復・AFKの報酬は抑制されます。</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature"><span class="tag">Daily</span><h3>デイリー 5件</h3><p>採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りから毎日抽選。全達成で追加報酬。</p></article>
+          <article class="feature"><span class="tag">Weekly</span><h3>ウィークリー 5件</h3><p>数千ブロックの採掘・建築や連続対戦など、週単位の目標。全達成で追加報酬。</p></article>
+          <article class="feature"><span class="tag">Monthly</span><h3>マンスリー 9件</h3><p>月間採掘王、月間建築家など固定の長期目標。報酬は数千MP規模。</p></article>
+          <article class="feature"><span class="tag">Special</span><h3>スペシャル 29種</h3><p>初ドラゴン討伐、バベル到達、転生、全進捗挑戦など条件発生型の特別クエスト。最高報酬は50,000 MP。</p></article>
+          <article class="feature"><span class="tag">Bonus</span><h3>転生ボーナス</h3><p>全進捗達成後、転生でMP報酬にボーナス倍率が付きます。上限120%、圧縮率25%。</p></article>
+          <article class="feature accent-feature"><span class="tag">Quest Map</span><h3>クエストボードを見る</h3><p>全クエストをキャンバス上で確認できるクエストボードを用意しています。ピンチで拡大、ドラッグで移動。</p></article>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="./quests/">クエストボードを開く</a>
+          <a class="btn" href="./quests/propose.html">クエストを提案する</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FFA -->
+    <section class="section" id="ffa">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">FFA</p>
+            <h2>18キットで戦う</h2>
+          </div>
+          <p>入口のキット選択で参加。キル報酬は50 MPで、同一相手への連続キルや反復狩りは報酬が段階的に抑制されます。退出は /mf ffa leave、戦績は /mf ffa stats。</p>
+        </div>
         <div class="kit-grid">
-          <div class="kit reveal"><b>戦士</b><small>ダイヤ斧（鋭さII）で戦う近接型。鉄系の防具で一撃を狙う。</small></div>
-          <div class="kit reveal"><b>狩人</b><small>Power II・Infinity Iの弓＋矢1本。遠距離向けだが接近戦は石剣。</small></div>
-          <div class="kit reveal"><b>騎士</b><small>鉄槍（ランジII）＋馬。馬は体力24・速度0.22・跳躍0.65。</small></div>
-          <div class="kit reveal"><b>リボルバー</b><small>クロスボウ6発。撃ち切ると約3.25秒リロード、与ダメージは0.85倍。</small></div>
-          <div class="kit reveal"><b>剣士</b><small>鋭さIの鉄剣＋金リンゴ。金リンゴは右クリックで使い、90秒後に再使用。</small></div>
-          <div class="kit reveal"><b>シールダー</b><small>鉄剣＋盾の防御型。正面からの受けに強いが、火力は控えめ。</small></div>
-          <div class="kit reveal"><b>海の戦士</b><small>トライデント。晴れは忠誠III、雨は激流I、雷雨は忠誠III＋召雷I。</small></div>
-          <div class="kit reveal"><b>重戦士</b><small>メイス＋ウィンドチャージ10個。残弾0から8秒で補充、最終ダメージ上限10。落下耐性IVのブーツ。</small></div>
-          <div class="kit reveal"><b>ギャンブラー</b><small>攻撃は−10〜+20（−は相手回復、0は不発）。被ダメージは−5〜+5、キル報酬は±10MP。</small></div>
-          <div class="kit reveal"><b>ケミスト</b><small>鈍化・負傷・毒・弱化・盲目の5種。再使用は10・13・16・13・22秒。</small></div>
-          <div class="kit reveal"><b>スナイパー</b><small>貫通IVの単発クロスボウ。1発ごとに5秒リロード（中は鈍足）、与ダメージ2.5倍。</small></div>
-          <div class="kit reveal"><b>ヴァンパイア</b><small>鉄剣で最終ダメージの30%を体力回復し、満腹度も回復。食料アイテムなし。弱体化I・自然回復2倍、累積60ごと攻撃＋12.5%（最大1.5倍）、4段階で速度I。直射日光で2秒ごとに2ダメージ。</small></div>
-          <div class="kit reveal"><b>グラップラー</b><small>武器・防具なし。速度I・跳躍I・攻撃力I・耐性Iで素手の機動戦。</small></div>
-          <div class="kit reveal"><b>アサシン</b><small>防具なし。致命短剣は体力4まで削って消滅、毒剣は毒II、透明化は30秒／再使用180秒。</small></div>
-          <div class="kit reveal"><b>ネクロマンサー</b><small>7種の召喚エッグを個別管理。再使用は5〜60秒、召喚Mobは20秒で消滅。自分の召喚は3体まで、戦場全体では20体まで。</small></div>
-          <div class="kit reveal"><b>トラッパー</b><small>爆発・蜘蛛の巣・毒・火炎の4罠。設置30秒で消滅、種類ごとに再使用16秒。</small></div>
-          <div class="kit reveal"><b>バグマニア</b><small>攻撃時15%で銀魚を召喚。1人5体・全体30体まで、各20秒で消滅。虫食い返しの抽選もある。</small></div>
-          <div class="kit reveal"><b>クラッシャー</b><small>攻撃時・被弾時に周囲爆発。50%不発、24%で4／範囲2、15%で8／3、10%で16／5、1%で32／8。発動後1.5秒CD。</small></div>
+          <div class="kit"><div class="kit-head"><b>戦士</b><span class="kit-role">近接</span></div><p>鋭さIIのダイヤ斧＋鉄装備。移動速度が下がる代わりに一撃が重い。</p></div>
+          <div class="kit"><div class="kit-head"><b>狩人</b><span class="kit-role">遠距離</span></div><p>修繕なしのPower II・Infinity I弓＋矢1本。近接は石の剣。革・チェーン装備。</p></div>
+          <div class="kit"><div class="kit-head"><b>騎士</b><span class="kit-role">機動</span></div><p>ランジIIの鉄の槍と馬（体力24・速度0.22・跳躍0.65）。近接用の鉄剣付き。</p></div>
+          <div class="kit"><div class="kit-head"><b>リボルバー</b><span class="kit-role">遠距離</span></div><p>6発のクロスボウ。撃ち切ると自動でリロード（65tick）、与ダメージ0.85倍。</p></div>
+          <div class="kit"><div class="kit-head"><b>剣士</b><span class="kit-role">近接</span></div><p>鋭さIの鉄剣。金リンゴは90秒ごとに再使用できる回復手段。</p></div>
+          <div class="kit"><div class="kit-head"><b>シールダー</b><span class="kit-role">防御</span></div><p>石の剣＋盾。正面防御に強く、火力は控えめ。</p></div>
+          <div class="kit"><div class="kit-head"><b>海の戦士</b><span class="kit-role">近接</span></div><p>忠誠IIIのトライデント。投げると手元に戻り、他のプレイヤーは拾えません。</p></div>
+          <div class="kit"><div class="kit-head"><b>重戦士</b><span class="kit-role">近接</span></div><p>メイス＋ウィンドチャージ10個（使い切ると8秒で10個補充）。最終ダメージ上限10、落下耐性IV。</p></div>
+          <div class="kit"><div class="kit-head"><b>ギャンブラー</b><span class="kit-role">特殊</span></div><p>攻撃ダメージが−10〜+20でランダム（マイナスは相手回復、0は不発）。被ダメージも−5〜+5で変動。与えたダメージに応じてMPも−10〜+10変動します。</p></div>
+          <div class="kit"><div class="kit-head"><b>ケミスト</b><span class="kit-role">支援</span></div><p>鈍化・負傷・毒・弱化・盲目の5種のスプラッシュポーション。再使用は10/13/16/13/22秒。</p></div>
+          <div class="kit"><div class="kit-head"><b>スナイパー</b><span class="kit-role">遠距離</span></div><p>貫通IVの単発クロスボウ。手動リロード100tick（中は鈍足IV）、与ダメージ2.5倍。</p></div>
+          <div class="kit"><div class="kit-head"><b>ヴァンパイア</b><span class="kit-role">特殊</span></div><p>与ダメージの30%を体力と満腹度に吸収。累計60ダメージごとに攻撃力+12.5%（最大4段階、4段階目で速度I）。直射日光でダメージ。</p></div>
+          <div class="kit"><div class="kit-head"><b>グラップラー</b><span class="kit-role">機動</span></div><p>武器・防具なし。速度I・攻撃力I・跳躍I・耐性Iが常時発動の素手型。</p></div>
+          <div class="kit"><div class="kit-head"><b>アサシン</b><span class="kit-role">特殊</span></div><p>防具なし。致命の短剣は体力を4（ハート2個）まで削ると消滅し、2キルごとに補充。毒剣は毒4秒。</p></div>
+          <div class="kit"><div class="kit-head"><b>ネクロマンサー</b><span class="kit-role">召喚</span></div><p>召喚エッグは15秒の共通クールダウンで8種から抽選。召喚Mobは20秒で消滅し、体数の上限はありません。</p></div>
+          <div class="kit"><div class="kit-head"><b>トラッパー</b><span class="kit-role">罠</span></div><p>爆発・蜘蛛の巣・毒・火炎の4種の罠。設置後30秒で消滅、能力の再使用は16秒。火炎は初撃2・燃焼6秒・半径2.5。</p></div>
+          <div class="kit"><div class="kit-head"><b>バグマニア</b><span class="kit-role">召喚</span></div><p>攻撃時15%で銀魚召喚（所有5体・全体30体まで）。被弾時20%、死亡時10%でも発生。</p></div>
+          <div class="kit"><div class="kit-head"><b>クラッシャー</b><span class="kit-role">特殊</span></div><p>攻撃・被弾時に周囲爆発。50%は不発、成功時は4/8/16/32ダメージのいずれか。発動後30tickのクールダウン。</p></div>
         </div>
-        <div class="notice reveal">
-          <strong>キット共通の使い方</strong><br>
-          食料・金リンゴ・ポーション・召喚エッグ・罠・透明化・ウィンドチャージは右クリックで使用します。空になったクロスボウも右クリックでリロードできます。
-        </div>
-        <div class="notice reveal">
-          <strong>FFAの共通ルール</strong><br>
-          /mf ffa leave で退出、/mf ffa stats で戦績を確認。食料クールダウンは15秒、ドロップ・拾得・ブロック操作は制限され、キル報酬は50 MP。同じ相手への連続キルは報酬が抑制されます。
+        <div class="notice">
+          <strong>フィールドアイテムとイベント</strong>
+          <p>戦場にはCommon〜Legendaryの5段階のレアリティでアイテムが出現します（重み付き抽選、落下後90秒で消滅）。150〜240秒間隔で雨・雪・吹雪・バーサーク・スピード・アイアンボディ・オーバードライブなどのイベントが発生します。アイテムの所持上限は9個、拾えるのはFFA参加中のみです。</p>
         </div>
       </div>
     </section>
 
-    <section class="section dark">
+    <!-- コミュニティ -->
+    <section class="section alt" id="community">
+      <div class="shell community-grid">
+        <div class="community-copy">
+          <p class="eyebrow">コミュニティ</p>
+          <h2>みんなでつくる</h2>
+          <p>提案とバグ報告を受け付け、審査後に実装します。実装された提案は、サイトの提案一覧で状態を確認できます。</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="./proposals/">提案を見る</a>
+            <a class="btn" href="./quests/propose.html">クエストを提案</a>
+          </div>
+        </div>
+        <iframe class="discord-widget" src="https://discord.com/widget?id=1511014329342754907&amp;theme=dark" width="330" height="480" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" title="Mifron Discordサーバーウィジェット" loading="lazy"></iframe>
+      </div>
+    </section>
+
+    <!-- 運営を応援 -->
+    <section class="section" id="support">
       <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Field Events</span><h2>戦場が変わる。</h2></div>
-          <p>レアアイテムと一時効果が戦況を変化させる。</p>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">支援</p>
+            <h2>運営を支える</h2>
+          </div>
+          <p>支援は任意です。ゲーム内の有利不利に影響する特典は行いません。</p>
         </div>
-        <div class="systems">
-          <article class="system-panel reveal featured-system">
-            <span class="tag">Rarity</span>
-            <h3>5段階のレアリティ</h3>
-            <p>Common、Uncommon、Rare、Epic、Legendaryの重み付き抽選。アイテムは時間経過で消滅し、拾ったプレイヤーの判断が勝敗を分けます。</p>
-            <ul>
-              <li>イベント抽選は150〜240秒間隔</li>
-              <li>通常アイテムは参加人数に応じて18〜55秒間隔</li>
-              <li>戦場アイテムの消滅は90秒</li>
-              <li>非FFA中の拾得は制限</li>
-            </ul>
-          </article>
-          <article class="system-panel reveal">
-            <span class="tag">Events</span>
-            <h3>天候と一時効果</h3>
-            <p>雨、雪、吹雪、バーサーク、スピード、アイアンボディ、オーバードライブなどの効果が発生します。</p>
-            <ul>
-              <li>ワンショットボウ、スカイスピア</li>
-              <li>MPフィーバー、タイムシフト</li>
-              <li>自分回復、全体回復</li>
-            </ul>
-          </article>
+        <div class="feature-grid">
+          <article class="feature"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、プロフィールバッジ、装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
+          <article class="feature"><span class="tag">公開条件</span><h3>準備完了後に開始</h3><p data-support-pending>現在は支援受付を行っていません。決済事業者・価格・返金条件を確認し、公開ページを用意した後に受付を開始します。</p></article>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div><span class="eyebrow">Community</span><h2>みんなでつくる。</h2></div>
-          <p>イベント・週替わり企画・提案・投票で、次の変化へ参加。</p>
-        </div>
-        <div class="systems">
-          <article class="system-panel reveal featured-system">
-            <span class="tag">Season / Weekly</span>
-            <h3>今週の遊びと、次の目標</h3>
-            <p>シーズン、ウィークリー企画、クエスト、イベントを通じて、数日空いても戻りやすい遊び方を用意しています。詳細な開催内容はDiscordで確認できます。</p>
-            <ul>
-              <li>週替わりのミッションと注目コンテンツ</li>
-              <li>週末イベントとコミュニティ目標</li>
-              <li>実装された提案をアップデートで紹介</li>
-            </ul>
-          </article>
-          <article class="system-panel reveal">
-            <span class="tag">Governance</span>
-            <h3>プレイヤーの声が次を変える</h3>
-            <p>提案、コミュニティ評価、正式投票、実装後のフィードバックまでを追跡します。投票で終わらず、実際にサーバーへ反映された変化を確認できます。</p>
-            <ul>
-              <li>提案とバグ報告をDiscordから受付</li>
-              <li>投票中・実装予定・実装済みを確認</li>
-              <li>実装後の評価を次の改善へ活用</li>
-            </ul>
-          </article>
-        </div>
-        <div class="hero-actions reveal mt-24">
-          <a class="btn discord" data-discord href="#">Discordで最新情報を見る</a>
-        </div>
-      </div>
-    </section>
-
+    <!-- 最終導線 -->
     <section class="section alt">
       <div class="shell">
-        <div class="contact-panel reveal">
+        <div class="contact-panel">
           <div>
-            <span class="eyebrow">Join</span>
-            <h2>次の世界をつくる。</h2>
-            <p>Discordでは参加認証、MP連携、提案、投票、イベント告知をまとめて行います。ゲーム内の案内、イベント情報、コミュニティのお知らせをDiscordで確認できます。</p>
+            <p class="eyebrow">参加</p>
+            <h2>次の世界へ、今すぐ。</h2>
+            <p>サーバーアドレスは <strong data-join-value="java">play.mct-official.com</strong>。Bedrock版はポート <strong data-join-value="port">19132</strong> を指定してください。</p>
           </div>
-          <a class="btn discord" data-discord href="#">Discordに参加</a>
+          <div class="contact-panel-actions">
+            <a class="btn discord" data-discord href="#">Discordに参加</a>
+            <a class="btn" href="./tutorial.html">チュートリアルを読む</a>
+          </div>
         </div>
-        <p class="disclaimer mt-24">Mifronは非公式のMinecraftサーバープロジェクトであり、Mojang StudiosまたはMicrosoftとの提携・承認・推奨関係はありません。MPやゲーム内報酬を現実通貨・譲渡可能な価値と交換する運用は行わず、MinecraftのEULAおよび関連ガイドラインに従って運営してください。</p>
+        <p class="disclaimer">Mifronは非公式のMinecraftサーバープロジェクトであり、Mojang StudiosおよびMicrosoftと提携・承認・推奨関係にはありません。MPやゲーム内報酬を現実通貨・譲渡可能な価値と交換する運用は行いません。MinecraftのEULAとUsage Guidelinesに従って運営しています。</p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="shell footer-grid">
-      <div>
+      <div class="footer-brand">
         <img src="assets/mct-wordmark-transparent.png" alt="MCT">
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
-      <div class="footer-links">
+      <nav class="footer-links" aria-label="フッター">
         <a href="https://mct-official.com/">MCT</a>
-        <a href="./">Mifron</a>
-        <a href="https://crewmate.mct-official.com/">CREWMATE</a>
-        <a href="https://texroot.mct-official.com/">TEXROOT</a>
-      </div>
+        <a href="./tutorial.html">チュートリアル</a>
+        <a href="./quests/">クエスト</a>
+        <a href="./proposals/">提案</a>
+      </nav>
     </div>
   </footer>
 </body>
