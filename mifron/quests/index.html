@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0c0e13">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fafaf7">
   <title>クエスト | Mifron</title>
-  <meta name="description" content="MifronのクエストをMinecraftの進捗画面のように確認。デイリー、ウィークリー、単発、隠しクエストのつながりと達成状況がひと目で分かります。">
+  <meta name="description" content="Mifronのクエストボード。デイリー、ウィークリー、マンスリー、スペシャルの全クエストをキャンバス上で確認できます。ピンチで拡大、ドラッグで移動。">
   <link rel="canonical" href="https://mifron.mct-official.com/quests/">
   <link rel="icon" href="../assets/mifron-favicon.png">
   <link rel="stylesheet" href="../assets/styles.css">
@@ -16,200 +16,130 @@
 </head>
 <body class="quest-page">
   <a class="skip" href="#main">本文へ移動</a>
-  <header class="site-header sub-header">
+  <header class="site-header">
     <div class="shell nav">
       <a class="brand" href="../">
         <img class="brand-icon" src="../assets/mifron-icon.webp" alt="Mifron">
         <span class="brand-text">Mifron</span>
       </a>
-      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+      <nav class="nav-links" id="nav-panel" aria-label="サイト内ナビゲーション">
         <a href="../">ホーム</a>
         <a href="../tutorial.html">チュートリアル</a>
         <a href="./" aria-current="page">クエスト</a>
         <a href="../proposals/">提案</a>
-        <a href="../#join" class="discord">Discord</a>
+        <a class="hot" data-discord href="#">Discord</a>
       </nav>
-      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
     </div>
   </header>
 
   <main id="main">
-    <section class="sub-hero">
-      <div class="shell reveal">
-        <span class="kicker">Mifron Quest System</span>
-        <h1>クエスト</h1>
-        <p class="lead">Minecraftの進捗画面のように、クエストのつながりと達成状況をひと目で確認できます。カテゴリを切り替え、ノードを選んで挑戦しよう。</p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#quest-window">進捗ツリーを見る</a>
-          <a class="btn" href="./propose.html">クエストを提案する</a>
+    <section class="hero">
+      <div class="shell">
+        <p class="kicker">Quest Board</p>
+        <h1>クエストボード</h1>
+        <p class="lead">全部のクエストをキャンバスに置きました。つまむかホイールでズーム、ドラッグで移動、カードをタップで詳しく。</p>
+      </div>
+    </section>
+
+    <section class="quest-canvas-section">
+      <div class="shell quest-shell">
+        <div class="quest-toolbar">
+          <div class="quest-search">
+            <label class="quest-search-label" for="questSearch">クエストを探す</label>
+            <input id="questSearch" type="search" inputmode="search" autocomplete="off" placeholder="採掘、FFA、転生 など">
+          </div>
+          <div class="filter-bar quest-type-filter" id="questTypeFilter" role="group" aria-label="種類で絞り込み">
+            <button type="button" class="filter-btn active" data-type="all">すべて</button>
+            <button type="button" class="filter-btn" data-type="daily">デイリー</button>
+            <button type="button" class="filter-btn" data-type="weekly">ウィークリー</button>
+            <button type="button" class="filter-btn" data-type="monthly">マンスリー</button>
+            <button type="button" class="filter-btn" data-type="special">スペシャル</button>
+          </div>
+          <div class="filter-bar quest-state-filter" id="questStateFilter" role="group" aria-label="状態で絞り込み">
+            <button type="button" class="filter-btn active" data-state="all">全状態</button>
+            <button type="button" class="filter-btn" data-state="daily_open">挑戦中</button>
+            <button type="button" class="filter-btn" data-state="cycle">期間中</button>
+            <button type="button" class="filter-btn" data-state="repeatable">繰り返し</button>
+            <button type="button" class="filter-btn" data-state="once">1回限り</button>
+          </div>
+          <div class="quest-toolbar-meta">
+            <label class="proposed-toggle"><input id="showProposed" type="checkbox"> 審査待ちの提案も表示</label>
+            <span id="questCount" aria-live="polite"></span>
+          </div>
+        </div>
+
+        <div class="board-frame">
+          <div class="board-hint" id="boardHint">
+            <strong>動かし方</strong>
+            <ul>
+              <li>ドラッグ（スワイプ）でキャンバスを動かす</li>
+              <li>ピンチ / ホイール / ボタンで拡大・縮小</li>
+              <li>カードをタップして内容を確認</li>
+            </ul>
+            <button type="button" class="btn small" id="hintClose">わかった</button>
+          </div>
+          <div class="board-controls">
+            <button type="button" class="board-btn" id="zoomOut" aria-label="縮小">−</button>
+            <button type="button" class="board-btn" id="zoomReset" aria-label="全体表示">全体</button>
+            <button type="button" class="board-btn" id="zoomIn" aria-label="拡大">＋</button>
+          </div>
+          <div class="board" id="questBoard" tabindex="0" role="application" aria-label="クエストボード。ドラッグで移動、ピンチまたはホイールで拡大縮小、カードをタップで詳細">
+            <div class="board-canvas" id="boardCanvas">
+              <svg class="board-lines" id="boardLines" aria-hidden="true"></svg>
+              <!-- クエストカードはquests.jsが描画します -->
+            </div>
+          </div>
+        </div>
+
+        <div class="board-legend">
+          <span class="legend-item"><span class="legend-dot legend-daily" aria-hidden="true"></span>デイリー</span>
+          <span class="legend-item"><span class="legend-dot legend-weekly" aria-hidden="true"></span>ウィークリー</span>
+          <span class="legend-item"><span class="legend-dot legend-monthly" aria-hidden="true"></span>マンスリー</span>
+          <span class="legend-item"><span class="legend-dot legend-special" aria-hidden="true"></span>スペシャル</span>
         </div>
       </div>
     </section>
 
-    <section class="section" id="quest-window">
+    <section class="section alt" id="about-types">
       <div class="shell">
-        <div class="section-head reveal">
+        <div class="section-head">
           <div>
-            <span class="eyebrow">Advancements</span>
-            <h2>クエスト進捗ツリー</h2>
+            <p class="eyebrow">ルール</p>
+            <h2>クエストの種類</h2>
           </div>
-          <p>タブでカテゴリを切り替え、ノードをクリックすると条件・報酬・前提クエストを確認できます。</p>
+          <p>デイリーとウィークリーは候補10件から5件が抽選され、マンスリーは全件固定表示です。反復やAFKでの報酬は抑制されます。</p>
         </div>
-
-        <div class="mc-window reveal" id="mcWindow">
-          <div class="mc-titlebar">
-            <span class="mc-title" id="mcTitle">すべてのクエスト</span>
-            <span class="mc-progress" id="mcProgress" aria-live="polite"></span>
-          </div>
-          <div class="mc-tabs" id="mcTabs" role="tablist" aria-label="クエストカテゴリ"></div>
-          <div class="mc-panel">
-            <div class="mc-tree-view" id="mcTreeView">
-              <div class="mc-tree" id="mcTree"></div>
-              <div class="mc-empty" id="mcEmpty" hidden>
-                <strong>クエストがありません</strong>
-                <span>このカテゴリにはまだクエストが登録されていません。</span>
-              </div>
-            </div>
-
-            <div class="mc-propose-view" id="mcProposeView" hidden>
-              <div class="mc-propose-intro">
-                <h3>テンプレートからかんたん提案</h3>
-                <p>近いテンプレートを選ぶと入力欄が自動で埋まります。あとは内容を調整して送信するだけです。</p>
-              </div>
-              <div class="quest-template-grid" id="questTemplateGrid" aria-label="クエスト提案テンプレート"></div>
-
-              <form id="questProposalForm" class="quest-form" novalidate>
-                <div class="form-row">
-                  <div>
-                    <label for="qp-name">クエスト名 *</label>
-                    <input id="qp-name" name="name" type="text" required maxlength="120" placeholder="例: デイリー：採掘チャレンジ">
-                  </div>
-                  <div>
-                    <label for="qp-type">種類 *</label>
-                    <select id="qp-type" name="type" required>
-                      <option value="daily">デイリー</option>
-                      <option value="weekly">ウィークリー</option>
-                      <option value="single" selected>単発</option>
-                      <option value="hidden">隠し</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label for="qp-desc">説明 *</label>
-                  <textarea id="qp-desc" name="description" required maxlength="2000" placeholder="どんなクエストか、どうすれば達成できるかを書いてください。"></textarea>
-                </div>
-
-                <div class="form-row">
-                  <div>
-                    <label for="qp-condition">成功条件 *</label>
-                    <input id="qp-condition" name="condition" type="text" required maxlength="500" placeholder="例: 石を128個採掘する">
-                  </div>
-                  <div>
-                    <label for="qp-reward">報酬 *</label>
-                    <input id="qp-reward" name="reward" type="text" required maxlength="300" placeholder="例: MP: 120">
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div>
-                    <label for="qp-difficulty">難易度 *</label>
-                    <select id="qp-difficulty" name="difficulty" required>
-                      <option value="easy">★☆☆☆☆ 易しい</option>
-                      <option value="normal" selected>★★☆☆☆ 普通</option>
-                      <option value="hard">★★★☆☆ 難しい</option>
-                      <option value="very_hard">★★★★☆ 非常に難しい</option>
-                      <option value="extreme">★★★★★ 極難</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="qp-author">提案者名</label>
-                    <input id="qp-author" name="author" type="text" maxlength="60" placeholder="あなたの名前（省略可）">
-                  </div>
-                </div>
-
-                <fieldset>
-                  <legend>条件の種類（任意）</legend>
-                  <div class="check-grid">
-                    <label><input type="checkbox" name="conditionTypes" value="item_obtain"> アイテム入手</label>
-                    <label><input type="checkbox" name="conditionTypes" value="mob_kill"> モブ退治</label>
-                    <label><input type="checkbox" name="conditionTypes" value="block_break"> ブロック破壊</label>
-                    <label><input type="checkbox" name="conditionTypes" value="move"> 移動</label>
-                    <label><input type="checkbox" name="conditionTypes" value="mp_gain"> MP獲得</label>
-                    <label><input type="checkbox" name="conditionTypes" value="advancement"> 進捗達成</label>
-                    <label><input type="checkbox" name="conditionTypes" value="login"> 累計ログイン</label>
-                  </div>
-                </fieldset>
-
-                <fieldset>
-                  <legend>報酬の種類（任意）</legend>
-                  <div class="check-grid">
-                    <label><input type="checkbox" name="rewardTypes" value="mp"> MP</label>
-                    <label><input type="checkbox" name="rewardTypes" value="item"> アイテム</label>
-                    <label><input type="checkbox" name="rewardTypes" value="title"> 称号</label>
-                    <label><input type="checkbox" name="rewardTypes" value="exp"> 経験値</label>
-                  </div>
-                </fieldset>
-
-                <div id="questTitleGroup" hidden>
-                  <label for="qp-title">提案する称号</label>
-                  <input id="qp-title" name="proposedTitle" type="text" maxlength="120" placeholder="例: 真の冒険者">
-                </div>
-
-                <div class="form-row">
-                  <div>
-                    <label for="qp-deps">前提クエストID（任意）</label>
-                    <input id="qp-deps" name="dependencies" type="text" placeholder="例: daily_login, daily_mine">
-                  </div>
-                  <div>
-                    <label for="qp-unlock">解放条件（隠し用・任意）</label>
-                    <input id="qp-unlock" name="unlockCondition" type="text" maxlength="500" placeholder="例: 特定の座標に到達する">
-                  </div>
-                </div>
-
-                <div>
-                  <label for="qp-notes">備考（任意）</label>
-                  <textarea id="qp-notes" name="notes" maxlength="1000" rows="2" placeholder="補足があれば入力してください。"></textarea>
-                </div>
-
-                <div class="quest-form-actions">
-                  <button type="submit" class="btn primary">クエストを提案する</button>
-                  <a class="btn" href="../proposals/">提案一覧を見る</a>
-                </div>
-              </form>
-
-              <div class="form-message" id="questFormMessage" hidden></div>
-            </div>
-          </div>
-          <div class="mc-hint">ノードをクリック / タップで詳細を表示</div>
-          <div class="mc-tooltip" id="mcTooltip" role="tooltip"></div>
+        <div class="feature-grid">
+          <article class="feature"><span class="tag">デイリー</span><h3>毎日リセット</h3><p>候補10件から5件を抽選。その日の5件を全達成すると追加報酬がもらえます。</p></article>
+          <article class="feature"><span class="tag">ウィークリー</span><h3>毎週リセット</h3><p>候補10件から5件を抽選。週単位の大きな目標です。</p></article>
+          <article class="feature"><span class="tag">マンスリー</span><h3>毎月リセット</h3><p>9件が固定表示。月単位の長期目標で報酬は数千MP規模です。</p></article>
+          <article class="feature"><span class="tag">スペシャル</span><h3>条件発生</h3><p>討伐・到達・転生などの条件で発生する1回限りの特別クエストです。</p></article>
         </div>
-
-        <div class="mc-legend reveal">
-          <div class="mc-legend-item"><span class="mc-legend-frame state-completed"></span><span><b>達成済み</b>クリアしたクエスト</span></div>
-          <div class="mc-legend-item"><span class="mc-legend-frame state-available"></span><span><b>挑戦可能</b>今すぐ挑戦できる</span></div>
-          <div class="mc-legend-item"><span class="mc-legend-frame state-locked"></span><span><b>未解放</b>前提クエストのクリアが必要</span></div>
+        <div class="hero-actions">
+          <a class="btn primary" href="./propose.html">クエストを提案する</a>
+          <a class="btn" href="../tutorial.html#economy">MPの稼ぎ方を見る</a>
         </div>
       </div>
     </section>
   </main>
 
-  <dialog class="mc-dialog" id="questDialog" aria-label="クエスト詳細">
-    <div class="mc-dialog-body" id="questDialogBody"></div>
+  <dialog class="quest-dialog" id="questDialog" aria-label="クエスト詳細">
+    <div class="quest-dialog-body" id="questDialogBody"></div>
   </dialog>
 
   <footer class="footer">
     <div class="shell footer-grid">
-      <div>
+      <div class="footer-brand">
         <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
-      <div class="footer-links">
+      <nav class="footer-links" aria-label="フッター">
         <a href="../">Mifron</a>
         <a href="./">クエスト</a>
         <a href="../proposals/">提案</a>
         <a href="../tutorial.html">チュートリアル</a>
-      </div>
+      </nav>
     </div>
   </footer>
 </body>

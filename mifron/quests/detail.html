@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0c0e13">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fafaf7">
   <title>クエスト詳細 | Mifron</title>
-  <meta name="description" content="Mifronのクエスト詳細。成功条件、報酬、前提クエストを確認できます。">
+  <meta name="description" content="Mifronのクエスト詳細。成功条件、報酬、サイクルを確認できます。">
   <link rel="icon" href="../assets/mifron-favicon.png">
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="stylesheet" href="../assets/quests.css">
@@ -15,56 +15,52 @@
 </head>
 <body class="quest-page">
   <a class="skip" href="#main">本文へ移動</a>
-  <header class="site-header sub-header">
+  <header class="site-header">
     <div class="shell nav">
       <a class="brand" href="../">
         <img class="brand-icon" src="../assets/mifron-icon.webp" alt="Mifron">
         <span class="brand-text">Mifron</span>
       </a>
-      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+      <nav class="nav-links" id="nav-panel" aria-label="サイト内ナビゲーション">
         <a href="../">ホーム</a>
         <a href="../tutorial.html">チュートリアル</a>
-        <a href="./">クエスト</a>
+        <a href="./" aria-current="page">クエスト</a>
         <a href="../proposals/">提案</a>
-        <a href="../#join" class="discord">Discord</a>
+        <a class="hot" data-discord href="#">Discord</a>
       </nav>
-      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
     </div>
   </header>
 
   <main id="main">
-    <section class="sub-hero">
-      <div class="shell reveal">
-        <span class="kicker">Mifron Quest System</span>
+    <section class="hero">
+      <div class="shell">
+        <p class="kicker">Quest</p>
         <h1>クエスト詳細</h1>
-        <p class="lead" id="questTitle">読み込み中...</p>
       </div>
     </section>
-
-    <section class="section">
+    <section class="section" id="questDetailSection">
       <div class="shell">
-        <div id="questDetail" class="reveal">
-          <div class="mc-empty-state">
-            <h2>読み込み中...</h2>
-            <p>クエストの詳細情報を取得しています。</p>
-          </div>
+        <div id="questDetail" class="quest-detail-slot">
+          <p class="detail-meta">読み込み中…</p>
         </div>
+        <p class="detail-footer-note"><a href="./">← クエストボードへ戻る</a></p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="shell footer-grid">
-      <div>
+      <div class="footer-brand">
         <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
-      <div class="footer-links">
+      <nav class="footer-links" aria-label="フッター">
         <a href="../">Mifron</a>
         <a href="./">クエスト</a>
         <a href="../proposals/">提案</a>
         <a href="../tutorial.html">チュートリアル</a>
-      </div>
+      </nav>
     </div>
   </footer>
 </body>

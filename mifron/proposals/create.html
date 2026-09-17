@@ -50,13 +50,15 @@
 
           <form id="proposalForm" class="proposal-form" novalidate>
             <div>
-              <label for="pf-title">タイトル *</label>
-              <input id="pf-title" name="title" type="text" required maxlength="160" placeholder="例: 新しいFFAキットの追加">
+              <label for="pf-title">タイトル <span class="req" aria-hidden="true">必須</span></label>
+              <input id="pf-title" name="title" type="text" required maxlength="160" enterkeyhint="next" autocomplete="off" placeholder="例: 新しいFFAキットの追加">
+              <span class="field-count"><span data-count-for="pf-title">0</span> / 160</span>
             </div>
 
             <div>
-              <label for="pf-description">説明 *</label>
-              <textarea id="pf-description" name="description" required maxlength="3000" placeholder="提案の内容を具体的に書いてください。"></textarea>
+              <label for="pf-description">説明 <span class="req" aria-hidden="true">必須</span></label>
+              <textarea id="pf-description" name="description" required maxlength="3000" enterkeyhint="enter" placeholder="提案の内容を具体的に書いてください。"></textarea>
+              <span class="field-count"><span data-count-for="pf-description">0</span> / 3000</span>
               <p class="hint">具体的に書くほど採用されやすくなります。</p>
             </div>
 
@@ -83,28 +85,29 @@
 
             <div class="form-row">
               <div>
-                <label for="pf-author">提案者名</label>
-                <input id="pf-author" name="author" type="text" maxlength="60" placeholder="あなたの名前（省略可）">
+                <label for="pf-author">提案者名（任意）</label>
+                <input id="pf-author" name="author" type="text" maxlength="60" enterkeyhint="next" autocomplete="off" placeholder="ゲーム内ニックネームなど">
               </div>
               <div>
                 <label for="pf-tags">タグ（任意）</label>
-                <input id="pf-tags" name="tags" type="text" placeholder="例: FFA, ショップ, UI">
+                <input id="pf-tags" name="tags" type="text" enterkeyhint="next" autocomplete="off" inputmode="text" placeholder="例: FFA, ショップ, UI">
                 <p class="hint">カンマ区切りで入力してください。</p>
               </div>
             </div>
 
             <div>
               <label for="pf-notes">備考（任意）</label>
-              <textarea id="pf-notes" name="notes" maxlength="1000" rows="2" placeholder="補足があれば入力してください。"></textarea>
+              <textarea id="pf-notes" name="notes" maxlength="1000" rows="2" enterkeyhint="enter" placeholder="補足があれば入力してください。"></textarea>
+              <span class="field-count"><span data-count-for="pf-notes">0</span> / 1000</span>
             </div>
 
             <div class="proposal-form-actions">
-              <button type="submit" class="btn primary">提案を作成する</button>
+              <button type="submit" class="btn primary">送信する</button>
               <a class="btn" href="./">キャンセル</a>
             </div>
+            <p class="form-confirm-note">送信内容は運営へ通知され、審査後に提案一覧へ反映されます。重複送信は10分あたり5件までに制限されます。</p>
+            <div class="form-message" id="formMessage" hidden role="status" aria-live="polite"></div>
           </form>
-
-          <div class="form-message" id="formMessage" hidden></div>
         </div>
       </div>
     </section>

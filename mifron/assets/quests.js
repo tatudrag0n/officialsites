@@ -1,150 +1,500 @@
-/* Mifron Quest System
-   Minecraft advancement-style progress UI + quest proposal templates.
-   Externalised so it works under the site CSP (script-src 'self'). */
+/* Mifron Quest Board
+   無限キャンバス（ホワイトボード型）クエストUI。
+   クエストデータは mifronplugin の quests.yml（実装）に準拠。
+   API (/api/quests) から実データが取れる場合はそれを優先する。
+   CSP: script-src 'self' のため外部ライブラリは使わない。 */
 (function () {
   'use strict';
 
-  var TYPE_LABELS = { daily: 'デイリー', weekly: 'ウィークリー', single: '単発', hidden: '隠し' };
-  var DIFFICULTY_LABELS = {
-    easy: '★☆☆☆☆',
-    normal: '★★☆☆☆',
-    hard: '★★★☆☆',
-    very_hard: '★★★★☆',
-    extreme: '★★★★★'
-  };
-  var DIFFICULTY_NAMES = {
-    easy: '易しい',
-    normal: '普通',
-    hard: '難しい',
-    very_hard: '非常に難しい',
-    extreme: '極難'
-  };
-  var STATE_LABELS = { completed: '達成済み', available: '挑戦可能', locked: '未解放' };
-  var CONDITION_LABELS = {
-    item_obtain: 'アイテム入手',
-    mob_kill: 'モブ退治',
-    block_break: 'ブロック破壊',
-    move: '移動',
-    mp_gain: 'MP獲得',
-    advancement: '進捗達成',
-    login: '累計ログイン'
-  };
-  var REWARD_LABELS = { mp: 'MP', item: 'アイテム', title: '称号', exp: '経験値' };
-  var TYPE_TAB_ICONS = { daily: '🌅', weekly: '📅', single: '⭐', hidden: '👁️' };
+  /* ============================================================
+     実クエストデータ（mifronplugin: src/main/resources/quests.yml）
+     D01–D10 / W01–W10 / M01–M10 / S02–S30 の59件。
+     デイリー・ウィークリーは「10候補から5件抽選」、
+     マンスリーは「9件固定表示＋完全達成」、
+     スペシャルは「条件発生・1回限り」。
+     ============================================================ */
+  var QUESTS = [
+    // ---- デイリー（10候補から5件抽選） ----
+    { id: 'D01', type: 'daily', name: '今日の採掘', condition: '石系/鉱石系ブロックを合計300個採掘', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D02', type: 'daily', name: '今日の建築', condition: '任意の建材ブロックを200個設置', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D03', type: 'daily', name: '小規模討伐', condition: '敵対Mobを30体、直接討伐', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D04', type: 'daily', name: '農作業日和', condition: '生活ポイントを150獲得（採集1 / 釣り17 / 繁殖8）', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D05', type: 'daily', name: '商売の一歩', condition: 'ショップまたは商人で3回取引', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D06', type: 'daily', name: '軽い探索', condition: '初めて入るチャンクを20チャンク訪問', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D07', type: 'daily', name: '今日のアスレ', condition: '任意難易度のアスレを2回クリア', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D08', type: 'daily', name: 'ミニゲーム参加', condition: 'ミニゲームの参加または勝利処理を合計3回', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D09', type: 'daily', name: '釣りと収集', condition: '釣り成功または採集を合計20回', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
+    { id: 'D10', type: 'daily', name: 'デイリー完全達成', condition: 'その日に表示されたデイリー5件を全達成', reward: '500 MP', cycle: '毎日リセット', candidate: '表示分の全達成で発生' },
 
-  var KEYWORD_ICONS = [
-    [/採掘|掘|鉱石|ダイヤ|鉄|石/, '⛏️'],
-    [/建築|建て|設置|家/, '🧱'],
-    [/討伐|倒|モブ|キル|戦/, '⚔️'],
-    [/取引|ショップ|売買|購入|売却|オークション/, '💰'],
-    [/探索|座標|バイオーム|発見|冒険/, '🧭'],
-    [/農業|収穫|作物|畑|植/, '🌾'],
-    [/釣り|魚/, '🎣'],
-    [/アスレ|走|ジャンプ|移動/, '🏃'],
-    [/ミニゲーム|ゲーム|対戦|FFA/, '🎮'],
-    [/ログイン|参加|認証/, '🚪'],
-    [/称号|実績/, '🏅'],
-    [/クラフト|作成|作成する/, '🛠️'],
-    [/回復|ポーション|食料/, '🍖']
+    // ---- ウィークリー（10候補から5件抽選） ----
+    { id: 'W01', type: 'weekly', name: '週間採掘計画', condition: '石系/鉱石系ブロックを合計3,000個採掘', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W02', type: 'weekly', name: '週間建築計画', condition: '建材ブロックを2,000個設置', reward: '1,600 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W03', type: 'weekly', name: '討伐遠征', condition: '敵対Mobを300体、直接討伐', reward: '2,200 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W04', type: 'weekly', name: '交易週間', condition: 'ショップ/商人で20回取引', reward: '1,600 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W05', type: 'weekly', name: 'アスレ週間', condition: 'アスレを合計10回クリア', reward: '2,000 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W06', type: 'weekly', name: 'ミニゲーム週間', condition: 'ミニゲームの参加または勝利処理を合計15回', reward: '2,000 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W07', type: 'weekly', name: '探索遠征', condition: '初めて入るチャンクを150チャンク訪問', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W08', type: 'weekly', name: '進捗挑戦', condition: '任意の進捗を3個達成', reward: '2,500 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W09', type: 'weekly', name: '共同納品', condition: 'ミニゲーム解放へ合計1,000MPを納品', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
+    { id: 'W10', type: 'weekly', name: 'ウィークリー完全達成', condition: 'その週に表示されたウィークリー5件を全達成', reward: '3,500 MP', cycle: '毎週リセット', candidate: '表示分の全達成で発生' },
+
+    // ---- マンスリー（固定表示） ----
+    { id: 'M01', type: 'monthly', name: '月間採掘王', condition: '石系/鉱石系ブロックを30,000個採掘', reward: '9,000 MP', cycle: '毎月リセット' },
+    { id: 'M02', type: 'monthly', name: '月間建築家', condition: '建材ブロックを20,000個設置', reward: '9,000 MP', cycle: '毎月リセット' },
+    { id: 'M03', type: 'monthly', name: '月間討伐者', condition: '敵対Mobを2,000体、直接討伐', reward: '9,000 MP', cycle: '毎月リセット' },
+    { id: 'M04', type: 'monthly', name: '月間商人', condition: 'ショップまたは商人で合計100回取引', reward: '8,000 MP', cycle: '毎月リセット' },
+    { id: 'M05', type: 'monthly', name: '月間冒険者', condition: '初めて入るチャンクを1,000チャンク訪問', reward: '8,000 MP', cycle: '毎月リセット' },
+    { id: 'M06', type: 'monthly', name: '月間挑戦者', condition: 'アスレ・ミニゲーム・勝利処理を合計60回', reward: '8,500 MP', cycle: '毎月リセット' },
+    { id: 'M07', type: 'monthly', name: '進捗探究者', condition: '任意の進捗を10個達成', reward: '10,000 MP', cycle: '毎月リセット' },
+    { id: 'M08', type: 'monthly', name: '生活基盤整備', condition: '生活ポイントを5,000獲得', reward: '7,000 MP', cycle: '毎月リセット' },
+    { id: 'M09', type: 'monthly', name: '共同開拓', condition: 'ミニゲーム解放へ1MP以上を納品', reward: '8,000 MP', cycle: '毎月リセット' },
+    { id: 'M10', type: 'monthly', name: 'マンスリー完全達成', condition: '月間クエスト9件を全達成', reward: '12,000 MP', cycle: '毎月リセット' },
+
+    // ---- スペシャル（条件発生・1回限り） ----
+    { id: 'S02', type: 'special', name: '村の救世主', condition: 'ゾンビ村人を治療し、進捗を達成', reward: '7,000 MP' },
+    { id: 'S03', type: 'special', name: '初ドラゴン討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してエンダードラゴン討伐に参加', reward: '20,000 MP' },
+    { id: 'S04', type: 'special', name: '初ウィザー討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してウィザー討伐に参加', reward: '18,000 MP' },
+    { id: 'S05', type: 'special', name: '古代都市調査', condition: 'スカルクの振動を回避する進捗を達成', reward: '12,000 MP' },
+    { id: 'S06', type: 'special', name: '海底神殿制圧', condition: 'エルダーガーディアンを3体討伐（各討伐に参加）', reward: '10,000 MP' },
+    { id: 'S07', type: 'special', name: '砦の略奪者', condition: 'ピグリン要塞を発見する進捗を達成', reward: '10,000 MP' },
+    { id: 'S08', type: 'special', name: 'エンドシティ到達', condition: 'エンドシティ発見またはエリトラ関連の進捗を達成', reward: '15,000 MP' },
+    { id: 'S09', type: 'special', name: 'バベルの挑戦者', condition: 'babel_towerワールドへ到達', reward: '12,000 MP' },
+    { id: 'S10', type: 'special', name: '深淵到達', condition: 'ginnungagapワールドへ到達', reward: '12,000 MP' },
+    { id: 'S11', type: 'special', name: '地下帝国の客人', condition: 'agarthaワールドへ到達', reward: '15,000 MP' },
+    { id: 'S12', type: 'special', name: 'エリシオン巡礼', condition: 'elysionワールドへ到達', reward: '12,000 MP' },
+    { id: 'S13', type: 'special', name: '全進捗への一歩', condition: '累計進捗25個達成', reward: '8,000 MP' },
+    { id: 'S14', type: 'special', name: '進捗蒐集家', condition: '累計進捗50個達成', reward: '15,000 MP' },
+    { id: 'S15', type: 'special', name: '全能への道', condition: '累計進捗75個達成', reward: '25,000 MP' },
+    { id: 'S16', type: 'special', name: '初めての転生', condition: '初回転生を実行', reward: '30,000 MP' },
+    { id: 'S17', type: 'special', name: '二度目の覚醒', condition: '2回目の転生を実行', reward: '40,000 MP' },
+    { id: 'S18', type: 'special', name: '商人の常連', condition: '累計取引500回達成', reward: '12,000 MP' },
+    { id: 'S19', type: 'special', name: 'オークション参加者', condition: 'オークション額縁を1回作成', reward: '7,000 MP' },
+    { id: 'S20', type: 'special', name: '国家の礎', condition: 'nationまたはnationsワールドへ到達', reward: '10,000 MP' },
+    { id: 'S21', type: 'special', name: '建築コンテスト参加', condition: 'Buildワールドからschematicを1件提出', reward: '15,000 MP' },
+    { id: 'S22', type: 'special', name: 'ミニゲーム王者', condition: 'ミニゲームで1回勝利', reward: '20,000 MP' },
+    { id: 'S23', type: 'special', name: 'アスレ覇者', condition: 'hardcore設定のアスレチックを1回完走', reward: '25,000 MP' },
+    { id: 'S24', type: 'special', name: '釣り名人', condition: '釣りで弓・エンチャント本・釣竿・名札・オウムガイ・鞍のいずれかを獲得', reward: '8,000 MP' },
+    { id: 'S25', type: 'special', name: '農業王', condition: '棚ショップまたは商人へ農作物を1回売却', reward: '10,000 MP' },
+    { id: 'S26', type: 'special', name: '鍛冶の探究者', condition: '鍛冶型を1個拾得', reward: '15,000 MP' },
+    { id: 'S27', type: 'special', name: '全モブ観察', condition: '報酬対象Mobを1種類以上、直接攻撃で討伐', reward: '20,000 MP' },
+    { id: 'S28', type: 'special', name: '共同解放の功労者', condition: 'ミニゲーム解放へ1MP以上を納品', reward: '25,000 MP' },
+    { id: 'S29', type: 'special', name: 'クリエイターの第一歩', condition: '提出したschematicが1件承認される', reward: '15,000 MP' },
+    { id: 'S30', type: 'special', name: 'Mifronの伝説', condition: '転生2回・進捗75個・Mob討伐2,000体・ブロック設置20,000個・取引500回をすべて達成', reward: '50,000 MP' }
   ];
 
-  var NODE = 72;
-  var COL_STEP = 104;
-  var ROW_STEP = 128;
+  /* ---- クエスト間の接続（実装上の関係） ----
+     完全達成クエストは、同期間の通常クエストすべてを前提とする。
+     S30は長期総合目標。 */
+  var TYPE_GROUPS = { daily: 'D01', weekly: 'W01', monthly: 'M01' };
+  function connectionsOf(list) {
+    var edges = [];
+    var byType = {};
+    list.forEach(function (q) {
+      (byType[q.type] = byType[q.type] || []).push(q);
+    });
+    ['daily', 'weekly', 'monthly'].forEach(function (type) {
+      var group = byType[type] || [];
+      var goal = group.find(function (q) { return q.id.slice(-2) === '10'; });
+      if (!goal) return;
+      group.forEach(function (q) {
+        if (q !== goal && q.id !== 'D10' && q.id !== 'W10' && q.id !== 'M09') edges.push([q.id, goal.id]);
+      });
+    });
+    return edges;
+  }
 
   function esc(value) {
-    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    return String(value == null ? '' : value).replace(/[&<>"]/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
     });
   }
 
-  function iconFor(quest) {
-    if (quest.icon) return quest.icon;
-    var text = [quest.name, quest.description, quest.condition].join(' ');
-    for (var i = 0; i < KEYWORD_ICONS.length; i += 1) {
-      if (KEYWORD_ICONS[i][0].test(text)) return KEYWORD_ICONS[i][1];
+  var TYPE_LABELS = { daily: 'デイリー', weekly: 'ウィークリー', monthly: 'マンスリー', special: 'スペシャル' };
+
+  function rewardValue(reward) {
+    var m = String(reward || '').replace(/,/g, '').match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  /* ============================================================
+     APIから実データを取得（本番のKV投入データを優先表示）
+     - status が pending / 未設定のレコード = 提案（審査待ち）。
+       ボードへは既定で表示せず「審査待ちの提案も表示」で見せる。
+     - それ以外のレコード = 運営が承認投入した公式データ。
+       ある場合は内蔵データ（QUESTS）より優先する。
+     ============================================================ */
+  function fetchApiQuests() {
+    return fetch('/api/quests', { headers: { Accept: 'application/json' } })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
+        return data
+          .filter(function (q) { return q && (q.id || q.name); })
+          .map(function (q) {
+            var type = ['daily', 'weekly', 'monthly', 'special'].indexOf(String(q.type || '').toLowerCase()) !== -1
+              ? String(q.type).toLowerCase()
+              : 'special';
+            var status = String(q.status || '').toLowerCase();
+            var isPending = status === '' || status === 'pending';
+            return {
+              id: String(q.id || q.name).slice(0, 40),
+              type: type,
+              name: String(q.name || '').slice(0, 120),
+              condition: String(q.condition || '').slice(0, 500),
+              reward: String(q.reward || '').slice(0, 300),
+              cycle: isPending ? 'プレイヤー提案 / 審査待ち' : String(q.cycle || q.candidate || '運営公式').slice(0, 120),
+              proposed: isPending
+            };
+          });
+      })
+      .catch(function () { return null; });
+  }
+
+  /* ============================================================
+     ボード（無限キャンバス）
+     ============================================================ */
+  function initBoard() {
+    var board = document.getElementById('questBoard');
+    var canvas = document.getElementById('boardCanvas');
+    var svg = document.getElementById('boardLines');
+    var countEl = document.getElementById('questCount');
+    var searchEl = document.getElementById('questSearch');
+    var typeFilter = document.getElementById('questTypeFilter');
+    var stateFilter = document.getElementById('questStateFilter');
+    var dialog = document.getElementById('questDialog');
+    var dialogBody = document.getElementById('questDialogBody');
+    var hint = document.getElementById('boardHint');
+    if (!board || !canvas) return;
+
+    var quests = QUESTS.slice();
+    var query = '';
+    var activeType = 'all';
+    var activeState = 'all';
+    var showProposed = false;
+
+    var scale = 1;
+    var tx = 0;
+    var ty = 0;
+    var CARD_W = 216;
+    var CARD_GAP = 28;
+    var COL_H = 118;
+    var groupX = { daily: 0, weekly: 1, monthly: 2, special: 3 };
+
+    function filtered() {
+      var q = query.toLowerCase();
+      return quests.filter(function (quest) {
+        // 提案データ（審査待ち）は明示的にオンにしたときだけ表示
+        if (quest.proposed && !showProposed) return false;
+        if (activeType !== 'all' && quest.type !== activeType) return false;
+        if (activeState === 'cycle' && !(quest.cycle && quest.cycle.indexOf('リセット') !== -1)) return false;
+        if (activeState === 'repeatable' && !(quest.candidate || (quest.cycle && quest.cycle.indexOf('1日') !== -1))) return false;
+        if (activeState === 'once' && quest.type !== 'special') return false;
+        if (activeState === 'daily_open' && quest.type !== 'daily') return false;
+        if (q) {
+          var hay = (quest.name + ' ' + quest.condition + ' ' + quest.reward).toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
     }
-    return TYPE_TAB_ICONS[quest.type] || '❔';
+
+    function applyTransform() {
+      canvas.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    }
+
+    function layout(list) {
+      // 種類ごとに縦1列（値で降順）、列は daily→weekly→monthly→special
+      var columns = {};
+      list.forEach(function (q) {
+        (columns[q.type] = columns[q.type] || []).push(q);
+      });
+      Object.keys(columns).forEach(function (type) {
+        columns[type].sort(function (a, b) { return rewardValue(b.reward) - rewardValue(a.reward); });
+      });
+      var positions = new Map();
+      Object.keys(columns).forEach(function (type) {
+        var col = groupX[type] || 0;
+        columns[type].forEach(function (q, i) {
+          positions.set(q.id, { x: col * (CARD_W + CARD_GAP * 2.2), y: 60 + i * COL_H });
+        });
+      });
+      return positions;
+    }
+
+    function drawLines(list, positions) {
+      if (!svg) return;
+      var parts = [];
+      connectionsOf(list).forEach(function (edge) {
+        var a = positions.get(edge[0]);
+        var b = positions.get(edge[1]);
+        if (!a || !b) return;
+        var x1 = a.x + CARD_W / 2, y1 = a.y + 84;
+        var x2 = b.x + CARD_W / 2, y2 = b.y;
+        var my = (y1 + y2) / 2;
+        parts.push('<path d="M' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + my + ', ' + x2 + ' ' + my + ', ' + x2 + ' ' + y2 + '" class="edge edge-' + edge[1].slice(0, 1).toLowerCase() + '"/>');
+      });
+      svg.style.width = '2400px';
+      svg.style.height = '4000px';
+      svg.setAttribute('viewBox', '0 0 2400 4000');
+      svg.innerHTML = parts.join('');
+    }
+
+    function render() {
+      var list = filtered();
+      canvas.querySelectorAll('.quest-card').forEach(function (el) { el.remove(); });
+      if (!list.length) {
+        if (countEl) countEl.textContent = '該当するクエストはありません';
+        drawLines([], new Map());
+        return;
+      }
+      var positions = layout(list);
+      drawLines(list, positions);
+      list.forEach(function (quest) {
+        var pos = positions.get(quest.id) || { x: 0, y: 0 };
+        var el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'quest-card type-' + quest.type + (quest.proposed ? ' is-proposed' : '');
+        el.style.left = pos.x + 'px';
+        el.style.top = pos.y + 'px';
+        el.dataset.id = quest.id;
+        el.innerHTML =
+          '<span class="quest-card-type">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
+          '<span class="quest-card-name">' + esc(quest.name) + '</span>' +
+          '<span class="quest-card-reward">' + esc(quest.reward) + '</span>';
+        el.addEventListener('click', function () { openDialog(quest); });
+        canvas.appendChild(el);
+      });
+      if (countEl) countEl.textContent = list.length + ' 件を表示中';
+    }
+
+    function openDialog(quest) {
+      if (!dialog || !dialogBody) return;
+      dialogBody.innerHTML =
+        '<div class="quest-dialog-head">' +
+          '<span class="badge type-' + esc(quest.type) + '">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
+          '<h2>' + esc(quest.name) + '</h2>' +
+        '</div>' +
+        '<div class="quest-dialog-facts">' +
+          '<div><dt>成功条件</dt><dd>' + esc(quest.condition) + '</dd></div>' +
+          '<div><dt>報酬</dt><dd>' + esc(quest.reward) + '</dd></div>' +
+          '<div><dt>サイクル</dt><dd>' + esc(quest.candidate || quest.cycle || '条件発生 / 1回限り') + '</dd></div>' +
+        '</div>' +
+        '<div class="quest-dialog-actions">' +
+          '<button type="button" class="btn primary" data-close-dialog>閉じる</button>' +
+          '<a class="btn" href="./propose.html">この内容で提案する</a>' +
+        '</div>';
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else dialog.setAttribute('open', '');
+    }
+
+    // ---- パン（ドラッグ / タッチ1本） ----
+    // パン開始点がカード上でも、動いた（6px超）らドラッグ優先。
+    // 静止したまま指を離したときだけクリック（カード詳細）として扱う。
+    var pointer = null;
+    var panTarget = null;
+    board.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('a, button, input')) return;
+      panTarget = e.target.closest('.quest-card');
+      pointer = { x: e.clientX, y: e.clientY, tx: tx, ty: ty, moved: false };
+      board.setPointerCapture(e.pointerId);
+      board.classList.add('is-grabbing');
+    });
+    board.addEventListener('pointermove', function (e) {
+      if (!pointer) return;
+      var dx = e.clientX - pointer.x;
+      var dy = e.clientY - pointer.y;
+      if (!pointer.moved && Math.abs(dx) + Math.abs(dy) > 6) pointer.moved = true;
+      if (!pointer.moved) return;
+      tx = pointer.tx + dx;
+      ty = pointer.ty + dy;
+      applyTransform();
+    });
+    function endPan(e) {
+      if (!pointer) return;
+      var wasStatic = !pointer.moved;
+      var target = panTarget;
+      pointer = null;
+      panTarget = null;
+      board.classList.remove('is-grabbing');
+      if (wasStatic && target && e && e.type === 'pointerup') {
+        // タップ（静止タッチ）: カード詳細を開く
+        var quest = quests.find(function (q) { return q.id === target.dataset.id; });
+        if (quest) openDialog(quest);
+      }
+    }
+    board.addEventListener('pointerup', endPan);
+    board.addEventListener('pointercancel', endPan);
+
+    // ---- ズーム（ホイール / ピンチ / ボタン） ----
+    function zoomTo(next, cx, cy) {
+      var rect = board.getBoundingClientRect();
+      cx = cx == null ? rect.width / 2 : cx - rect.left;
+      cy = cy == null ? rect.height / 2 : cy - rect.top;
+      var clamped = Math.min(2.2, Math.max(0.35, next));
+      var ratio = clamped / scale;
+      tx = cx - (cx - tx) * ratio;
+      ty = cy - (cy - ty) * ratio;
+      scale = clamped;
+      applyTransform();
+    }
+    board.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+      zoomTo(scale * factor, e.clientX, e.clientY);
+    }, { passive: false });
+
+    var pinch = null;
+    board.addEventListener('touchstart', function (e) {
+      if (e.touches.length === 2) {
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        pinch = { dist: Math.hypot(dx, dy), scale: scale, tx: tx, ty: ty, mx: (e.touches[0].clientX + e.touches[1].clientX) / 2, my: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+        pointer = null;
+      }
+    }, { passive: true });
+    board.addEventListener('touchmove', function (e) {
+      if (pinch && e.touches.length === 2) {
+        e.preventDefault();
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        var dist = Math.hypot(dx, dy);
+        var rect = board.getBoundingClientRect();
+        var cx = pinch.mx - rect.left, cy = pinch.my - rect.top;
+        var next = Math.min(2.2, Math.max(0.35, pinch.scale * (dist / pinch.dist)));
+        var ratio = next / scale;
+        tx = cx - (cx - tx) * ratio;
+        ty = cy - (cy - ty) * ratio;
+        scale = next;
+        applyTransform();
+        // ピンチ中の平行移動
+        var mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        var my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        tx += mx - pinch.mx;
+        ty += my - pinch.my;
+        pinch.mx = mx; pinch.my = my;
+        applyTransform();
+      }
+    }, { passive: false });
+    board.addEventListener('touchend', function () { pinch = null; }, { passive: true });
+
+    // ボタン
+    var zoomIn = document.getElementById('zoomIn');
+    var zoomOut = document.getElementById('zoomOut');
+    var zoomReset = document.getElementById('zoomReset');
+    if (zoomIn) zoomIn.addEventListener('click', function () { zoomTo(scale * 1.3); });
+    if (zoomOut) zoomOut.addEventListener('click', function () { zoomTo(scale / 1.3); });
+    if (zoomReset) zoomReset.addEventListener('click', function () { fitView(); });
+
+    function fitView() {
+      // 全体表示: フィルタ後のキャンバス範囲を実測して収める
+      var cards = Array.prototype.slice.call(canvas.querySelectorAll('.quest-card'));
+      if (!cards.length) { scale = 1; tx = 0; ty = 0; applyTransform(); return; }
+      var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      cards.forEach(function (card) {
+        var x = parseFloat(card.style.left) || 0;
+        var y = parseFloat(card.style.top) || 0;
+        minX = Math.min(minX, x); minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + CARD_W); maxY = Math.max(maxY, y + 110);
+      });
+      var pad = 24;
+      var w = Math.max(1, maxX - minX + pad * 2);
+      var h = Math.max(1, maxY - minY + pad * 2);
+      scale = Math.min(1.1, Math.max(0.35, Math.min(board.clientWidth / w, board.clientHeight / h)));
+      tx = Math.round((board.clientWidth - w * scale) / 2 - (minX - pad) * scale);
+      ty = Math.round((board.clientHeight - h * scale) / 2 - (minY - pad) * scale);
+      applyTransform();
+    }
+
+    // 検索・フィルタ
+    var searchTimer = null;
+    if (searchEl) {
+      searchEl.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+          query = searchEl.value.trim();
+          render();
+        }, 180);
+      });
+    }
+    function bindFilterBar(bar, attr, apply) {
+      if (!bar) return;
+      bar.querySelectorAll('.filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          bar.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          apply(btn.dataset[attr]);
+          render();
+        });
+      });
+    }
+    bindFilterBar(typeFilter, 'type', function (v) { activeType = v; });
+    bindFilterBar(stateFilter, 'state', function (v) { activeState = v; });
+
+    // 提案データ（審査待ち）の表示切り替え。既定はオフ。
+    var proposedToggle = document.getElementById('showProposed');
+    if (proposedToggle) {
+      proposedToggle.addEventListener('change', function () {
+        showProposed = proposedToggle.checked;
+        render();
+      });
+    }
+
+    // ヒント
+    if (hint) {
+      var hintClose = document.getElementById('hintClose');
+      if (hintClose) hintClose.addEventListener('click', function () { hint.hidden = true; });
+      try {
+        if (window.localStorage && window.localStorage.getItem('mifron-quest-hint') === 'seen') hint.hidden = true;
+        hintClose && hintClose.addEventListener('click', function () {
+          try { window.localStorage.setItem('mifron-quest-hint', 'seen'); } catch (_) { /* private mode */ }
+        });
+      } catch (_) { /* localStorage unavailable */ }
+    }
+
+    // ダイアログを閉じる
+    if (dialog) {
+      dialog.addEventListener('click', function (e) {
+        if (e.target === dialog || e.target.closest('[data-close-dialog]')) {
+          if (typeof dialog.close === 'function') dialog.close();
+          else dialog.removeAttribute('open');
+        }
+      });
+    }
+
+    fetchApiQuests().then(function (apiQuests) {
+      if (apiQuests && apiQuests.length) {
+        var approved = apiQuests.filter(function (q) { return !q.proposed; });
+        var pending = apiQuests.filter(function (q) { return q.proposed; });
+        // 承認済みKVデータがあれば内蔵データより優先。提案は追加で保持（既定非表示）。
+        quests = approved.length ? approved.concat(pending) : QUESTS.slice().concat(pending);
+      }
+      render();
+      fitView();
+    });
   }
 
-  function normalize(quest) {
-    var clone = Object.assign({}, quest);
-    clone.dependencies = Array.isArray(quest.dependencies) ? quest.dependencies.slice() : [];
-    clone.icon = quest.icon || iconFor(quest);
-    clone.state = quest.state || 'available';
-    return clone;
-  }
-
-  function typeLabel(type) {
-    return TYPE_LABELS[type] || type || 'クエスト';
-  }
-
-  function difficultyLabel(difficulty) {
-    return DIFFICULTY_LABELS[difficulty] || DIFFICULTY_LABELS.normal;
-  }
-
-  function difficultyName(difficulty) {
-    return DIFFICULTY_NAMES[difficulty] || difficulty || '普通';
-  }
-
-  function stateLabel(state) {
-    return STATE_LABELS[state] || '挑戦可能';
-  }
-
-  function formatDate(value) {
-    var date = new Date(value);
-    if (isNaN(date.getTime())) return '不明';
-    return date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
-  }
-
-  function demoQuests() {
-    return [
-      // ---- Daily tree ----
-      { id: 'daily_login', name: '今日のログイン', description: 'Mifronへログインして、今日の活動を始めよう。', condition: 'サーバーにログインする', reward: 'MP: 50', type: 'daily', difficulty: 'easy', dependencies: [], state: 'completed', icon: '🚪' },
-      { id: 'daily_mine', name: '石を128個採掘', description: '採掘の基本。石を128個集めて資源を確保しよう。', condition: '石を128個採掘する', reward: 'MP: 120', type: 'daily', difficulty: 'normal', dependencies: ['daily_login'], state: 'completed', icon: '⛏️' },
-      { id: 'daily_mob', name: 'モブを15体討伐', description: '夜になる前に周囲のモブを討伐して安全を確保する。', condition: 'モブを15体倒す', reward: 'MP: 120', type: 'daily', difficulty: 'normal', dependencies: ['daily_login'], state: 'available', icon: '⚔️' },
-      { id: 'daily_trade', name: 'ショップで取引', description: '棚ショップで1回売買して経済を回そう。', condition: 'ショップで1回売買する', reward: 'MP: 80', type: 'daily', difficulty: 'easy', dependencies: ['daily_login'], state: 'available', icon: '💰' },
-      { id: 'daily_build', name: 'ブロックを64個設置', description: '建築の第一歩。ブロックを64個設置しよう。', condition: 'ブロックを64個設置する', reward: 'MP: 100', type: 'daily', difficulty: 'easy', dependencies: ['daily_login'], state: 'locked', icon: '🧱' },
-      { id: 'daily_fish', name: '魚を10匹釣る', description: 'のんびり釣りをして食料とMPを確保。', condition: '魚を10匹釣る', reward: 'MP: 90', type: 'daily', difficulty: 'easy', dependencies: ['daily_trade'], state: 'locked', icon: '🎣' },
-
-      // ---- Weekly tree ----
-      { id: 'weekly_start', name: '週間チャレンジ開始', description: '今週の目標を立てて挑戦を始めよう。', condition: 'デイリークエストを3件クリア', reward: 'MP: 300', type: 'weekly', difficulty: 'normal', dependencies: [], state: 'completed', icon: '📅' },
-      { id: 'weekly_mine', name: '鉱石を512個採掘', description: '一週間かけて大量の鉱石を掘り進める。', condition: '鉱石を512個採掘する', reward: 'MP: 800', type: 'weekly', difficulty: 'hard', dependencies: ['weekly_start'], state: 'available', icon: '💎' },
-      { id: 'weekly_build', name: '10x10の建築', description: '10x10以上の拠点を建てて完成させる。', condition: '10x10以上の建築を完成させる', reward: 'MP: 700', type: 'weekly', difficulty: 'hard', dependencies: ['weekly_start'], state: 'locked', icon: '🏗️' },
-      { id: 'weekly_ffa', name: 'FFAで10キル', description: 'FFAアリーナで10回勝利を重ねる。', condition: 'FFAで10キルする', reward: 'MP: 650', type: 'weekly', difficulty: 'hard', dependencies: ['weekly_start'], state: 'locked', icon: '🎮' },
-      { id: 'weekly_master', name: 'ウィークリーマスター', description: '今週の主要目標をすべて達成する。', condition: '採掘・建築・FFAの週間目標を達成', reward: '称号: 週間の覇者 / MP: 1500', type: 'weekly', difficulty: 'very_hard', dependencies: ['weekly_mine', 'weekly_build', 'weekly_ffa'], state: 'locked', icon: '👑' },
-
-      // ---- Single tree ----
-      { id: 'single_welcome', name: '初心者の挑戦', description: 'はじめてMifronへ参加しよう。', condition: 'サーバーに初めてログインする', reward: 'MP: 100', type: 'single', difficulty: 'easy', dependencies: [], state: 'completed', icon: '🌱' },
-      { id: 'single_home', name: 'はじめての拠点', description: '自分だけの拠点を建築ワールドに建てる。', condition: '拠点となる建築を1つ完成させる', reward: 'MP: 250', type: 'single', difficulty: 'normal', dependencies: ['single_welcome'], state: 'available', icon: '🏠' },
-      { id: 'single_shop', name: '初めての取引', description: 'ショップで初めてアイテムを購入する。', condition: 'ショップでアイテムを購入する', reward: 'MP: 150', type: 'single', difficulty: 'easy', dependencies: ['single_welcome'], state: 'available', icon: '🛒' },
-
-      // ---- Hidden tree ----
-      { id: 'hidden_secret', name: '秘密の場所', description: '誰も知らない場所へたどり着く。', condition: '特定の座標に到達する', reward: 'MP: 500', type: 'hidden', difficulty: 'hard', dependencies: [], state: 'available', icon: '🗺️' },
-      { id: 'hidden_adventurer', name: '真の冒険者', description: '隠された試練をすべて乗り越える。', condition: '隠しクエストを3件クリア', reward: '称号: 真の冒険者', type: 'hidden', difficulty: 'very_hard', dependencies: ['hidden_secret'], state: 'locked', icon: '🏅' }
-    ];
-  }
-
+  /* ============================================================
+     提案フォーム（テンプレート・カウンタ・送信）
+     ============================================================ */
   var QUEST_TEMPLATES = [
     {
       key: 'mining', icon: '⛏️', label: '採掘',
       hint: '決まった数のブロックを掘る定番クエスト',
       data: {
-        name: 'デイリー：採掘チャレンジ',
-        description: '石や鉱石を決められた数だけ採掘するデイリークエストです。毎日の資源集めを習慣にできます。',
-        type: 'daily', difficulty: 'normal',
-        condition: '石を128個採掘する', conditionTypes: ['block_break'],
+        name: 'デイリー：採掘チャレンジ', description: '石や鉱石を決められた数だけ採掘するデイリークエストです。',
+        type: 'daily', difficulty: 'normal', condition: '石を128個採掘する', conditionTypes: ['block_break'],
         reward: 'MP: 120', rewardTypes: ['mp']
       }
     },
     {
       key: 'combat', icon: '⚔️', label: '討伐',
-      hint: 'モブや敵を倒す戦闘系クエスト',
+      hint: 'モブを倒す戦闘系クエスト',
       data: {
-        name: 'デイリー：モブ討伐',
-        description: '夜になる前に周囲のモブを討伐して、ワールドの安全を守ります。',
-        type: 'daily', difficulty: 'normal',
-        condition: 'モブを15体倒す', conditionTypes: ['mob_kill'],
+        name: 'デイリー：モブ討伐', description: '夜になる前に周囲のモブを討伐して、ワールドの安全を守ります。',
+        type: 'daily', difficulty: 'normal', condition: 'モブを15体倒す', conditionTypes: ['mob_kill'],
         reward: 'MP: 120', rewardTypes: ['mp']
       }
     },
@@ -152,10 +502,8 @@
       key: 'build', icon: '🧱', label: '建築',
       hint: '拠点や構造物を建てるクリエイティブ系',
       data: {
-        name: 'ウィークリー：建築家',
-        description: '10x10以上の拠点を建築ワールドに建てて完成させます。クリエイティビティを発揮しましょう。',
-        type: 'weekly', difficulty: 'hard',
-        condition: '10x10以上の建築を完成させる', conditionTypes: ['block_break'],
+        name: 'ウィークリー：建築家', description: '10x10以上の拠点を建築ワールドに建てて完成させます。',
+        type: 'weekly', difficulty: 'hard', condition: '10x10以上の建築を完成させる', conditionTypes: ['block_break'],
         reward: 'MP: 700', rewardTypes: ['mp', 'item']
       }
     },
@@ -163,21 +511,17 @@
       key: 'trade', icon: '💰', label: '取引',
       hint: 'ショップやオークションで経済を動かす',
       data: {
-        name: 'デイリー：マーケット活動',
-        description: 'ショップで売買を行い、Mifronの経済を活性化させます。',
-        type: 'daily', difficulty: 'easy',
-        condition: 'ショップで3回売買する', conditionTypes: ['mp_gain'],
+        name: 'デイリー：マーケット活動', description: 'ショップで売買を行い、Mifronの経済を活性化させます。',
+        type: 'daily', difficulty: 'easy', condition: 'ショップで3回売買する', conditionTypes: ['mp_gain'],
         reward: 'MP: 100', rewardTypes: ['mp']
       }
     },
     {
       key: 'explore', icon: '🧭', label: '探索',
-      hint: 'バイオームや座標を目指して冒険する',
+      hint: 'ワールドや座標を目指して冒険する',
       data: {
-        name: 'スペシャル：未知への旅',
-        description: '遠くのバイオームや指定座標を目指して探索し、新しい発見を集めます。',
-        type: 'single', difficulty: 'normal',
-        condition: '特定のバイオームを3種類発見する', conditionTypes: ['move', 'advancement'],
+        name: 'スペシャル：未知への旅', description: '遠くのワールドや指定座標を目指して探索し、新しい発見を集めます。',
+        type: 'single', difficulty: 'normal', condition: '特定のワールドへ到達する', conditionTypes: ['move', 'advancement'],
         reward: 'MP: 300', rewardTypes: ['mp']
       }
     },
@@ -185,368 +529,31 @@
       key: 'fishing', icon: '🎣', label: '釣り',
       hint: '釣りでアイテムや食料を集める',
       data: {
-        name: 'デイリー：釣り名人',
-        description: '釣りをして魚やレアアイテムを集める、のんびり系クエストです。',
-        type: 'daily', difficulty: 'easy',
-        condition: '魚を10匹釣る', conditionTypes: ['item_obtain'],
+        name: 'デイリー：釣り名人', description: '釣りをして魚やレアアイテムを集める、のんびり系クエストです。',
+        type: 'daily', difficulty: 'easy', condition: '魚を10匹釣る', conditionTypes: ['item_obtain'],
         reward: 'MP: 90', rewardTypes: ['mp', 'item']
       }
     },
     {
-      key: 'title', icon: '🏅', label: '称号チャレンジ',
+      key: 'title', icon: '🏅', label: '称号',
       hint: '条件を満たして特別な称号を獲得する',
       data: {
-        name: 'チャレンジ：〇〇の達人',
-        description: '難しい条件を達成して、特別な称号を手に入れるチャレンジクエストです。',
-        type: 'hidden', difficulty: 'very_hard',
-        condition: '特定の条件を達成する', conditionTypes: ['advancement'],
-        reward: '称号: 新しい称号', rewardTypes: ['title'],
-        proposedTitle: '新しい称号'
+        name: 'チャレンジ：〇〇の達人', description: '難しい条件を達成して、特別な称号を手に入れるチャレンジクエストです。',
+        type: 'hidden', difficulty: 'very_hard', condition: '特定の条件を達成する', conditionTypes: ['advancement'],
+        reward: '称号: 新しい称号', rewardTypes: ['title'], proposedTitle: '新しい称号'
+      }
+    },
+    {
+      key: 'login', icon: '🚪', label: 'ログイン',
+      hint: '続けて参加する習慣づけ系',
+      data: {
+        name: 'デイリー：今日のログイン', description: 'サーバーへ参加して、今日の活動を始めるきっかけのクエストです。',
+        type: 'daily', difficulty: 'easy', condition: 'サーバーにログインする', conditionTypes: ['login'],
+        reward: 'MP: 50', rewardTypes: ['mp']
       }
     }
   ];
 
-  function getDemoQuests() {
-    return demoQuests().map(normalize);
-  }
-
-  async function fetchQuests() {
-    try {
-      var response = await fetch('/api/quests', { headers: { Accept: 'application/json' } });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      var data = await response.json();
-      if (!Array.isArray(data)) throw new Error('Unexpected payload');
-      if (data.length === 0) return getDemoQuests();
-      return data.map(normalize);
-    } catch (error) {
-      return getDemoQuests();
-    }
-  }
-
-  /* ---------------------------------------------------------------
-     Advancement tree layout
-  --------------------------------------------------------------- */
-  function computeLayout(list) {
-    var byId = new Map();
-    var children = new Map();
-    var parents = new Map();
-    var indeg = new Map();
-
-    list.forEach(function (quest) {
-      byId.set(quest.id, quest);
-      children.set(quest.id, []);
-      parents.set(quest.id, []);
-      indeg.set(quest.id, 0);
-    });
-
-    list.forEach(function (quest) {
-      (quest.dependencies || []).forEach(function (dep) {
-        if (!byId.has(dep) || dep === quest.id) return;
-        children.get(dep).push(quest.id);
-        parents.get(quest.id).push(dep);
-        indeg.set(quest.id, indeg.get(quest.id) + 1);
-      });
-    });
-
-    var level = new Map();
-    var queue = [];
-    list.forEach(function (quest) {
-      if (indeg.get(quest.id) === 0) {
-        level.set(quest.id, 0);
-        queue.push(quest.id);
-      }
-    });
-
-    var guard = 0;
-    while (queue.length && guard < 5000) {
-      guard += 1;
-      var id = queue.shift();
-      var currentLevel = level.get(id) || 0;
-      children.get(id).forEach(function (child) {
-        var next = currentLevel + 1;
-        if (!level.has(child) || next > level.get(child)) level.set(child, next);
-        indeg.set(child, indeg.get(child) - 1);
-        if (indeg.get(child) === 0) queue.push(child);
-      });
-    }
-
-    list.forEach(function (quest) {
-      if (!level.has(quest.id)) level.set(quest.id, 0);
-    });
-
-    var groups = new Map();
-    list.forEach(function (quest) {
-      var lv = level.get(quest.id);
-      if (!groups.has(lv)) groups.set(lv, []);
-      groups.get(lv).push(quest);
-    });
-
-    groups.forEach(function (arr) {
-      arr.sort(function (a, b) {
-        return String(a.name).localeCompare(String(b.name), 'ja');
-      });
-    });
-
-    var maxCount = 0;
-    groups.forEach(function (arr) { maxCount = Math.max(maxCount, arr.length); });
-    var maxLevel = 0;
-    groups.forEach(function (_arr, lv) { maxLevel = Math.max(maxLevel, lv); });
-
-    var width = Math.max(maxCount * COL_STEP - (COL_STEP - NODE), NODE);
-    var height = maxLevel * ROW_STEP + NODE;
-    var positions = new Map();
-
-    groups.forEach(function (arr, lv) {
-      var rowWidth = arr.length * COL_STEP - (COL_STEP - NODE);
-      var offset = (width - rowWidth) / 2;
-      arr.forEach(function (quest, index) {
-        positions.set(quest.id, { x: offset + index * COL_STEP, y: lv * ROW_STEP });
-      });
-    });
-
-    return { byId: byId, children: children, parents: parents, positions: positions, width: width, height: height };
-  }
-
-  function svgEl(name, attrs) {
-    var el = document.createElementNS('http://www.w3.org/2000/svg', name);
-    Object.keys(attrs).forEach(function (key) { el.setAttribute(key, attrs[key]); });
-    return el;
-  }
-
-  function buildLines(layout, stateOf) {
-    var svg = svgEl('svg', {
-      class: 'mc-lines',
-      width: layout.width,
-      height: layout.height,
-      viewBox: '0 0 ' + layout.width + ' ' + layout.height,
-      'aria-hidden': 'true'
-    });
-
-    layout.positions.forEach(function (childPos, childId) {
-      layout.parents.get(childId).forEach(function (parentId) {
-        var parentPos = layout.positions.get(parentId);
-        if (!parentPos) return;
-        var x1 = parentPos.x + NODE / 2;
-        var y1 = parentPos.y + NODE;
-        var x2 = childPos.x + NODE / 2;
-        var y2 = childPos.y;
-        var midY = (y1 + y2) / 2;
-        var state = stateOf(childId);
-        var path = svgEl('path', {
-          d: 'M' + x1 + ' ' + y1 + ' V' + midY + ' H' + x2 + ' V' + y2,
-          class: 'mc-line state-' + state
-        });
-        svg.appendChild(path);
-      });
-    });
-
-    return svg;
-  }
-
-  /* ---------------------------------------------------------------
-     Quest index page
-  --------------------------------------------------------------- */
-  function initQuestIndex() {
-    var windowEl = document.getElementById('mcWindow');
-    var tabsEl = document.getElementById('mcTabs');
-    var treeView = document.getElementById('mcTreeView');
-    var treeEl = document.getElementById('mcTree');
-    var emptyEl = document.getElementById('mcEmpty');
-    var proposeView = document.getElementById('mcProposeView');
-    var titleEl = document.getElementById('mcTitle');
-    var progressEl = document.getElementById('mcProgress');
-    var tooltip = document.getElementById('mcTooltip');
-    var dialog = document.getElementById('questDialog');
-    var dialogBody = document.getElementById('questDialogBody');
-
-    if (!windowEl || !tabsEl || !treeEl) return;
-
-    var TABS = [
-      { key: 'all', label: 'すべて', icon: '🗺️' },
-      { key: 'daily', label: 'デイリー', icon: '🌅' },
-      { key: 'weekly', label: 'ウィークリー', icon: '📅' },
-      { key: 'single', label: '単発', icon: '⭐' },
-      { key: 'hidden', label: '隠し', icon: '👁️' },
-      { key: 'propose', label: '＋ 提案', icon: '✍️' }
-    ];
-
-    var quests = [];
-    var active = 'all';
-
-    function stateOf(id) {
-      var quest = quests.find(function (item) { return item.id === id; });
-      return quest ? quest.state : 'available';
-    }
-
-    function filtered() {
-      if (active === 'all') return quests.slice();
-      return quests.filter(function (quest) { return quest.type === active; });
-    }
-
-    function hideTooltip() {
-      if (tooltip) tooltip.classList.remove('is-visible');
-    }
-
-    function positionTooltip(target) {
-      if (!tooltip) return;
-      var wrapRect = windowEl.getBoundingClientRect();
-      var rect = target.getBoundingClientRect();
-      var left = rect.left - wrapRect.left + rect.width / 2;
-      var top = rect.top - wrapRect.top - 10;
-      tooltip.style.left = Math.max(12, left) + 'px';
-      tooltip.style.top = Math.max(12, top) + 'px';
-    }
-
-    function showTooltip(quest, target) {
-      if (!tooltip) return;
-      tooltip.innerHTML =
-        '<span class="mc-tooltip-type type-' + esc(quest.type) + '">' + esc(typeLabel(quest.type)) + '</span>' +
-        '<strong class="mc-tooltip-title">' + esc(quest.name) + '</strong>' +
-        '<span class="mc-tooltip-desc">' + esc(quest.description) + '</span>' +
-        '<span class="mc-tooltip-row"><b>条件</b>' + esc(quest.condition) + '</span>' +
-        '<span class="mc-tooltip-row"><b>報酬</b>' + esc(quest.reward) + '</span>' +
-        '<span class="mc-tooltip-state state-' + esc(quest.state) + '">' + esc(stateLabel(quest.state)) + ' / ' + esc(difficultyName(quest.difficulty)) + '</span>';
-      positionTooltip(target);
-      tooltip.classList.add('is-visible');
-    }
-
-    function openDialog(quest) {
-      if (!dialog || !dialogBody) return;
-      var deps = (quest.dependencies || []).map(function (dep) {
-        var found = quests.find(function (item) { return item.id === dep; });
-        return found ? found.name : dep;
-      });
-      dialogBody.innerHTML =
-        '<div class="mc-dialog-head">' +
-          '<span class="mc-dialog-icon">' + esc(quest.icon) + '</span>' +
-          '<div>' +
-            '<span class="mc-dialog-type type-' + esc(quest.type) + '">' + esc(typeLabel(quest.type)) + ' · ' + esc(difficultyLabel(quest.difficulty)) + '</span>' +
-            '<h2>' + esc(quest.name) + '</h2>' +
-            '<span class="mc-dialog-state state-' + esc(quest.state) + '">' + esc(stateLabel(quest.state)) + '</span>' +
-          '</div>' +
-        '</div>' +
-        '<p class="mc-dialog-desc">' + esc(quest.description) + '</p>' +
-        '<dl class="mc-dialog-facts">' +
-          '<div><dt>成功条件</dt><dd>' + esc(quest.condition) + '</dd></div>' +
-          '<div><dt>報酬</dt><dd>' + esc(quest.reward) + '</dd></div>' +
-          '<div><dt>解放条件</dt><dd>' + (deps.length ? '前提: ' + esc(deps.join('、')) : esc(quest.unlockCondition || 'なし')) + '</dd></div>' +
-        '</dl>' +
-        '<div class="mc-dialog-actions">' +
-          '<button type="button" class="btn primary" data-close-dialog>閉じる</button>' +
-          '<a class="btn" href="./propose.html">このクエストを提案する</a>' +
-        '</div>';
-      if (typeof dialog.showModal === 'function') dialog.showModal();
-      else dialog.setAttribute('open', '');
-    }
-
-    function createNode(quest, position) {
-      var node = document.createElement('button');
-      node.type = 'button';
-      node.className = 'mc-node type-' + quest.type + ' state-' + quest.state;
-      node.style.left = position.x + 'px';
-      node.style.top = position.y + 'px';
-      node.dataset.id = quest.id;
-      node.setAttribute('aria-label', quest.name + '（' + stateLabel(quest.state) + '）');
-      node.innerHTML =
-        '<span class="mc-node-frame">' +
-          '<span class="mc-node-icon">' + esc(quest.icon) + '</span>' +
-        '</span>' +
-        '<span class="mc-node-label">' + esc(quest.name) + '</span>' +
-        (quest.state === 'completed' ? '<span class="mc-node-check" aria-hidden="true">✔</span>' : '') +
-        (quest.state === 'locked' ? '<span class="mc-node-lock" aria-hidden="true">🔒</span>' : '');
-      node.addEventListener('mouseenter', function () { showTooltip(quest, node); });
-      node.addEventListener('focus', function () { showTooltip(quest, node); });
-      node.addEventListener('mouseleave', hideTooltip);
-      node.addEventListener('blur', hideTooltip);
-      node.addEventListener('click', function () { hideTooltip(); openDialog(quest); });
-      return node;
-    }
-
-    function renderTree() {
-      var list = filtered();
-      treeEl.innerHTML = '';
-      treeEl.classList.remove('is-empty');
-
-      if (!list.length) {
-        treeEl.classList.add('is-empty');
-        if (emptyEl) emptyEl.hidden = false;
-        if (progressEl) progressEl.textContent = '';
-        return;
-      }
-      if (emptyEl) emptyEl.hidden = true;
-
-      var layout = computeLayout(list);
-      treeEl.style.width = layout.width + 'px';
-      treeEl.style.height = layout.height + 'px';
-      treeEl.appendChild(buildLines(layout, stateOf));
-
-      list.forEach(function (quest) {
-        var position = layout.positions.get(quest.id);
-        if (position) treeEl.appendChild(createNode(quest, position));
-      });
-
-      var completed = list.filter(function (quest) { return quest.state === 'completed'; }).length;
-      if (progressEl) progressEl.textContent = completed + ' / ' + list.length + ' 達成';
-    }
-
-    function updateTabs() {
-      tabsEl.querySelectorAll('.mc-tab').forEach(function (tab) {
-        tab.classList.toggle('is-active', tab.dataset.tab === active);
-        tab.setAttribute('aria-selected', String(tab.dataset.tab === active));
-      });
-    }
-
-    function selectTab(key) {
-      active = key;
-      hideTooltip();
-      updateTabs();
-
-      var isPropose = key === 'propose';
-      if (treeView) treeView.hidden = isPropose;
-      if (proposeView) proposeView.hidden = !isPropose;
-
-      if (isPropose) {
-        if (titleEl) titleEl.textContent = 'クエストを提案';
-        if (progressEl) progressEl.textContent = '';
-        return;
-      }
-
-      if (titleEl) titleEl.textContent = key === 'all' ? 'すべてのクエスト' : typeLabel(key) + 'クエスト';
-      renderTree();
-    }
-
-    TABS.forEach(function (tab) {
-      var button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'mc-tab';
-      button.dataset.tab = tab.key;
-      button.setAttribute('role', 'tab');
-      button.innerHTML = '<span class="mc-tab-icon" aria-hidden="true">' + tab.icon + '</span><span>' + esc(tab.label) + '</span>';
-      button.addEventListener('click', function () { selectTab(tab.key); });
-      tabsEl.appendChild(button);
-    });
-
-    if (dialog) {
-      dialog.addEventListener('click', function (event) {
-        if (event.target === dialog || event.target.closest('[data-close-dialog]')) {
-          if (typeof dialog.close === 'function') dialog.close();
-          else dialog.removeAttribute('open');
-        }
-      });
-    }
-
-    fetchQuests().then(function (data) {
-      quests = data;
-      var requested = new URLSearchParams(window.location.search).get('tab');
-      var valid = TABS.some(function (tab) { return tab.key === requested; });
-      selectTab(valid ? requested : 'all');
-      setupQuestProposalForm();
-    });
-  }
-
-  /* ---------------------------------------------------------------
-     Quest proposal form (index tab + standalone page)
-  --------------------------------------------------------------- */
   function setupQuestProposalForm() {
     var form = document.getElementById('questProposalForm');
     if (!form) return;
@@ -558,6 +565,7 @@
     function setField(name, value) {
       var field = form.elements[name];
       if (field) field.value = value == null ? '' : value;
+      updateCount(field);
     }
 
     function setChecks(name, values) {
@@ -575,6 +583,17 @@
       );
       titleGroup.hidden = !hasTitle;
     }
+
+    // 文字数カウンタ
+    function updateCount(field) {
+      if (!field || !field.id) return;
+      var counter = form.querySelector('[data-count-for="' + field.id + '"]');
+      if (counter) counter.textContent = String(field.value.length);
+    }
+    form.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(function (field) {
+      field.addEventListener('input', function () { updateCount(field); });
+      updateCount(field);
+    });
 
     function applyTemplate(template) {
       var data = template.data;
@@ -617,9 +636,21 @@
     });
     syncTitleGroup();
 
+    // バリデーション: ネイティブメッセージの下に独自のサマリも出す
+    function feedback(text, ok) {
+      if (!message) return;
+      message.textContent = text;
+      message.hidden = false;
+      message.classList.toggle('is-error', !ok);
+      message.classList.toggle('is-ok', ok);
+    }
+
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      if (!form.reportValidity()) {
+        feedback('未入力の必須項目があります。各項目の下のエラーを確認してください。', false);
+        return;
+      }
 
       var data = {
         name: form.elements.name ? form.elements.name.value.trim() : '',
@@ -629,10 +660,6 @@
         condition: form.elements.condition ? form.elements.condition.value.trim() : '',
         reward: form.elements.reward ? form.elements.reward.value.trim() : '',
         proposedTitle: form.elements.proposedTitle ? form.elements.proposedTitle.value.trim() : '',
-        dependencies: form.elements.dependencies && form.elements.dependencies.value
-          ? form.elements.dependencies.value.split(',').map(function (id) { return id.trim(); }).filter(Boolean)
-          : [],
-        unlockCondition: form.elements.unlockCondition ? form.elements.unlockCondition.value.trim() : '',
         author: form.elements.author ? form.elements.author.value.trim() : '',
         notes: form.elements.notes ? form.elements.notes.value.trim() : '',
         conditionTypes: [],
@@ -645,16 +672,9 @@
         data.rewardTypes.push(input.value);
       });
 
-      function feedback(text, ok) {
-        if (!message) return;
-        message.textContent = text;
-        message.hidden = false;
-        message.classList.toggle('is-error', !ok);
-        message.classList.toggle('is-ok', ok);
-      }
-
       var submit = form.querySelector('button[type="submit"]');
       if (submit) submit.disabled = true;
+      feedback('送信中…', true);
 
       try {
         var response = await fetch('/api/quests', {
@@ -664,14 +684,17 @@
         });
         var result = await response.json().catch(function () { return {}; });
         if (response.ok) {
-          feedback('提案を受け付けました。審査後に公開されます。', true);
+          feedback('提案を受け付けました。運営へ通知しました。審査後にクエストボードへ反映されます。', true);
           form.reset();
+          form.querySelectorAll('[data-count-for]').forEach(function (c) { c.textContent = '0'; });
           syncTitleGroup();
           if (templateGrid) {
             templateGrid.querySelectorAll('.quest-template').forEach(function (card) {
               card.classList.remove('is-active');
             });
           }
+        } else if (response.status === 429) {
+          feedback('送信が集中しています。10分ほど待ってから再度お試しください。', false);
         } else {
           feedback('提案に失敗しました: ' + (result.error || '不明なエラー'), false);
         }
@@ -683,71 +706,52 @@
     });
   }
 
-  /* ---------------------------------------------------------------
-     Quest detail page
-  --------------------------------------------------------------- */
-  function initQuestDetail() {
+  /* ---------- 詳細ページ（detail.html） ---------- */
+  function initDetail() {
     var container = document.getElementById('questDetail');
-    var titleEl = document.getElementById('questTitle');
     if (!container) return;
-
-    var questId = new URLSearchParams(window.location.search).get('id');
+    var id = new URLSearchParams(window.location.search).get('id');
 
     function render(quest) {
       if (!quest) {
         container.innerHTML =
-          '<div class="mc-empty-state">' +
-            '<h2>クエストが見つかりません</h2>' +
-            '<p>指定されたクエストは存在しないか、削除されました。</p>' +
-            '<a class="btn primary" href="./">クエスト一覧に戻る</a>' +
-          '</div>';
+          '<div class="mc-empty-state"><h2>クエストが見つかりません</h2>' +
+          '<p>指定されたクエストは存在しないか、削除されました。</p>' +
+          '<a class="btn primary" href="./">クエストボードへ戻る</a></div>';
         return;
       }
-      if (titleEl) titleEl.textContent = quest.name;
-
-      var deps = (quest.dependencies || []).map(function (dep) {
-        return '<li>' + esc(dep) + '</li>';
-      }).join('');
-
+      document.title = quest.name + ' | Mifron';
       container.innerHTML =
-        '<article class="mc-detail type-' + esc(quest.type) + '">' +
-          '<header class="mc-detail-head">' +
-            '<span class="mc-detail-icon">' + esc(quest.icon) + '</span>' +
-            '<div>' +
-              '<span class="mc-detail-badge type-' + esc(quest.type) + '">' + esc(typeLabel(quest.type)) + '</span>' +
-              '<h2>' + esc(quest.name) + '</h2>' +
-              '<span class="mc-detail-state state-' + esc(quest.state) + '">' + esc(stateLabel(quest.state)) + ' · ' + esc(difficultyLabel(quest.difficulty)) + ' ' + esc(difficultyName(quest.difficulty)) + '</span>' +
-            '</div>' +
+        '<article class="detail-card type-' + esc(quest.type) + '">' +
+          '<header class="detail-head">' +
+            '<span class="badge type-' + esc(quest.type) + '">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
+            '<h2>' + esc(quest.name) + '</h2>' +
           '</header>' +
-          '<p class="mc-detail-desc">' + esc(quest.description) + '</p>' +
-          '<div class="mc-detail-grid">' +
-            '<section><h3>成功条件</h3><p>' + esc(quest.condition) + '</p></section>' +
-            '<section><h3>報酬</h3><p>' + esc(quest.reward) + '</p></section>' +
+          '<div class="quest-dialog-facts">' +
+            '<div><dt>成功条件</dt><dd>' + esc(quest.condition) + '</dd></div>' +
+            '<div><dt>報酬</dt><dd>' + esc(quest.reward) + '</dd></div>' +
+            '<div><dt>サイクル</dt><dd>' + esc(quest.candidate || quest.cycle || '条件発生 / 1回限り') + '</dd></div>' +
           '</div>' +
-          (deps ? '<section class="mc-detail-section"><h3>前提クエスト</h3><ul class="mc-detail-deps">' + deps + '</ul></section>' : '') +
-          (quest.unlockCondition ? '<section class="mc-detail-section"><h3>解放条件</h3><p>' + esc(quest.unlockCondition) + '</p></section>' : '') +
-          '<footer class="mc-detail-foot">' +
-            '<a class="btn primary" href="./">クエスト一覧へ</a>' +
-            '<a class="btn" href="./propose.html">改善を提案する</a>' +
+          '<footer class="detail-footer">' +
+            '<a class="btn primary" href="./">ボードへ戻る</a>' +
+            '<a class="btn" href="./propose.html">提案する</a>' +
           '</footer>' +
         '</article>';
     }
 
-    if (!questId) {
-      render(null);
-      return;
-    }
-
-    fetchQuests().then(function (quests) {
-      var quest = quests.find(function (item) { return item.id === questId; });
-      render(quest || null);
+    fetchApiQuests().then(function (apiQuests) {
+      var list = apiQuests || [];
+      var approved = list.filter(function (q) { return !q.proposed; });
+      var pending = list.filter(function (q) { return q.proposed; });
+      var pool = approved.length ? approved.concat(pending) : QUESTS.concat(pending);
+      render(pool.find(function (q) { return q.id === id; }) || null);
     });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    if (document.getElementById('mcWindow')) initQuestIndex();
-    if (document.getElementById('questDetail')) initQuestDetail();
-    if (document.getElementById('questProposalForm') && !document.getElementById('mcWindow')) {
+    if (document.getElementById('questBoard')) initBoard();
+    if (document.getElementById('questDetail')) initDetail();
+    if (document.getElementById('questProposalForm') && !document.getElementById('questBoard')) {
       setupQuestProposalForm();
     }
   });

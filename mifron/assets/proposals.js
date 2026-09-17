@@ -213,7 +213,19 @@
     function setField(name, value) {
       var field = form.elements[name];
       if (field) field.value = value == null ? '' : value;
+      updateCount(field);
     }
+
+    // 文字数カウンタ（スマホの長文入力で書きすぎを防ぐ）
+    function updateCount(field) {
+      if (!field || !field.id) return;
+      var counter = form.querySelector('[data-count-for="' + field.id + '"]');
+      if (counter) counter.textContent = String(field.value.length);
+    }
+    form.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(function (field) {
+      field.addEventListener('input', function () { updateCount(field); });
+      updateCount(field);
+    });
 
     function applyTemplate(template) {
       setField('title', template.data.title);
@@ -247,7 +259,10 @@
 
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      if (!form.reportValidity()) {
+        feedback('未入力の必須項目があります。各項目の下のエラーを確認してください。', false);
+        return;
+      }
 
       var data = {
         title: form.elements.title ? form.elements.title.value.trim() : '',
@@ -271,6 +286,7 @@
 
       var submit = form.querySelector('button[type="submit"]');
       if (submit) submit.disabled = true;
+      feedback('送信中…', true);
 
       try {
         var response = await fetch('/api/proposals', {
@@ -280,13 +296,16 @@
         });
         var result = await response.json().catch(function () { return {}; });
         if (response.ok) {
-          feedback('提案を受け付けました。審査後に実装が検討されます。', true);
+          feedback('提案を受け付けました。運営へ通知しました。審査後に提案一覧へ反映されます。', true);
           form.reset();
+          form.querySelectorAll('[data-count-for]').forEach(function (c) { c.textContent = '0'; });
           if (templateGrid) {
             templateGrid.querySelectorAll('.proposal-template').forEach(function (card) {
               card.classList.remove('is-active');
             });
           }
+        } else if (response.status === 429) {
+          feedback('送信が集中しています。10分ほど待ってから再度お試しください。', false);
         } else {
           feedback('提案に失敗しました: ' + (result.error || '不明なエラー'), false);
         }
@@ -296,6 +315,14 @@
         if (submit) submit.disabled = false;
       }
     });
+
+    function feedback(text, ok) {
+      if (!message) return;
+      message.textContent = text;
+      message.hidden = false;
+      message.classList.toggle('is-error', !ok);
+      message.classList.toggle('is-ok', ok);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
