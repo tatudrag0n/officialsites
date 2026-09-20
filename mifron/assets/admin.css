@@ -6,21 +6,23 @@
 
 .admin-page { background: var(--paper); }
 
-.review-summary {
+.review-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.review-stat {
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  margin-top: 18px;
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 600;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--muted);
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
-.review-summary b { font-size: 16px; }
-.review-summary .is-hot { color: var(--mifron); }
-.review-summary .is-watch { color: #b3261e; }
+.review-stat b { font-size: 19px; color: var(--ink); }
+.review-stat.is-hot { border-color: var(--mifron); background: var(--mifron-soft); }
+.review-stat.is-hot b { color: var(--mifron); }
+.review-stat.is-watch { border-color: #b3261e; background: #fdeaec; }
+.review-stat.is-watch b { color: #b3261e; }
 
 /* ---------- カード ---------- */
 .review-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -28,6 +30,8 @@
 @media (min-width: 1100px) { .review-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .review-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -36,6 +40,19 @@
   border: 1px solid var(--line);
   border-left: 4px solid var(--line-strong);
   border-radius: var(--radius);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.review-card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(22, 24, 29, .10); }
+/* 強調カードはブランドの帯で一覧の中で目を引くようにする */
+.review-card.is-hot::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--mifron), var(--gold), transparent);
+}
+.review-card.review-deletion.is-hot::after {
+  background: linear-gradient(90deg, var(--tex), var(--gold), transparent);
 }
 
 /* 高評価比率が高いものは、枠・背景・影で一覧の中で目立たせる */

@@ -440,6 +440,7 @@
     var dialog = document.getElementById('questDialog');
     var dialogBody = document.getElementById('questDialogBody');
     var hint = document.getElementById('boardHint');
+    var emptyEl = document.getElementById('boardEmpty');
     if (!board || !canvas) return;
 
     var quests = QUESTS.slice();
@@ -518,6 +519,7 @@
     function render() {
       var list = filtered();
       canvas.querySelectorAll('.quest-card').forEach(function (el) { el.remove(); });
+      if (emptyEl) emptyEl.hidden = list.length > 0;
       if (!list.length) {
         if (countEl) countEl.textContent = '該当するクエストはありません';
         drawLines([], new Map());

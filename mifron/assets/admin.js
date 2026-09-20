@@ -143,6 +143,11 @@
     });
   }
 
+  function statChip(kind, value, label) {
+    return '<span class="review-stat' + (kind ? ' is-' + kind : '') + '">' +
+      '<b>' + value + '</b><small>' + esc(label) + '</small></span>';
+  }
+
   function renderInto(container, html, emptyText) {
     if (!container) return;
     container.innerHTML = html || '<p class="review-empty">' + esc(emptyText) + '</p>';
@@ -234,11 +239,12 @@
           return row.flag === 'hot';
         }).length;
         var watch = implementedRows.filter(function (row) { return row.flag === 'watch'; }).length;
-        summary.innerHTML =
-          '強調表示 <b class="is-hot">' + hot + '</b> 件 ・ ' +
-          '要注意 <b class="is-watch">' + watch + '</b> 件 ・ ' +
-          '審査中の提案 <b>' + pendingRows.length + '</b> 件 ・ ' +
-          '削除提案 <b>' + deletionRows.length + '</b> 件';
+        summary.innerHTML = [
+          statChip('hot', hot, '強調表示'),
+          statChip('watch', watch, '要注意'),
+          statChip('', pendingRows.length, '審査中の提案'),
+          statChip('', deletionRows.length, '削除提案')
+        ].join('');
       }
     });
   }
