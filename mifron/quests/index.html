@@ -8,13 +8,14 @@
   <meta name="description" content="Mifronのクエストボード。デイリー、ウィークリー、マンスリー、スペシャルの全クエストをキャンバス上で確認できます。ピンチで拡大、ドラッグで移動。">
   <link rel="canonical" href="https://mifron.mct-official.com/quests/">
   <link rel="icon" href="../assets/mifron-favicon.png">
-  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="../assets/mifron.css">
   <link rel="stylesheet" href="../assets/quests.css">
   <script src="../assets/config.js" defer></script>
   <script src="../assets/site.js" defer></script>
   <script src="../assets/quests.js" defer></script>
 </head>
-<body class="quest-page">
+<body class="quest-page quest-board-page">
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <div class="shell nav">
@@ -34,20 +35,25 @@
   </header>
 
   <main id="main">
-    <section class="hero">
-      <div class="shell">
-        <p class="kicker">Quest Board</p>
-        <h1>クエストボード</h1>
-        <p class="lead">全部のクエストをキャンバスに置きました。つまむかホイールでズーム、ドラッグで移動、カードをタップで詳しく。</p>
-      </div>
-    </section>
-
-    <section class="quest-canvas-section">
+    <section class="quest-canvas-section" aria-label="クエストボード">
       <div class="shell quest-shell">
         <div class="quest-toolbar">
-          <div class="quest-search">
-            <label class="quest-search-label" for="questSearch">クエストを探す</label>
-            <input id="questSearch" type="search" inputmode="search" autocomplete="off" placeholder="採掘、FFA、転生 など">
+          <div class="quest-topbar">
+            <div class="quest-topbar-text">
+              <p class="kicker">Quest Board</p>
+              <h1>クエストボード</h1>
+            </div>
+            <a class="btn primary quest-add" href="./propose.html"><span aria-hidden="true">＋</span>クエストを追加</a>
+          </div>
+          <div class="quest-toolbar-row">
+            <div class="quest-search">
+              <label class="quest-search-label" for="questSearch">クエストを探す</label>
+              <input id="questSearch" type="search" inputmode="search" autocomplete="off" placeholder="採掘、FFA、転生 など">
+            </div>
+            <div class="quest-toolbar-meta">
+              <label class="proposed-toggle"><input id="showProposed" type="checkbox"> 審査待ちの提案も表示</label>
+              <span id="questCount" aria-live="polite"></span>
+            </div>
           </div>
           <div class="filter-bar quest-type-filter" id="questTypeFilter" role="group" aria-label="種類で絞り込み">
             <button type="button" class="filter-btn active" data-type="all">すべて</button>
@@ -63,10 +69,6 @@
             <button type="button" class="filter-btn" data-state="repeatable">繰り返し</button>
             <button type="button" class="filter-btn" data-state="once">1回限り</button>
           </div>
-          <div class="quest-toolbar-meta">
-            <label class="proposed-toggle"><input id="showProposed" type="checkbox"> 審査待ちの提案も表示</label>
-            <span id="questCount" aria-live="polite"></span>
-          </div>
         </div>
 
         <div class="board-frame">
@@ -76,6 +78,7 @@
               <li>ドラッグ（スワイプ）でキャンバスを動かす</li>
               <li>ピンチ / ホイール / ボタンで拡大・縮小</li>
               <li>カードをタップして内容を確認</li>
+              <li>開いたカードで高評価・低評価・削除提案ができる</li>
             </ul>
             <button type="button" class="btn small" id="hintClose">わかった</button>
           </div>
@@ -108,7 +111,7 @@
             <p class="eyebrow">ルール</p>
             <h2>クエストの種類</h2>
           </div>
-          <p>デイリーとウィークリーは候補10件から5件が抽選され、マンスリーは全件固定表示です。反復やAFKでの報酬は抑制されます。</p>
+          <p>ボードには全部のクエストをキャンバスに置いています。デイリーとウィークリーは候補10件から5件が抽選され、マンスリーは全件固定表示です。反復やAFKでの報酬は抑制されます。</p>
         </div>
         <div class="feature-grid">
           <article class="feature"><span class="tag">デイリー</span><h3>毎日リセット</h3><p>候補10件から5件を抽選。その日の5件を全達成すると追加報酬がもらえます。</p></article>

@@ -15,6 +15,20 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ�
 
 `assets/config.js` でDiscord招待URLを管理しています。
 
+## クエストの評価と運営レビュー
+
+クエストの詳細（ボードのカード / `quests/detail.html`）を開くと「高評価 / 低評価」で評価でき、同じ場所の「削除を提案」から削除提案を送信します。表示するのは高評価数だけで、低評価数は運営レビュー画面にのみ表示します。
+
+レビュー画面は `https://mifron.mct-official.com/admin/` です。サイト内のナビゲーションからはリンクせず、`noindex` と `robots.txt` の `Disallow: /admin/` で検索対象から外しています。認証はないため、表示する内容は公開API（`/api/quests`、`/api/proposals` とそれぞれの `votes`）が返す範囲に限定しています。
+
+- 強調表示: 高評価比率 70% 以上（3票以上）
+- 要注意: 高評価比率 30% 以下（3票以上）
+- 削除提案の優先比率: 提案への高評価 ÷（提案への高評価 ＋ 対象クエストの低評価）
+
+## スタイルシートの構成
+
+Mifronの各ページは `1. /assets/styles.css`（全ブランド共通のデザインシステム）→ `2. /assets/mifron.css`（Mifron固有の差分）の順で読み込みます。Mifronホストでは `/assets/styles.css` をWorkerがリポジトリ直下の共通ファイルへ振り分けるため、`mifron/assets/` に共通デザインシステムを複製する必要はありません。順序を入れ替えると差分が上書きされるので注意してください。
+
 ## Mifronサイトの公開
 
 Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実行します。誤公開防止のため、入力欄へ `DEPLOY_MIFRON` と入力した場合だけ実行されます。

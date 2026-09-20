@@ -1,9 +1,10 @@
 @charset "UTF-8";
 
 /* ============================================================
-   Mifron サブサイト スタイル
-   ルート /assets/styles.css（共通デザインシステム）の上に重ねる
-   Mifron固有のスタイルのみを定義する。
+   Mifron サブサイト固有スタイル（共通デザインシステムの差分）
+   各ページは次の順で読み込む。順序を入れ替えないこと。
+     1. /assets/styles.css  共通デザインシステム（MCT・CREWMATE・TEXROOTと共有）
+     2. /assets/mifron.css  このファイル（Mifron固有の調整のみ）
    - スクリーンショット・ゲーム画像には依存しない
    - 日本語読みやすさを最優先（Line-height 1.8、フォント16px以上の入力欄）
    - モバイル前提のレイアウト
@@ -94,3 +95,7 @@
 
 /* ---------- 404ページ ---------- */
 .simple-hero { min-height: 100vh; }
+
+/* ---------- 削除提案バッジ（提案一覧・審査画面で共通） ---------- */
+.badge.type-deletion,
+.proposal-type-badge.type-deletion { background: #fdeaec; color: #b3261e; }
