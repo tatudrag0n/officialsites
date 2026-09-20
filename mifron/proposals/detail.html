@@ -7,8 +7,7 @@
   <title>提案詳細 | Mifron</title>
   <meta name="description" content="Mifronの提案詳細。提案の内容、状態、優先度、投票数を確認できます。">
   <link rel="icon" href="../assets/mifron-favicon.png">
-  <link rel="stylesheet" href="/assets/styles.css">
-  <link rel="stylesheet" href="../assets/mifron.css">
+  <link rel="stylesheet" href="../assets/styles.css">
   <link rel="stylesheet" href="../assets/proposals.css">
   <script src="../assets/config.js" defer></script>
   <script src="../assets/site.js" defer></script>
@@ -16,20 +15,23 @@
 </head>
 <body class="proposal-page">
   <a class="skip" href="#main">本文へ移動</a>
-  <header class="site-header sub-header">
+  <header class="site-header">
     <div class="shell nav">
       <a class="brand" href="../">
         <img class="brand-icon" src="../assets/mifron-icon.webp" alt="Mifron">
         <span class="brand-text">Mifron</span>
       </a>
-      <nav class="nav-links" aria-label="メインサイトナビゲーション">
+      <nav class="nav-links" id="nav-panel" aria-label="サイト内ナビゲーション">
         <a href="../">ホーム</a>
         <a href="../tutorial.html">チュートリアル</a>
         <a href="../quests/">クエスト</a>
-        <a href="./">提案</a>
-        <a href="../#join" class="discord">Discord</a>
+        <a href="./" aria-current="page">提案</a>
+        <a href="https://mct-official.com/">MCT</a>
+        <a href="https://crewmate.mct-official.com/">CREWMATE</a>
+        <a href="https://texroot.mct-official.com/">TEXROOT</a>
+        <a class="hot" data-discord href="#">Discord</a>
       </nav>
-      <button class="menu" aria-label="メニュー" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
     </div>
   </header>
 
@@ -57,12 +59,14 @@
         <img src="../assets/mct-wordmark-transparent.png" alt="MCT">
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
-      <div class="footer-links">
-        <a href="../">Mifron</a>
+      <nav class="footer-links" aria-label="フッター">
+        <a href="../">ホーム</a>
+        <a href="../tutorial.html">チュートリアル</a>
         <a href="../quests/">クエスト</a>
         <a href="./">提案</a>
-        <a href="../tutorial.html">チュートリアル</a>
-      </div>
+        <a href="https://mct-official.com/">MCT</a>
+        <a data-discord href="#">Discord</a>
+      </nav>
     </div>
   </footer>
 </body>

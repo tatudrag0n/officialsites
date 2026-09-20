@@ -13,14 +13,14 @@
   <meta property="og:title" content="Mifron | みんなでつくるMinecraftサーバー">
   <meta property="og:description" content="採掘・建築・取引・FFA・クエストをひとつの経済「MP」でつなぐ、Java / Bedrock対応Minecraftサーバー。">
   <meta property="og:url" content="https://mifron.mct-official.com/">
-  <meta property="og:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.png">
+  <meta property="og:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.webp">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Mifron | みんなでつくるMinecraftサーバー">
   <meta name="twitter:description" content="遊び方を選び、提案と投票で次の変化をつくるMinecraftサーバー。">
-  <meta name="twitter:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.png">
+  <meta name="twitter:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.webp">
   <link rel="icon" href="assets/mifron-favicon.png">
-  <link rel="stylesheet" href="/assets/styles.css">
-  <link rel="stylesheet" href="assets/mifron.css">
+  <link rel="icon" type="image/webp" href="assets/mifron-favicon-64.webp">
+  <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/config.js" defer></script>
   <script src="assets/site.js" defer></script>
 </head>
@@ -28,18 +28,18 @@
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <div class="shell nav">
-      <a class="brand" href="https://mct-official.com/">
-        <img src="assets/mct-wordmark-transparent.png" alt="MCT">
-        <span class="brand-text">MCT<small>Minerva Creative Technologies</small></span>
+      <a class="brand" href="./">
+        <img class="brand-icon" src="./assets/mifron-icon.webp" alt="Mifron">
+        <span class="brand-text">Mifron</span>
       </a>
-      <nav class="nav-links" id="nav-panel" aria-label="主要ナビゲーション">
-        <a href="https://mct-official.com/">MCT</a>
-        <a href="./" aria-current="page">Mifron</a>
-        <a href="https://crewmate.mct-official.com/">CREWMATE</a>
-        <a href="https://texroot.mct-official.com/">TEXROOT</a>
+      <nav class="nav-links" id="nav-panel" aria-label="サイト内ナビゲーション">
+        <a href="./" aria-current="page">ホーム</a>
         <a href="./tutorial.html">チュートリアル</a>
         <a href="./quests/">クエスト</a>
         <a href="./proposals/">提案</a>
+        <a href="https://mct-official.com/">MCT</a>
+        <a href="https://crewmate.mct-official.com/">CREWMATE</a>
+        <a href="https://texroot.mct-official.com/">TEXROOT</a>
         <a class="hot" data-discord href="#">Discord</a>
       </nav>
       <button class="menu" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="nav-panel"><span></span><span></span><span></span></button>
@@ -62,9 +62,9 @@
         <aside class="hero-status" aria-label="接続情報">
           <p class="status-line"><span class="dot dot-live" aria-hidden="true"></span>参加方法</p>
           <dl class="status-list">
-            <div><dt>Java / Bedrock</dt><dd>同じアドレス</dd></div>
+            <div><dt>Java版</dt><dd>アドレス直接入力</dd></div>
             <div><dt>Bedrock版</dt><dd>ポート <strong data-join-value="port">19132</strong></dd></div>
-            <div><dt>対応</dt><dd>Geyser連携</dd></div>
+            <div><dt>認証</dt><dd>Discord 6桁コード</dd></div>
           </dl>
           <p class="join-address" aria-label="サーバーアドレス"><strong data-join-value="java">play.mct-official.com</strong></p>
           <button class="copy-button" type="button" data-copy-join="java">アドレスをコピー</button>
@@ -232,7 +232,7 @@
         </div>
         <div class="hero-actions">
           <a class="btn primary" href="./quests/">クエストボードを開く</a>
-          <a class="btn" href="./quests/propose.html">クエストを提案する</a>
+          <a class="btn" href="./quests/propose.html">クエスト提案フォームを開く</a>
         </div>
       </div>
     </section>
@@ -333,10 +333,12 @@
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
       <nav class="footer-links" aria-label="フッター">
-        <a href="https://mct-official.com/">MCT</a>
+        <a href="./">ホーム</a>
         <a href="./tutorial.html">チュートリアル</a>
         <a href="./quests/">クエスト</a>
         <a href="./proposals/">提案</a>
+        <a href="https://mct-official.com/">MCT</a>
+        <a data-discord href="#">Discord</a>
       </nav>
     </div>
   </footer>

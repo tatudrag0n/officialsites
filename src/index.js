@@ -636,12 +636,6 @@ export default {
     }
 
     if (host === "mifron.mct-official.com") {
-      // 共通デザインシステムはルート /assets に集約して共有する。
-      // Mifron固有の調整だけを /mifron/assets/mifron.css に置く。
-      if (url.pathname === "/assets/styles.css") {
-        return fetchAsset(env, "/assets/styles.css");
-      }
-
       const publicPath = url.pathname === "/" ? "/index.html" : url.pathname;
       let response = await fetchAsset(env, `/mifron${publicPath}`);
 

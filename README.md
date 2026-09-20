@@ -27,7 +27,7 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ�
 
 ## スタイルシートの構成
 
-Mifronの各ページは `1. /assets/styles.css`（全ブランド共通のデザインシステム）→ `2. /assets/mifron.css`（Mifron固有の差分）の順で読み込みます。Mifronホストでは `/assets/styles.css` をWorkerがリポジトリ直下の共通ファイルへ振り分けるため、`mifron/assets/` に共通デザインシステムを複製する必要はありません。順序を入れ替えると差分が上書きされるので注意してください。
+Mifronの各ページは、共通デザインシステムを統合した `mifron/assets/styles.css` と、ページ固有の `quests.css` / `proposals.css` / `admin.css` を読み込みます。MCTポータルはルートの `assets/styles.css` を使うため、共通デザインを変更するときは両方のファイルへ反映してください（Mifronサイトは独立して公開できるよう、`mifron/` 配下で完結させています）。
 
 ## Mifronサイトの公開
 

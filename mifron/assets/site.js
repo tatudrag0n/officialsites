@@ -12,10 +12,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     }));
   }
 
-  const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
-    if(entry.isIntersecting) entry.target.classList.add('visible');
-  }),{threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   const links=window.SITE_LINKS||{};
   document.querySelectorAll('[data-discord]').forEach(a=>{
@@ -71,17 +67,4 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
-  // 旧表記EMを正式名称MPへ統一する。
-  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-  const nodes=[];
-  while(walker.nextNode()) nodes.push(walker.currentNode);
-  nodes.forEach(node=>{
-    if(node.nodeValue&&node.nodeValue.includes('EM')){
-      node.nodeValue=node.nodeValue.replaceAll('EM','MP');
-    }
-  });
-  const description=document.querySelector('meta[name="description"]');
-  if(description&&description.content.includes('EM')){
-    description.content=description.content.replaceAll('EM','MP');
-  }
 });

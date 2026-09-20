@@ -1,0 +1,55 @@
+/* Mifron brand polish: keep the shared MCT system visually rich and readable. */
+html,body{background:var(--paper)}
+body{font-family:var(--sans);font-size:15px;line-height:1.8;letter-spacing:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3,h4{letter-spacing:.01em}
+.brand-text,.nav-links a,.btn,.copy-button,.tag,.eyebrow,.kicker,.status-line,.brand-no,.brand-tag,.go{font-family:var(--sans)}
+
+/* Stronger Mifron identity without turning the page into a game UI. */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--mifron),var(--gold),transparent)}
+.hero-copy h1{font-size:clamp(48px,9.5vw,84px)}
+.hero-status{border:1px solid var(--line);box-shadow:0 16px 36px rgba(22,24,29,.09)}
+.hero-status::before{content:"MIFRON / SERVER";display:block;margin-bottom:16px;font:700 10px/1 var(--sans);letter-spacing:.16em;color:var(--mifron)}
+
+.section{padding:clamp(58px,8vw,88px) 0}
+.section.alt{background:var(--mist)}
+.section-head{margin-bottom:30px}
+.feature-grid,.systems,.value-grid,.brand-grid{gap:0}
+.feature,.system-panel,.value-card,.brand-card{border-radius:0;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 22px rgba(22,24,29,.045);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.feature:hover,.system-panel:hover,.value-card:hover,.brand-card:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:0 14px 28px rgba(22,24,29,.08)}
+.feature{padding:24px}
+.feature h3{font-size:20px;margin-top:10px}
+.feature p{font-size:14px;line-height:1.8;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;min-height:26px;padding:3px 8px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);font-size:10px;font-weight:700;letter-spacing:.08em}
+
+.stat-ribbon{background:var(--ink);color:var(--white);border:0}
+.stat-ribbon b{font-family:var(--sans)}
+.stat-ribbon span{color:#cfd2d8}
+
+.dark{background:#292842}
+.dark .system-panel{border-radius:0}
+.dark .featured-system{position:relative}
+.dark .featured-system::after{content:"";position:absolute;top:0;right:0;width:8px;height:100%;background:var(--mifron)}
+
+.notice{border-left:4px solid var(--mifron);border-radius:0}
+.btn{min-height:48px;border-radius:6px}
+.copy-button{min-height:46px;border-radius:6px}
+input,select,textarea{font-family:inherit;font-size:16px}
+
+@media(max-width:899px){
+  .feature-grid,.systems{grid-template-columns:1fr 1fr}
+  .nav-links.open{padding:10px var(--shell-pad) 18px}
+  .nav-links.open a{min-height:52px}
+}
+@media(max-width:640px){
+  .shell{padding-inline:18px}
+  .hero{padding-top:48px}
+  .hero h1{font-size:clamp(48px,17vw,72px)}
+  .lead{font-size:16px}
+  .hero-actions{display:grid;grid-template-columns:1fr}
+  .hero-actions .btn{width:100%}
+  .feature-grid,.systems,.brand-grid,.value-grid{grid-template-columns:1fr}
+  .section-head h2{font-size:32px}
+  .stat-ribbon{grid-template-columns:1fr 1fr}
+  .nav-links.open{max-height:calc(100dvh - 68px)}
+}
