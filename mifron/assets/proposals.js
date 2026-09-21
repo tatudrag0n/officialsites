@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var TYPE_LABELS = { feature: '機能提案', bug: 'バグ報告', quest: 'クエスト提案', other: 'その他' };
+  var TYPE_LABELS = { feature: '機能提案', bug: 'バグ報告', quest: 'クエスト提案', deletion: '削除提案', other: 'その他' };
   var STATUS_LABELS = { open: '審査中', in_progress: '実装中', completed: '完了', rejected: '却下' };
   var PRIORITY_LABELS = { low: '低', medium: '中', high: '高', critical: '緊急' };
 
@@ -15,6 +15,21 @@
   }
 
   function typeLabel(type) { return TYPE_LABELS[type] || type || '提案'; }
+
+  // 端末ごとの匿名ID。高評価の重複をサーバー側で防ぐために使う。
+  function voterId() {
+    try {
+      var key = 'mifron-voter-id';
+      var id = window.localStorage.getItem(key);
+      if (!id) {
+        id = 'v' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+        window.localStorage.setItem(key, id);
+      }
+      return id;
+    } catch (_) {
+      return '';
+    }
+  }
   function statusLabel(status) { return STATUS_LABELS[status] || status || '審査中'; }
   function priorityLabel(priority) { return PRIORITY_LABELS[priority] || priority || '中'; }
 
@@ -112,7 +127,7 @@
       grid.innerHTML = list.map(function (proposal) {
         return '<article class="proposal-card type-' + esc(proposal.type) + ' status-' + esc(proposal.status) + '">' +
           '<div class="proposal-header">' +
-            '<span class="proposal-type-badge">' + esc(typeLabel(proposal.type)) + '</span>' +
+            '<span class="proposal-type-badge type-' + esc(proposal.type) + '">' + esc(typeLabel(proposal.type)) + '</span>' +
             '<span class="proposal-status-badge status-' + esc(proposal.status) + '">' + esc(statusLabel(proposal.status)) + '</span>' +
           '</div>' +
           '<h3>' + esc(proposal.title) + '</h3>' +
@@ -165,7 +180,7 @@
         '<article class="proposal-detail-card">' +
           '<header class="proposal-detail-header">' +
             '<div class="proposal-badges">' +
-              '<span class="proposal-type-badge">' + esc(typeLabel(proposal.type)) + '</span>' +
+              '<span class="proposal-type-badge type-' + esc(proposal.type) + '">' + esc(typeLabel(proposal.type)) + '</span>' +
               '<span class="proposal-status-badge status-' + esc(proposal.status) + '">' + esc(statusLabel(proposal.status)) + '</span>' +
               '<span class="proposal-priority-badge priority-' + esc(proposal.priority || 'medium') + '">優先度: ' + esc(priorityLabel(proposal.priority)) + '</span>' +
             '</div>' +
@@ -173,13 +188,24 @@
             '<p class="proposal-meta">提案者: ' + esc(proposal.author || '匿名') + ' · ' + esc(formatDate(proposal.createdAt)) + '</p>' +
           '</header>' +
           '<section class="proposal-section"><h3>説明</h3><p class="proposal-body">' + esc(proposal.description).replace(/\n/g, '<br>') + '</p></section>' +
+          (proposal.type === 'deletion' && proposal.targetName
+            ? '<section class="proposal-section"><h3>削除の対象</h3>' +
+                '<p class="proposal-body">クエスト「' + esc(proposal.targetName) + '」' +
+                (proposal.targetId ? '（ID: ' + esc(proposal.targetId) + '）' : '') + '</p>' +
+                (proposal.targetId
+                  ? '<a class="btn" href="../quests/detail.html?id=' + encodeURIComponent(proposal.targetId) + '">対象のクエストを見る</a>'
+                  : '') +
+              '</section>'
+            : '') +
           (tags ? '<section class="proposal-section"><h3>タグ</h3><div class="tag-list">' + tags + '</div></section>' : '') +
           (proposal.notes ? '<section class="proposal-section"><h3>追加情報</h3><p class="proposal-body">' + esc(proposal.notes).replace(/\n/g, '<br>') + '</p></section>' : '') +
           '<section class="proposal-section proposal-vote">' +
-            '<h3>支持する</h3>' +
-            '<p>この提案を応援したい場合は投票してください。</p>' +
-            '<button type="button" class="btn primary" data-vote>▲ 投票する（' + esc(proposal.upvotes || 0) + '）</button>' +
-            '<p class="vote-note" data-vote-note hidden>投票機能は現在準備中です。Discordでも意見を募集しています。</p>' +
+            '<h3>この提案を支持する</h3>' +
+            '<p>賛成なら高評価を送れます。1端末につき1票で、もう一度押すと取り消せます。</p>' +
+            '<button type="button" class="btn primary" data-vote aria-pressed="false">' +
+              '<span aria-hidden="true">▲</span> 高評価（<span data-vote-count>' + esc(proposal.upvotes || 0) + '</span>）' +
+            '</button>' +
+            '<p class="vote-note" data-vote-note hidden role="status" aria-live="polite"></p>' +
           '</section>' +
           '<footer class="proposal-detail-footer">' +
             '<a class="btn" href="./">提案一覧に戻る</a>' +
@@ -188,11 +214,62 @@
         '</article>';
 
       var voteBtn = container.querySelector('[data-vote]');
-      var note = container.querySelector('[data-vote-note]');
-      if (voteBtn && note) {
+      var voteNote = container.querySelector('[data-vote-note]');
+      var voteCount = container.querySelector('[data-vote-count]');
+      var voter = voterId();
+      var voted = false;
+
+      function setVoteNote(text, isError) {
+        if (!voteNote) return;
+        voteNote.hidden = false;
+        voteNote.classList.toggle('is-error', !!isError);
+        voteNote.textContent = text;
+      }
+
+      function paintVote() {
+        if (!voteBtn) return;
+        voteBtn.classList.toggle('is-active', voted);
+        voteBtn.setAttribute('aria-pressed', voted ? 'true' : 'false');
+      }
+
+      if (voteBtn) {
+        fetch('/api/proposals/votes' + (voter ? '?voter=' + encodeURIComponent(voter) : ''), {
+          headers: { Accept: 'application/json' }
+        })
+          .then(function (response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+          })
+          .then(function (data) {
+            var tally = data && data.counts && data.counts[proposal.id];
+            if (tally && voteCount) voteCount.textContent = String(tally.up);
+            voted = !!(data && data.mine && data.mine[proposal.id]);
+            paintVote();
+          })
+          .catch(function () { /* 集計が取得できない場合は現在の値を表示 */ });
+
         voteBtn.addEventListener('click', function () {
-          note.hidden = false;
           voteBtn.disabled = true;
+          setVoteNote('送信中…', false);
+          fetch('/api/proposals/vote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proposalId: proposal.id, vote: voted ? 'none' : 'up', voter: voter })
+          })
+            .then(function (response) {
+              if (!response.ok) throw new Error('HTTP ' + response.status);
+              return response.json();
+            })
+            .then(function (data) {
+              voted = !!(data && data.myVote);
+              if (voteCount) voteCount.textContent = String((data && data.count && data.count.up) || 0);
+              paintVote();
+              setVoteNote(voted ? '高評価を記録しました。' : '高評価を取り消しました。', false);
+            })
+            .catch(function () {
+              setVoteNote('送信できませんでした。時間をおいて再試行してください。', true);
+            })
+            .then(function () { voteBtn.disabled = false; });
         });
       }
     }

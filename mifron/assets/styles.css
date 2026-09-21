@@ -848,6 +848,10 @@ h3 { font-size: 19px; font-weight: 700; }
 .dark .featured-system::after{content:"";position:absolute;top:0;right:0;width:8px;height:100%;background:var(--mifron)}
 .notice{border-left:4px solid var(--mifron)}
 
+/* ---------- 削除提案バッジ（提案一覧・審査画面で共通） ---------- */
+.badge.type-deletion,
+.proposal-type-badge.type-deletion { background: #fdeaec; color: #b3261e; }
+
 /* サブページのヒーローを軽量に（トップの大見出しと階層差をつける） */
 .quest-page .hero, .proposal-page .hero, .proposal-page .sub-hero { padding: clamp(36px, 6vw, 64px) 0 clamp(20px, 4vw, 36px); }
 .quest-page .hero h1, .proposal-page .hero h1, .proposal-page .sub-hero h1 { font-size: clamp(34px, 6.5vw, 56px); }

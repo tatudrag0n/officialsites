@@ -207,18 +207,137 @@ async function readKvList(namespace, prefix, limit = 100) {
 
 const RATE_LIMIT_WINDOW_SECONDS = 600;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+// 評価（高評価/低評価）は1人1票なので、投稿系より緩い上限にする。
+const VOTE_RATE_LIMIT_MAX_REQUESTS = 60;
 
-async function enforceRateLimit(request, namespace, bucket) {
+async function enforceRateLimit(
+  request,
+  namespace,
+  bucket,
+  maxRequests = RATE_LIMIT_MAX_REQUESTS
+) {
   if (!namespace) return false;
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
   const window = Math.floor(Date.now() / (RATE_LIMIT_WINDOW_SECONDS * 1000));
   const key = `__rl:${bucket}:${window}:${ip.slice(0, 100)}`;
   const current = Number.parseInt((await namespace.get(key)) || "0", 10);
-  if (current >= RATE_LIMIT_MAX_REQUESTS) return true;
+  if (current >= maxRequests) return true;
   await namespace.put(key, String(current + 1), {
     expirationTtl: RATE_LIMIT_WINDOW_SECONDS + 60,
   });
   return false;
+}
+
+/* ---------- 評価（高評価 / 低評価） ----------
+   1人1票。KVのキー（接頭辞 + 対象ID + 投票者ID）で重複を防ぎ、
+   集計は同じ接頭辞を一覧して行う。低評価数は一般向けUIでは表示しない。 */
+const QUEST_VOTE_PREFIX = "qv_";
+const PROPOSAL_VOTE_PREFIX = "pv_";
+
+function cleanIdentifier(value, maxLength = 80) {
+  if (typeof value !== "string") return "";
+  return value.replace(/[^A-Za-z0-9_.:-]/g, "").slice(0, maxLength);
+}
+
+function cleanVoter(value) {
+  if (typeof value !== "string") return "";
+  return value.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
+}
+
+async function readVotes(namespace, prefix, voter = "") {
+  const list = await namespace.list({ prefix, limit: 1000 });
+  const counts = {};
+  const mine = {};
+  await Promise.all(
+    list.keys.map(async (key) => {
+      const raw = await namespace.get(key.name);
+      if (!raw) return;
+      let record;
+      try {
+        record = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      if (!isPlainObject(record) || typeof record.id !== "string") return;
+      const vote = record.vote === "down" ? "down" : "up";
+      const tally = counts[record.id] || (counts[record.id] = { up: 0, down: 0 });
+      tally[vote] += 1;
+      if (voter && record.voter === voter) mine[record.id] = vote;
+    })
+  );
+  return { counts, mine };
+}
+
+async function writeVote(namespace, prefix, id, voter, vote) {
+  const key = `${prefix}${id}_${voter}`;
+  if (vote === "none") {
+    await namespace.delete(key);
+    return;
+  }
+  await namespace.put(key, JSON.stringify({ id, vote, voter, at: Date.now() }));
+}
+
+async function handleVoteApi(request, env, options) {
+  const { namespace, prefix, bucket, idField } = options;
+  const url = new URL(request.url);
+  const voter = cleanVoter(url.searchParams.get("voter"));
+
+  if (request.method === "GET") {
+    return jsonResponse(await readVotes(namespace, prefix, voter));
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  if (await enforceRateLimit(request, namespace, bucket, VOTE_RATE_LIMIT_MAX_REQUESTS)) {
+    return jsonResponse({ error: "Too many requests. Try again later." }, 429);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+  if (!isPlainObject(body)) return jsonResponse({ error: "Invalid body" }, 400);
+
+  const id = cleanIdentifier(body[idField]);
+  if (!id) return jsonResponse({ error: `Missing required field: ${idField}` }, 400);
+
+  const vote = ["up", "down", "none"].includes(body.vote) ? body.vote : "";
+  if (!vote) return jsonResponse({ error: "Invalid vote" }, 400);
+
+  // ログイン機構がないため、端末ごとの匿名IDを投票者IDとして使う。
+  const who =
+    cleanVoter(body.voter) ||
+    voter ||
+    cleanVoter(request.headers.get("CF-Connecting-IP") || "") ||
+    "anonymous";
+
+  await writeVote(namespace, prefix, id, who, vote);
+  const { counts, mine } = await readVotes(namespace, prefix, who);
+  return jsonResponse({
+    success: true,
+    id,
+    count: counts[id] || { up: 0, down: 0 },
+    myVote: mine[id] || null,
+  });
+}
+
+// 提案一覧は提案レコードの upvotes を参照するため、集計値を同期しておく。
+async function syncProposalUpvotes(env, proposalId, up) {
+  const raw = await env.PROPOSALS.get(proposalId);
+  if (!raw) return;
+  let record;
+  try {
+    record = JSON.parse(raw);
+  } catch {
+    return;
+  }
+  if (!isPlainObject(record)) return;
+  record.upvotes = Math.max(0, Number.parseInt(up, 10) || 0);
+  await env.PROPOSALS.put(proposalId, JSON.stringify(record));
 }
 
 // Proposal notifications are emailed to the Mifron operations inbox.
@@ -288,6 +407,16 @@ async function sendProposalNotification(env, subject, rows) {
 
 async function handleQuestsApi(request, env) {
   if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
+  const pathname = new URL(request.url).pathname;
+
+  if (pathname === "/api/quests/votes" || pathname === "/api/quests/vote") {
+    return handleVoteApi(request, env, {
+      namespace: env.QUESTS,
+      prefix: QUEST_VOTE_PREFIX,
+      bucket: "quest_vote",
+      idField: "questId",
+    });
+  }
 
   if (request.method === "GET") {
     return jsonResponse(await readKvList(env.QUESTS, "quest_", 100));
@@ -380,6 +509,21 @@ async function handleQuestsApi(request, env) {
 
 async function handleProposalsApi(request, env) {
   if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
+  const pathname = new URL(request.url).pathname;
+
+  if (pathname === "/api/proposals/votes" || pathname === "/api/proposals/vote") {
+    const response = await handleVoteApi(request, env, {
+      namespace: env.PROPOSALS,
+      prefix: PROPOSAL_VOTE_PREFIX,
+      bucket: "proposal_vote",
+      idField: "proposalId",
+    });
+    if (request.method === "POST" && response.status === 200) {
+      const payload = await response.clone().json().catch(() => null);
+      if (payload && payload.id) await syncProposalUpvotes(env, payload.id, payload.count.up);
+    }
+    return response;
+  }
 
   if (request.method === "GET") {
     return jsonResponse(await readKvList(env.PROPOSALS, "prop_", 100));
@@ -405,7 +549,9 @@ async function handleProposalsApi(request, env) {
     id: `prop_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
     title: cleanText(body.title, 160),
     description: cleanText(body.description, 3000),
-    type: ["feature", "bug", "quest", "other"].includes(body.type) ? body.type : "feature",
+    type: ["feature", "bug", "quest", "deletion", "other"].includes(body.type)
+      ? body.type
+      : "feature",
     priority: ["low", "medium", "high", "critical"].includes(body.priority)
       ? body.priority
       : "medium",
@@ -418,6 +564,9 @@ async function handleProposalsApi(request, env) {
       : [],
     author: cleanText(body.author, 60) || "匿名",
     notes: cleanText(body.notes, 1000),
+    // 削除提案は対象クエストを参照する。
+    targetId: cleanIdentifier(body.targetId),
+    targetName: cleanText(body.targetName, 120),
     status: "open",
     upvotes: 0,
     createdAt: new Date().toISOString(),
@@ -426,6 +575,13 @@ async function handleProposalsApi(request, env) {
   if (!proposal.title || !proposal.description) {
     return jsonResponse(
       { error: "Missing required fields: title, description" },
+      400
+    );
+  }
+
+  if (proposal.type === "deletion" && (!proposal.targetId || !proposal.targetName)) {
+    return jsonResponse(
+      { error: "Missing required fields: targetId, targetName" },
       400
     );
   }
@@ -439,6 +595,7 @@ async function handleProposalsApi(request, env) {
       ["種別", "提案"],
       ["タイトル", proposal.title],
       ["種類", proposal.type],
+      ["対象クエスト", proposal.targetName ? `${proposal.targetName} (${proposal.targetId})` : ""],
       ["優先度", proposal.priority],
       ["提案者", proposal.author],
       ["タグ", proposal.tags.join(", ")],

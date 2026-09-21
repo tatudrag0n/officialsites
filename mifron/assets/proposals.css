@@ -119,6 +119,7 @@
 .proposal-priority-badge.priority-medium { background: var(--mifron-soft); color: var(--mifron); }
 .proposal-priority-badge.priority-high { background: #fff6da; color: #8a6d00; }
 .proposal-priority-badge.priority-critical { background: #fdeaec; color: #b3261e; }
+.proposal-card.type-deletion { border-left-color: #b3261e; }
 
 /* ---------- 詳細 ---------- */
 .proposal-detail-card {
@@ -140,6 +141,10 @@
 .tag-chip { display: inline-flex; padding: 4px 12px; font-size: 12px; background: var(--mist); border-radius: 999px; color: var(--muted); }
 .proposal-vote p { color: var(--muted); margin: 0 0 14px; }
 .vote-note { margin-top: 12px !important; font-size: 13px; color: var(--mifron); }
+.vote-note.is-error { color: #b3261e; }
+.proposal-vote .btn { min-height: 52px; }
+.proposal-vote .btn.is-active { background: var(--mifron); border-color: var(--mifron); color: var(--white); }
+.proposal-vote .btn[disabled] { opacity: .6; pointer-events: none; }
 .proposal-detail-footer { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 
 /* ---------- 作成フォーム ---------- */
