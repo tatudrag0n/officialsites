@@ -37,6 +37,7 @@
         <a href="./tutorial.html">チュートリアル</a>
         <a href="./quests/">クエスト</a>
         <a href="./proposals/">提案</a>
+        <a href="./store/">ストア</a>
         <a href="https://mct-official.com/">MCT</a>
         <a href="https://crewmate.mct-official.com/">CREWMATE</a>
         <a href="https://texroot.mct-official.com/">TEXROOT</a>
@@ -118,7 +119,7 @@
         </div>
         <div class="notice">
           <strong>ワールドごとに持ち物が分かれます</strong>
-          <p>Survival系・通常系でインベントリ、装備、経験値、満腹度が別管理です。全ワールドでKeepInventoryが有効ですが、FFAは除きます。</p>
+          <p>Survival系・通常系でインベントリ、装備、経験値、満腹度が別管理です。KeepInventoryは全ワールドで有効です。FFAの持ち物は保存グループに含まれず、退出するとFFA前の状態に戻ります。</p>
         </div>
       </div>
     </section>
@@ -162,7 +163,7 @@
           <article class="system-panel">
             <span class="tag">Auction</span>
             <h3>オークション</h3>
-            <p>額縁にアイテムを置いて出品します。入札MPは即時に預かり、最高額を更新されると自動で返金。終了後、落札者と出品者へ自動配送されます。</p>
+            <p>アイテム入りの額縁を、旧ショップワンドでオークション化します。価格表で許可されたアイテムが対象です。入札MPは即時に預かり、最高額を更新されると自動で返金。終了後、落札者と出品者へ自動配送されます。</p>
             <ul>
               <li>通常入札 +100 MP / スニーク入札 +1,000 MP</li>
               <li>出品者は自分の商品へ入札できません</li>
@@ -176,14 +177,16 @@
               <li>賭け金: Easy 100 / Normal 1,000 / Hard 10,000 / Expert 100,000 MP</li>
               <li>赤石3つで無料再抽選（最大8回）</li>
               <li>ダイヤ当選で次の10回はジャックポットモード</li>
+              <li>ネザライト当選で称号「ギャンブラー」を解放</li>
             </ul>
           </article>
           <article class="system-panel">
             <span class="tag">OnlineShop</span>
             <h3>OnlineShop</h3>
-            <p>参加時に配布される専用アイテムから開ける、カタログ式の購入ショップです。建材・鉱石・戦闘・道具・食料などのカテゴリから購入できます。</p>
+            <p>参加時に配布される専用アイテムから開ける、カタログ式の購入ショップです。建材・鉱石・戦闘・道具・食料・回路・自然・装飾・その他のカテゴリから購入できます。</p>
             <ul>
               <li>Survivalワールド限定</li>
+              <li>カテゴリ順に並んだ商品をページ送りで表示</li>
               <li>一部の商品には購入クールダウンあり</li>
             </ul>
           </article>
@@ -207,7 +210,38 @@
           <article class="feature"><span class="tag">テレポーター</span><h3>ワールドへ移動</h3><p>右クリックで移動先を表示し、アイテムを左クリックで移動。エンドポータルフレームに使うと登録地点へ移動します。</p></article>
           <article class="feature"><span class="tag">クエスト本</span><h3>クエストを確認</h3><p>右クリックでクエスト一覧を開きます。デイリー・ウィークリーの進捗もここから確認できます。</p></article>
           <article class="feature"><span class="tag">OnlineShop</span><h3>カタログ購入</h3><p>右クリックで商品一覧を開きます。Survivalワールドでのみ使用できます。</p></article>
-          <article class="feature"><span class="tag">フレンド</span><h3>チャットと申請</h3><p>フレンドUIから申請の承認やフレンドチャットができます。/friend コマンドでも操作できます。</p></article>
+          <article class="feature"><span class="tag">Store</span><h3>公式ストアを開く</h3><p>右クリックでMifron公式ストアを開きます。サポーターパスや装飾特典はここから購入できます。</p></article>
+          <article class="feature"><span class="tag">フレンド</span><h3>申請と一覧</h3><p>フレンドUIから申請・承認・削除ができます。<strong>/friend add|accept|remove</strong> でも操作できます。フレンドチャットは廃止され、1対1の会話はDiscordのVC/ダイレクトメッセージを使います。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 特殊アイテム -->
+    <section class="section" id="special-items">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">特殊アイテム</p>
+            <h2>低確率で手に入る特別なアイテム</h2>
+          </div>
+          <p>通常アイテムの取得・クラフト時に、ごく低確率で特殊アイテムへ変化することがあります。売買不可・不可壊で、見た目や行動の幅を広げます。</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature"><span class="tag">フックショット</span><h3>釣り竿 → 引っ掛けて急接近</h3><p>釣り竿を取得・クラフトした時、0.05%で変化。ウキを引っ掛けた場所へ一気に近づきます。</p></article>
+          <article class="feature"><span class="tag">スクラッチ</span><h3>紙 → 運試しでMP</h3><p>紙を取得・クラフトした時、1%で変化。右クリックで削るとMPを獲得でき、低確率で当たりが出ます。</p></article>
+          <article class="feature"><span class="tag">ジェットパック</span><h3>チェーンのチェストプレート → 空を飛ぶ</h3><p>チェーンのチェストプレートを取得・クラフトした時、1%で変化。ブレイズパウダンを燃料に空を飛びます。</p></article>
+          <article class="feature"><span class="tag">残響の結晶</span><h3>残響の欠片 → ソニックビーム</h3><p>残響の欠片を取得・クラフトした時、2%で変化。ウォーデンのビームを放つ使い捨てアイテムです。</p></article>
+          <article class="feature"><span class="tag">ファイアーボール</span><h3>ファイアチャージ → 火の玉</h3><p>ファイアチャージを取得・クラフトした時、0.1%で変化。ガストの火の玉を撃ち出す使い捨てアイテムです。</p></article>
+          <article class="feature"><span class="tag">ローラースケート</span><h3>鉄のブーツ → 高速滑走</h3><p>鉄のブーツを取得・クラフトした時、0.01%で変化。走ると氷の上のように滑走します。</p></article>
+          <article class="feature accent-feature"><span class="tag">朽ちた剣</span><h3>ネザライトの剣 → 全エンチャントMAX</h3><p>ネザライトの剣を取得・クラフトした時、0.001%で変化。ごく低確率で手に入る、いつかの勇者の剣です。</p></article>
+        </div>
+        <div class="notice">
+          <strong>特殊アイテムも提案できます</strong>
+          <p>新しい効果・抽選率・モチーフのアイデアは提案フォームから受け付けています。審査後に実装し、提案一覧へ状態を反映します。特殊アイテムは売買不可・不可壊です。</p>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="./proposals/create.html">特殊アイテムを提案する</a>
+          <a class="btn" href="./proposals/">提案一覧を見る</a>
         </div>
       </div>
     </section>
@@ -220,13 +254,13 @@
             <p class="eyebrow">クエスト</p>
             <h2>毎日の目標が報酬になる</h2>
           </div>
-          <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件固定表示、スペシャルは条件発生型です。反復・AFKの報酬は抑制されます。</p>
+          <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件が固定表示です。それぞれ「完全達成」クエストが用意され、反復・AFKの報酬は抑制されます。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">Daily</span><h3>デイリー 5件</h3><p>採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りから毎日抽選。全達成で追加報酬。</p></article>
-          <article class="feature"><span class="tag">Weekly</span><h3>ウィークリー 5件</h3><p>数千ブロックの採掘・建築や連続対戦など、週単位の目標。全達成で追加報酬。</p></article>
-          <article class="feature"><span class="tag">Monthly</span><h3>マンスリー 9件</h3><p>月間採掘王、月間建築家など固定の長期目標。報酬は数千MP規模。</p></article>
-          <article class="feature"><span class="tag">Special</span><h3>スペシャル 29種</h3><p>初ドラゴン討伐、バベル到達、転生、全進捗挑戦など条件発生型の特別クエスト。最高報酬は50,000 MP。</p></article>
+          <article class="feature"><span class="tag">Daily</span><h3>デイリー 候補10件→5件</h3><p>採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りなど。候補10件からその日の5件が抽選され、全達成で追加報酬。</p></article>
+          <article class="feature"><span class="tag">Weekly</span><h3>ウィークリー 候補10件→5件</h3><p>数千ブロックの採掘・建築や連続対戦など、週単位の目標。候補10件から5件が抽選され、全達成で追加報酬。</p></article>
+          <article class="feature"><span class="tag">Monthly</span><h3>マンスリー 9件</h3><p>月間採掘王、月間建築家など固定の9件。報酬は数千MP規模です。</p></article>
+          <article class="feature"><span class="tag">Special</span><h3>スペシャル 29種</h3><p>初ドラゴン討伐、バベル到達、転生、全進捗挑戦など条件発生型の特別クエスト。最高報酬は50,000 MPです。</p></article>
           <article class="feature"><span class="tag">Bonus</span><h3>転生ボーナス</h3><p>全進捗達成後、転生でMP報酬にボーナス倍率が付きます。上限120%、圧縮率25%。</p></article>
           <article class="feature accent-feature"><span class="tag">Quest Map</span><h3>クエストボードを見る</h3><p>全クエストをキャンバス上で確認できるクエストボードを用意しています。ピンチで拡大、ドラッグで移動。</p></article>
         </div>
@@ -301,8 +335,13 @@
           <p>支援は任意です。ゲーム内の有利不利に影響する特典は行いません。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、プロフィールバッジ、装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
+          <article class="feature"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、称号「MSP / MSP+」、プロフィールバッジ、ネームカラー・チャットカラー・タブアイテムなどの装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
+          <article class="feature"><span class="tag">独自ストア</span><h3>公式ストア</h3><p>外部ストア(Tebex)を廃止し、Mifron公式のストアページでサポーターパスや装飾を取り扱います。</p></article>
           <article class="feature"><span class="tag">公開条件</span><h3>準備完了後に開始</h3><p data-support-pending>現在は支援受付を行っていません。決済事業者・価格・返金条件を確認し、公開ページを用意した後に受付を開始します。</p></article>
+        </div>
+        <div class="hero-actions">
+          <a class="btn primary" href="./store/">ストアを見る</a>
+          <a class="btn" data-support-link href="#" hidden>支援ページを開く</a>
         </div>
       </div>
     </section>
@@ -337,6 +376,7 @@
         <a href="./tutorial.html">チュートリアル</a>
         <a href="./quests/">クエスト</a>
         <a href="./proposals/">提案</a>
+        <a href="./store/">ストア</a>
         <a href="https://mct-official.com/">MCT</a>
         <a data-discord href="#">Discord</a>
       </nav>

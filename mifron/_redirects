@@ -19,5 +19,7 @@
 /tutorial    /tutorial.html    302
 /quests      /quests/         302
 /proposals   /proposals/      302
+/store       /store/          302
 /quests/    /quests/index.html 302
 /proposals/  /proposals/index.html 302
+/store/      /store/index.html 302
