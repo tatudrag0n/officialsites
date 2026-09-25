@@ -7,10 +7,30 @@
 .quest-canvas-section { padding: 0 0 72px; }
 .quest-shell { max-width: 1140px; }
 
-.quest-toolbar { display: grid; gap: 12px; margin-bottom: 16px; }
+.quest-toolbar { display: grid; gap: 10px; margin-bottom: 12px; }
+.quest-toolbar .filter-bar { margin-bottom: 0; }
+
+/* ---------- ボード上部（タイトルと追加ボタン） ---------- */
+.quest-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.quest-topbar-text { min-width: 0; }
+.quest-topbar .kicker { font-size: 10.5px; }
+.quest-topbar h1 { margin: 2px 0 0; font-size: clamp(20px, 5.4vw, 26px); line-height: 1.2; }
+.quest-add { flex: none; min-height: 48px; padding: 0 16px; font-size: 13.5px; border-radius: 0; }
+@media (max-width: 380px) {
+  .quest-topbar h1 { font-size: 19px; }
+  .quest-add { padding: 0 12px; font-size: 12.5px; }
+}
+
+.quest-toolbar-row { display: grid; gap: 10px; }
 @media (min-width: 760px) {
-  .quest-toolbar { grid-template-columns: minmax(220px, 320px) 1fr auto; align-items: end; }
-  .quest-toolbar .filter-bar { margin-bottom: 0; }
+  .quest-toolbar-row { grid-template-columns: minmax(240px, 340px) 1fr; align-items: end; }
 }
 .quest-search-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
 .quest-search input {
@@ -26,7 +46,14 @@
   appearance: none;
 }
 .quest-search input:focus { border-color: var(--mifron); outline: none; box-shadow: 0 0 0 3px rgba(86,70,255,.15); }
-.quest-toolbar-meta { font-size: 13px; color: var(--muted); align-self: center; }
+.quest-toolbar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
 .proposed-toggle {
   display: inline-flex;
   align-items: center;
@@ -51,6 +78,62 @@
 }
 .quest-type-filter::-webkit-scrollbar, .quest-state-filter::-webkit-scrollbar { display: none; }
 .quest-type-filter .filter-btn, .quest-state-filter .filter-btn { flex: none; }
+
+/* ============================================================
+   ボードページ：画面いっぱいのキャンバス（モバイル前提）
+   ヘッダーを除いた高さをボードに使い切る。
+   ============================================================ */
+.quest-board-page { --quest-header: 65px; }
+@media (min-width: 900px) { .quest-board-page { --quest-header: 73px; } }
+
+.quest-board-page .quest-canvas-section {
+  display: flex;
+  padding: 0;
+  min-height: calc(100vh - var(--quest-header));
+  min-height: calc(100svh - var(--quest-header));
+}
+.quest-board-page .quest-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: none;
+  padding: 12px clamp(12px, 3vw, 20px) 14px;
+}
+.quest-board-page .board-frame {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+  box-shadow: 0 14px 34px rgba(22, 24, 29, .07);
+}
+/* ブランドの帯（ヒーローと同じ Mifron→ゴールドのグラデーション） */
+.quest-board-page .board-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  z-index: 4;
+  background: linear-gradient(90deg, var(--mifron), var(--gold), transparent);
+  pointer-events: none;
+}
+.quest-board-page .board { flex: 1; height: auto; min-height: 0; }
+.quest-board-page .board-legend { margin-top: 0; }
+
+/* スマホは左右いっぱいに広げ、操作UIだけ内側に戻す */
+@media (max-width: 640px) {
+  .quest-board-page .quest-shell { padding-inline: 0; }
+  .quest-board-page .quest-toolbar,
+  .quest-board-page .board-legend { padding-inline: 12px; }
+  .quest-board-page .board-frame { border-radius: 0; border-inline: 0; box-shadow: none; }
+  .quest-board-page .board-hint { left: 10px; top: 10px; max-width: 240px; }
+  .quest-board-page .board-controls { right: 10px; bottom: 10px; }
+}
+
+/* 縦が低い端末ではキャンバスの最低高さを抑える */
+@media (max-height: 620px) {
+  .quest-board-page .board-frame { min-height: 240px; }
+}
 
 /* ---------- ボード ---------- */
 .board-frame {
@@ -108,6 +191,7 @@
   color: var(--ink);
   background: var(--white);
   border: 1.5px solid var(--line-strong);
+  border-left: 4px solid var(--brand, var(--mifron));
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(22, 24, 29, .07);
   cursor: pointer;
@@ -126,6 +210,10 @@
 .quest-card.type-monthly { --brand: var(--tex); }
 .quest-card.type-special { --brand: #8324a8; border-style: dashed; }
 .quest-card.is-proposed { border-style: dotted; opacity: .92; }
+/* 種類バッジと高評価数を同じ行に置く（低評価数は表示しない） */
+.quest-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.quest-card-up { flex: none; font-size: 11px; font-weight: 700; color: var(--mifron); }
+.quest-card.type-special .quest-card-up { color: #8324a8; }
 .quest-card-type {
   align-self: flex-start;
   font-size: 10px;
@@ -141,28 +229,34 @@
 .quest-card.type-special .quest-card-reward { color: #8324a8; }
 
 /* ---------- 操作UI ---------- */
+/* まとめて1つのドックに載せ、キャンバスを隠しすぎないようにする */
 .board-controls {
   position: absolute;
   right: 14px;
   bottom: 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   z-index: 5;
+  padding: 5px;
+  background: rgba(255, 255, 255, .93);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(22, 24, 29, .14);
+  backdrop-filter: blur(8px);
 }
 .board-btn {
-  min-width: 52px;
-  min-height: 52px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .95);
+  min-width: 48px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
   color: var(--ink);
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(22, 24, 29, .1);
 }
-.board-btn:hover { border-color: var(--ink); }
+.board-btn:hover { background: var(--mist); }
 .board-btn:active { transform: translateY(1px); }
 .board-btn#zoomReset { font-size: 12px; }
 
@@ -172,11 +266,26 @@
   top: 14px;
   z-index: 5;
   max-width: 280px;
-  padding: 16px;
+  padding: 14px 16px;
   background: rgba(255, 255, 255, .97);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--mifron);
+  border-radius: 0 12px 12px 0;
   box-shadow: 0 12px 30px rgba(22, 24, 29, .14);
+}
+/* 絞り込みで0件になったときの案内 */
+.board-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--muted);
+  pointer-events: none;
 }
 .board-hint strong { display: block; margin-bottom: 6px; font-size: 13px; }
 .board-hint ul { list-style: disc; padding-left: 1.2em; display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
@@ -195,8 +304,17 @@
   font-size: 12.5px;
   color: var(--muted);
 }
-.legend-item { display: inline-flex; align-items: center; gap: 7px; }
-.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 3px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
 .legend-daily { background: var(--mifron); }
 .legend-weekly { background: var(--crew); }
 .legend-monthly { background: var(--tex); }
@@ -205,6 +323,9 @@
 /* ---------- 詳細ダイアログ ---------- */
 .quest-dialog {
   width: min(520px, calc(100% - 28px));
+  max-height: min(88svh, 780px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 0;
   border-radius: 16px;
   padding: 0;
@@ -214,13 +335,131 @@
 .quest-dialog-body { padding: 26px; }
 .quest-dialog-head { display: grid; gap: 10px; }
 .quest-dialog-head h2 { font-size: 24px; }
-.quest-dialog-facts { display: grid; gap: 16px; margin-top: 20px; }
-.quest-dialog-facts dt { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--muted); margin-bottom: 4px; }
+.quest-dialog-facts { display: grid; margin-top: 18px; border-top: 1px solid var(--line); }
+.quest-dialog-facts > div { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.quest-dialog-facts dt { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; color: var(--muted); margin-bottom: 4px; }
 .quest-dialog-facts dd { margin: 0; font-size: 15px; line-height: 1.7; }
+
+/* 開いたときの控えめな動き */
+.quest-dialog[open],
+.deletion-dialog[open] { animation: sheet-in .2s ease both; }
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+/* スマホでは下から出るシートとして表示する */
+@media (max-width: 520px) {
+  .quest-dialog,
+  .deletion-dialog {
+    inset: auto 0 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    max-height: 90svh;
+    border-radius: 20px 20px 0 0;
+  }
+  .quest-dialog-body { padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px)); }
+  .deletion-form { padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px)); }
+}
 .quest-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 @media (max-width: 480px) {
   .quest-dialog-actions { display: grid; grid-template-columns: 1fr; }
 }
+
+/* ---------- 評価（高評価 / 低評価） ---------- */
+.quest-rating {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.quest-rating-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
+.quest-rating-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.rate-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--white);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.rate-btn:hover:not(:disabled) { border-color: var(--ink); }
+.rate-btn:focus-visible { outline: 3px solid var(--mifron); outline-offset: 2px; }
+.rate-btn:disabled { opacity: .6; }
+.rate-btn.rate-up.is-active { border-color: var(--mifron); background: var(--mifron); color: var(--white); }
+.rate-btn.rate-down.is-active { border-color: #b3261e; background: #b3261e; color: var(--white); }
+.rate-icon { font-size: 11px; }
+.rate-count {
+  min-width: 1.7em;
+  padding: 2px 8px;
+  text-align: center;
+  font-size: 12.5px;
+  background: var(--mist);
+  border-radius: 999px;
+}
+.rate-btn.is-active .rate-count { background: rgba(255, 255, 255, .24); color: var(--white); }
+.rate-note { margin-top: 10px; font-size: 12.5px; line-height: 1.7; color: var(--muted); }
+.rate-note.is-error { color: #b3261e; }
+@media (max-width: 360px) { .quest-rating-actions { grid-template-columns: 1fr; } }
+
+/* 審査中の提案であることの注記 */
+.quest-state-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #8a6d00;
+  background: #fff6da;
+  border-radius: 10px;
+}
+
+/* ---------- 削除提案 ---------- */
+.btn.danger { border-color: #b3261e; color: #b3261e; background: var(--white); }
+.btn.danger:hover { background: #fdeaec; border-color: #b3261e; }
+.deletion-dialog {
+  width: min(560px, calc(100% - 24px));
+  border: 0;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .3);
+}
+.deletion-dialog::backdrop { background: rgba(12, 14, 19, .5); }
+.deletion-form { display: grid; gap: 16px; padding: clamp(18px, 5vw, 26px); }
+.deletion-form h2 { font-size: 22px; }
+.deletion-target { font-size: 13px; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; }
+.deletion-target strong { color: var(--ink); }
+.deletion-field label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+.deletion-field textarea,
+.deletion-field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 16px; /* iOSの自動ズーム防止 */
+  color: var(--ink);
+  background: var(--white);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  appearance: none;
+}
+.deletion-field textarea { min-height: 120px; line-height: 1.7; resize: vertical; }
+.deletion-field textarea:focus,
+.deletion-field input:focus { border-color: var(--mifron); outline: none; box-shadow: 0 0 0 3px rgba(86, 70, 255, .15); }
+.deletion-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.deletion-actions .btn { min-height: 54px; }
+.deletion-note { font-size: 12px; line-height: 1.7; color: var(--muted); }
+.deletion-message { padding: 12px 14px; font-size: 13px; line-height: 1.7; border-radius: 10px; background: var(--mist); }
+.deletion-message.is-ok { background: var(--crew-soft); color: var(--crew); }
+.deletion-message.is-error { background: #fdeaec; color: #b3261e; }
+@media (max-width: 420px) { .deletion-actions { grid-template-columns: 1fr; } }
 
 /* ---------- 旧要素の互換（detail.html等） ---------- */
 [hidden] { display: none !important; }

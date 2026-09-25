@@ -82,6 +82,9 @@
     { id: 'S30', type: 'special', name: 'Mifronの伝説', condition: '転生2回・進捗75個・Mob討伐2,000体・ブロック設置20,000個・取引500回をすべて達成', reward: '50,000 MP' }
   ];
 
+  // 管理者レビュー（/admin/）でも同じクエスト定義を参照できるようにする。
+  window.MIFRON_QUESTS = QUESTS;
+
   /* ---- クエスト間の接続（実装上の関係） ----
      完全達成クエストは、同期間の通常クエストすべてを前提とする。
      S30は長期総合目標。 */
@@ -154,6 +157,276 @@
   }
 
   /* ============================================================
+     評価（高評価 / 低評価）
+     実装済み・審査中のどちらのクエストでも同じ操作で評価する。
+     表示するのは高評価数だけで、低評価数は一般向けUIに出さない。
+     ============================================================ */
+  var voteStore = { counts: {}, mine: {} };
+
+  function voterId() {
+    try {
+      var key = 'mifron-voter-id';
+      var id = window.localStorage.getItem(key);
+      if (!id) {
+        id = 'v' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+        window.localStorage.setItem(key, id);
+      }
+      return id;
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function voteCounts(questId) {
+    return voteStore.counts[questId] || { up: 0, down: 0 };
+  }
+
+  function myVote(questId) {
+    return voteStore.mine[questId] || null;
+  }
+
+  function fetchVotes() {
+    var voter = voterId();
+    var url = '/api/quests/votes' + (voter ? '?voter=' + encodeURIComponent(voter) : '');
+    return fetch(url, { headers: { Accept: 'application/json' } })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        voteStore.counts = (data && data.counts) || {};
+        voteStore.mine = (data && data.mine) || {};
+      })
+      .catch(function () {
+        // 評価APIが使えない環境では0件として表示する。
+        voteStore.counts = {};
+        voteStore.mine = {};
+      });
+  }
+
+  // 同じボタンをもう一度押すと投票を取り消す。
+  function sendVote(questId, vote) {
+    var next = myVote(questId) === vote ? 'none' : vote;
+    return fetch('/api/quests/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questId: questId, vote: next, voter: voterId() })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        voteStore.counts[questId] = (data && data.count) || { up: 0, down: 0 };
+        if (data && data.myVote) voteStore.mine[questId] = data.myVote;
+        else delete voteStore.mine[questId];
+      });
+  }
+
+  function ratingHtml(questId) {
+    var up = voteCounts(questId).up;
+    var mine = myVote(questId);
+    return '<section class="quest-rating" data-rating>' +
+      '<h3 class="quest-rating-title">このクエストの評価</h3>' +
+      '<div class="quest-rating-actions">' +
+        '<button type="button" class="rate-btn rate-up' + (mine === 'up' ? ' is-active' : '') + '" data-vote="up" aria-pressed="' + (mine === 'up' ? 'true' : 'false') + '">' +
+          '<span class="rate-icon" aria-hidden="true">▲</span><span>高評価</span><span class="rate-count" data-rate-count>' + up + '</span>' +
+        '</button>' +
+        '<button type="button" class="rate-btn rate-down' + (mine === 'down' ? ' is-active' : '') + '" data-vote="down" aria-pressed="' + (mine === 'down' ? 'true' : 'false') + '">' +
+          '<span class="rate-icon" aria-hidden="true">▼</span><span>低評価</span>' +
+        '</button>' +
+      '</div>' +
+      '<p class="rate-note" data-rate-note hidden role="status" aria-live="polite"></p>' +
+    '</section>';
+  }
+
+  function bindRating(scope, questId, onChange) {
+    var section = scope.querySelector('[data-rating]');
+    if (!section) return;
+    var note = section.querySelector('[data-rate-note]');
+    var countEl = section.querySelector('[data-rate-count]');
+    var buttons = Array.prototype.slice.call(section.querySelectorAll('.rate-btn'));
+
+    function paint() {
+      var mine = myVote(questId);
+      if (countEl) countEl.textContent = String(voteCounts(questId).up);
+      buttons.forEach(function (button) {
+        var active = button.dataset.vote === mine;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        buttons.forEach(function (b) { b.disabled = true; });
+        if (note) {
+          note.hidden = false;
+          note.classList.remove('is-error');
+          note.textContent = '送信中…';
+        }
+        sendVote(questId, button.dataset.vote)
+          .then(function () {
+            paint();
+            if (onChange) onChange(questId);
+            if (note) note.textContent = '評価を記録しました。';
+          })
+          .catch(function () {
+            if (note) {
+              note.hidden = false;
+              note.classList.add('is-error');
+              note.textContent = '評価を送信できませんでした。時間をおいて再試行してください。';
+            }
+          })
+          .then(function () {
+            buttons.forEach(function (b) { b.disabled = false; });
+          });
+      });
+    });
+
+    paint();
+  }
+
+  /* ---------- 削除提案 ----------
+     クエストを選んだときの「削除を提案」から送信する。
+     審査の優先度は、提案への高評価と対象クエストの低評価の比率で決まる。 */
+  var deletionDialog = null;
+
+  function deletionFeedback(dialogEl, text, ok) {
+    var message = dialogEl.querySelector('[data-deletion-message]');
+    if (!message) return;
+    message.textContent = text;
+    message.hidden = false;
+    message.classList.toggle('is-error', !ok);
+    message.classList.toggle('is-ok', ok);
+  }
+
+  function closeDeletionDialog() {
+    if (!deletionDialog) return;
+    if (typeof deletionDialog.close === 'function') deletionDialog.close();
+    else deletionDialog.removeAttribute('open');
+  }
+
+  function ensureDeletionDialog() {
+    if (deletionDialog) return deletionDialog;
+
+    var dialogEl = document.createElement('dialog');
+    dialogEl.className = 'deletion-dialog';
+    dialogEl.setAttribute('aria-label', 'クエストの削除提案');
+    dialogEl.innerHTML =
+      '<form class="deletion-form" data-deletion-form novalidate>' +
+        '<h2>削除を提案</h2>' +
+        '<p class="deletion-target">対象クエスト: <strong data-deletion-target></strong></p>' +
+        '<div class="deletion-field">' +
+          '<label for="deletion-reason">削除すべき理由 <span class="req" aria-hidden="true">必須</span></label>' +
+          '<textarea id="deletion-reason" name="reason" required maxlength="1000" rows="4" enterkeyhint="done" placeholder="重複している / 報酬バランスが不適切 / 条件が達成できない など"></textarea>' +
+          '<span class="field-count"><span data-count-for="deletion-reason">0</span> / 1000</span>' +
+        '</div>' +
+        '<div class="deletion-field">' +
+          '<label for="deletion-author">提案者名（任意）</label>' +
+          '<input id="deletion-author" name="author" type="text" maxlength="60" autocomplete="off" enterkeyhint="done" placeholder="ゲーム内ニックネームなど">' +
+        '</div>' +
+        '<div class="deletion-actions">' +
+          '<button type="submit" class="btn primary">削除提案を送信</button>' +
+          '<button type="button" class="btn" data-deletion-cancel>キャンセル</button>' +
+        '</div>' +
+        '<p class="deletion-note">削除提案は運営が審査します。提案への高評価と対象クエストの低評価の比率が高いものから優先して確認されます。</p>' +
+        '<div class="deletion-message" data-deletion-message hidden role="status" aria-live="polite"></div>' +
+      '</form>';
+
+    var form = dialogEl.querySelector('[data-deletion-form]');
+    var reason = dialogEl.querySelector('#deletion-reason');
+    var counter = dialogEl.querySelector('[data-count-for="deletion-reason"]');
+    if (reason && counter) {
+      reason.addEventListener('input', function () { counter.textContent = String(reason.value.length); });
+    }
+
+    dialogEl.addEventListener('click', function (event) {
+      if (event.target === dialogEl || event.target.closest('[data-deletion-cancel]')) {
+        closeDeletionDialog();
+      }
+    });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!form.reportValidity()) {
+        deletionFeedback(dialogEl, '削除すべき理由を入力してください。', false);
+        return;
+      }
+      var submit = form.querySelector('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      deletionFeedback(dialogEl, '送信中…', true);
+
+      var author = dialogEl.querySelector('#deletion-author');
+      var payload = {
+        title: '「' + (dialogEl.dataset.questName || '') + '」の削除提案',
+        description: reason ? reason.value.trim() : '',
+        type: 'deletion',
+        priority: 'medium',
+        targetId: dialogEl.dataset.questId || '',
+        targetName: dialogEl.dataset.questName || '',
+        author: author ? author.value.trim() : '',
+        tags: ['削除提案']
+      };
+
+      fetch('/api/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json().catch(function () { return {}; }).then(function (result) {
+            if (response.ok) {
+              deletionFeedback(dialogEl, '削除提案を受け付けました。運営が審査します。', true);
+              form.reset();
+              if (counter) counter.textContent = '0';
+            } else if (response.status === 429) {
+              deletionFeedback(dialogEl, '送信が集中しています。10分ほど待ってから再度お試しください。', false);
+            } else {
+              deletionFeedback(dialogEl, '送信に失敗しました: ' + (result.error || '不明なエラー'), false);
+            }
+          });
+        })
+        .catch(function () {
+          deletionFeedback(dialogEl, 'サーバーに接続できませんでした。時間をおいて再試行してください。', false);
+        })
+        .then(function () {
+          if (submit) submit.disabled = false;
+        });
+    });
+
+    document.body.appendChild(dialogEl);
+    deletionDialog = dialogEl;
+    return dialogEl;
+  }
+
+  function openDeletionDialog(quest) {
+    var dialogEl = ensureDeletionDialog();
+    dialogEl.dataset.questId = quest.id;
+    dialogEl.dataset.questName = quest.name;
+
+    var target = dialogEl.querySelector('[data-deletion-target]');
+    if (target) target.textContent = quest.name;
+
+    var form = dialogEl.querySelector('[data-deletion-form]');
+    if (form) form.reset();
+    var counter = dialogEl.querySelector('[data-count-for="deletion-reason"]');
+    if (counter) counter.textContent = '0';
+    var message = dialogEl.querySelector('[data-deletion-message]');
+    if (message) {
+      message.hidden = true;
+      message.textContent = '';
+      message.classList.remove('is-error', 'is-ok');
+    }
+
+    if (typeof dialogEl.showModal === 'function') dialogEl.showModal();
+    else dialogEl.setAttribute('open', '');
+
+    var reason = dialogEl.querySelector('#deletion-reason');
+    if (reason) reason.focus();
+  }
+
+  /* ============================================================
      ボード（無限キャンバス）
      ============================================================ */
   function initBoard() {
@@ -167,6 +440,7 @@
     var dialog = document.getElementById('questDialog');
     var dialogBody = document.getElementById('questDialogBody');
     var hint = document.getElementById('boardHint');
+    var emptyEl = document.getElementById('boardEmpty');
     if (!board || !canvas) return;
 
     var quests = QUESTS.slice();
@@ -245,6 +519,7 @@
     function render() {
       var list = filtered();
       canvas.querySelectorAll('.quest-card').forEach(function (el) { el.remove(); });
+      if (emptyEl) emptyEl.hidden = list.length > 0;
       if (!list.length) {
         if (countEl) countEl.textContent = '該当するクエストはありません';
         drawLines([], new Map());
@@ -260,14 +535,37 @@
         el.style.left = pos.x + 'px';
         el.style.top = pos.y + 'px';
         el.dataset.id = quest.id;
+        var up = voteCounts(quest.id).up;
         el.innerHTML =
-          '<span class="quest-card-type">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
+          '<span class="quest-card-head">' +
+            '<span class="quest-card-type">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
+            (up > 0 ? '<span class="quest-card-up">▲ ' + up + '</span>' : '') +
+          '</span>' +
           '<span class="quest-card-name">' + esc(quest.name) + '</span>' +
           '<span class="quest-card-reward">' + esc(quest.reward) + '</span>';
         el.addEventListener('click', function () { openDialog(quest); });
         canvas.appendChild(el);
       });
       if (countEl) countEl.textContent = list.length + ' 件を表示中';
+    }
+
+    function refreshCardCount(questId) {
+      var up = voteCounts(questId).up;
+      canvas.querySelectorAll('.quest-card').forEach(function (card) {
+        if (card.dataset.id !== questId) return;
+        var chip = card.querySelector('.quest-card-up');
+        if (up > 0) {
+          if (!chip) {
+            chip = document.createElement('span');
+            chip.className = 'quest-card-up';
+            var head = card.querySelector('.quest-card-head');
+            if (head) head.appendChild(chip);
+          }
+          chip.textContent = '▲ ' + up;
+        } else if (chip) {
+          chip.remove();
+        }
+      });
     }
 
     function openDialog(quest) {
@@ -277,15 +575,22 @@
           '<span class="badge type-' + esc(quest.type) + '">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
           '<h2>' + esc(quest.name) + '</h2>' +
         '</div>' +
+        (quest.proposed ? '<p class="quest-state-note">審査中の提案です。承認されるとゲーム内へ反映されます。</p>' : '') +
         '<div class="quest-dialog-facts">' +
           '<div><dt>成功条件</dt><dd>' + esc(quest.condition) + '</dd></div>' +
           '<div><dt>報酬</dt><dd>' + esc(quest.reward) + '</dd></div>' +
           '<div><dt>サイクル</dt><dd>' + esc(quest.candidate || quest.cycle || '条件発生 / 1回限り') + '</dd></div>' +
         '</div>' +
+        ratingHtml(quest.id) +
         '<div class="quest-dialog-actions">' +
           '<button type="button" class="btn primary" data-close-dialog>閉じる</button>' +
-          '<a class="btn" href="./propose.html">この内容で提案する</a>' +
+          '<button type="button" class="btn danger" data-propose-deletion>削除を提案</button>' +
         '</div>';
+      bindRating(dialogBody, quest.id, refreshCardCount);
+      var deletionButton = dialogBody.querySelector('[data-propose-deletion]');
+      if (deletionButton) {
+        deletionButton.addEventListener('click', function () { openDeletionDialog(quest); });
+      }
       if (typeof dialog.showModal === 'function') dialog.showModal();
       else dialog.setAttribute('open', '');
     }
@@ -464,7 +769,8 @@
       });
     }
 
-    fetchApiQuests().then(function (apiQuests) {
+    Promise.all([fetchApiQuests(), fetchVotes()]).then(function (results) {
+      var apiQuests = results[0];
       if (apiQuests && apiQuests.length) {
         var approved = apiQuests.filter(function (q) { return !q.proposed; });
         var pending = apiQuests.filter(function (q) { return q.proposed; });
@@ -727,20 +1033,27 @@
             '<span class="badge type-' + esc(quest.type) + '">' + esc(TYPE_LABELS[quest.type] || quest.type) + '</span>' +
             '<h2>' + esc(quest.name) + '</h2>' +
           '</header>' +
+          (quest.proposed ? '<p class="quest-state-note">審査中の提案です。承認されるとゲーム内へ反映されます。</p>' : '') +
           '<div class="quest-dialog-facts">' +
             '<div><dt>成功条件</dt><dd>' + esc(quest.condition) + '</dd></div>' +
             '<div><dt>報酬</dt><dd>' + esc(quest.reward) + '</dd></div>' +
             '<div><dt>サイクル</dt><dd>' + esc(quest.candidate || quest.cycle || '条件発生 / 1回限り') + '</dd></div>' +
           '</div>' +
+          ratingHtml(quest.id) +
           '<footer class="detail-footer">' +
             '<a class="btn primary" href="./">ボードへ戻る</a>' +
-            '<a class="btn" href="./propose.html">提案する</a>' +
+            '<button type="button" class="btn danger" data-propose-deletion>削除を提案</button>' +
           '</footer>' +
         '</article>';
+      bindRating(container, quest.id);
+      var deletionButton = container.querySelector('[data-propose-deletion]');
+      if (deletionButton) {
+        deletionButton.addEventListener('click', function () { openDeletionDialog(quest); });
+      }
     }
 
-    fetchApiQuests().then(function (apiQuests) {
-      var list = apiQuests || [];
+    Promise.all([fetchApiQuests(), fetchVotes()]).then(function (results) {
+      var list = results[0] || [];
       var approved = list.filter(function (q) { return !q.proposed; });
       var pending = list.filter(function (q) { return q.proposed; });
       var pool = approved.length ? approved.concat(pending) : QUESTS.concat(pending);
