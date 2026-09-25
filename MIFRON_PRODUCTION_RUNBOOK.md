@@ -19,7 +19,7 @@
 
 ## 支援導線の有効化
 
-支援販売は初期状態で無効です。提供内容・価格・返金処理・Minecraft Usage Guidelinesへの適合を運営で確認してから、決済事業者側の商品を作成します。
+支援販売は初期状態で無効です。提供内容・価格・返金処理・Minecraft Usage Guidelinesへの適合を運営で確認してから、決済事業者側の商品を作成します。ストアページは `mifron/store/` にあり、`assets/config.js` の `mifronStorePage`(必要なら `mifronStoreProducts`)に決済ページURLを設定した時だけ購入ボタンが有効になります。未設定の間は「販売準備中」を表示します。
 
 有効化前に、必ず[Minecraft Usage Guidelines](https://www.minecraft.net/usage-guidelines)の最新版を確認してください。特に、支援特典が他プレイヤーへの競争上の優位やゲームプレイ上の不公平を生まないことを確認します。
 

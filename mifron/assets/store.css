@@ -1,0 +1,120 @@
+@charset "UTF-8";
+
+/* ============================================================
+   Mifron ストア固有スタイル
+   共通デザインは ../assets/styles.css を使用し、
+   商品カード・カラーパレットだけを調整する。
+   ============================================================ */
+
+.store-page .hero {
+  padding: clamp(36px, 6vw, 64px) 0 clamp(20px, 4vw, 36px);
+}
+.store-page .hero h1 {
+  font-size: clamp(34px, 6.5vw, 56px);
+}
+
+/* ---------- プラン ---------- */
+.plan-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 760px) {
+  .plan-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(22px, 4vw, 30px);
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+.plan-card.featured {
+  border-color: var(--mifron);
+  box-shadow: 0 22px 48px rgba(86, 70, 255, .14);
+}
+.plan-card h3 { font-size: 21px; margin-top: 4px; }
+.plan-price { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 6px; }
+.plan-price b { font-size: 30px; letter-spacing: -.02em; color: var(--mifron); }
+.plan-price small { font-size: 12px; color: var(--muted); }
+.plan-features {
+  display: grid;
+  gap: 8px;
+  padding-left: 1.15em;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.plan-card .btn { margin-top: auto; }
+.plan-card .store-pending { margin-top: auto; }
+
+/* ---------- 価格表示 ---------- */
+.product-price {
+  margin-top: 10px !important;
+  font-weight: 700;
+  font-size: 16px !important;
+  color: var(--gold) !important;
+}
+.system-panel .btn { margin-top: 16px; }
+
+/* ---------- カラーパレット ---------- */
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+@media (min-width: 520px) { .palette-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 900px) { .palette-grid { grid-template-columns: repeat(8, 1fr); } }
+.palette-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-align: center;
+}
+.palette-chip .swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(22, 24, 29, .18);
+}
+.palette-chip b { font-size: 12.5px; }
+.palette-chip small { font-size: 10.5px; color: var(--muted); }
+
+/* 16色(Minecraftチャットカラー相当)。CSPに合わせ、色はクラスで指定する。 */
+.swatch-black { background: #000000; }
+.swatch-dark_blue { background: #0000AA; }
+.swatch-dark_green { background: #00AA00; }
+.swatch-dark_aqua { background: #00AAAA; }
+.swatch-dark_red { background: #AA0000; }
+.swatch-dark_purple { background: #AA00AA; }
+.swatch-gold { background: #FFAA00; }
+.swatch-gray { background: #AAAAAA; }
+.swatch-dark_gray { background: #555555; }
+.swatch-blue { background: #5555FF; }
+.swatch-green { background: #55FF55; }
+.swatch-aqua { background: #55FFFF; }
+.swatch-red { background: #FF5555; }
+.swatch-light_purple { background: #FF55FF; }
+.swatch-yellow { background: #FFFF55; }
+.swatch-white { background: #FFFFFF; }
+
+/* ---------- 販売準備中表示 ---------- */
+.store-pending {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--mist);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.notice .store-pending { margin-bottom: 12px; }
