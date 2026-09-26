@@ -44,30 +44,26 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 
 Mifronの各ページは、共通デザインシステムを統合した `mifron/assets/styles.css` と、ページ固有の `quests.css` / `proposals.css` / `admin.css` を読み込みます。MCTポータルはルートの `assets/styles.css` を使うため、共通デザインを変更するときは両方のファイルへ反映してください（Mifronサイトは独立して公開できるよう、`mifron/` 配下で完結させています）。
 
-## Mifronサイトの公開
+## 本番への公開
 
-Mifronの本番公開は、GitHub Actionsの `Deploy Mifron Pages` を手動実行します。誤公開防止のため、入力欄へ `DEPLOY_MIFRON` と入力した場合だけ実行されます。
+本番への反映は **Cloudflare Workers Builds**（Cloudflare の GitHub 連携）が `main` へ push された時点で自動実行します。これが本番デプロイの唯一の経路です。
 
-過去の `MCTsites.zip` 自動展開Workflowは、リポジトリ全体を削除して上書きする危険があり、現在の独立サイト公開方式と競合するため廃止しています。
+GitHub Actions にはデプロイ用ワークフローを置きません。同一のデプロイを2経路で持つと、片方だけ失敗して二重反映や取りこぼしが起きるためです。過去に `CLOUDFLARE_API_TOKEN` を使う `Deploy officialsites Worker` があり、`officialsites` Worker への `Workers Scripts: Edit` 権限がないため `No access to the specified service.` で失敗していました（2026-09-26 確認）。権限のない経路を1本なくすため、ワークフローを削除しています。
 
-リポジトリ設定には、次の非秘密Variableを登録します。
+反映の確認は GitHub Actions の `Verify production sites` を手動実行してください。トークンは不要で、以下を実測します。
 
-```text
-MIFRON_PAGES_PROJECT=mct-mifron
-```
+- 全5ホスト（`mct-official.com` / `mifron` / `crewmate` / `texroot` / `tatudragon`）が 200 を返し、期待するビルド内容を含んでいること
+- 存在しないパスが 404 を返すこと（200 のまま返ると、検索エンジンが存在しないURLをインデックスする）
+- CSP / HSTS / `X-Content-Type-Options` が返っていること
 
-次の秘密情報だけをCloudflareのアカウント管理者がGitHub Secretsへ登録してください。チャットやリポジトリへ書き込まないでください。
+このワークフローを push で自動起動しないのは、Workers Builds のチェックランがデプロイ完了の信号にならないためです（マージ直後に完了する起動 acknowledgment で、反映完了の保証がない）。自動判定にしたい場合は Workers Builds 側のデプロイ完了通知にトリガーを移してください。
 
-```text
-CLOUDFLARE_API_TOKEN
-```
+### リポジトリ設定
 
-アカウントIDは秘密ではないため、GitHub Repository Variable `CLOUDFLARE_ACCOUNT_ID` に保存します。Pagesプロジェクト名も同じくRepository Variable `MIFRON_PAGES_PROJECT` に保存します。
+- Repository Variable `CLOUDFLARE_ACCOUNT_ID` … Cloudflare アカウントID（秘密ではない）
+- Repository Variable `MIFRON_PAGES_PROJECT` … 現行デプロイ経路では参照していません
 
-Cloudflare Pages側のプロジェクト名は既存の `mct-mifron` と一致させます。Secrets未設定時はWorkflowが公開処理を停止します。
+環境 secret `production` / `CLOUDFLARE_API_TOKEN` は、デプロイ経路が無くなったため現在未使用です。必要なら削除してください（古い認証情報は放置しない方が安全です）。
 
-現在の本番サイトは既存の `mct-mifron` へ反映済みで、CSP/HSTSとMifron固有404を実測済みです。GitHub Actionsによる再公開は、`CLOUDFLARE_API_TOKEN` を登録した後に、確認語とproduction環境承認を通して実行します。
+`production` 環境に設定してある所有者の承認と `main` ブランチ制限は、参照するワークフローが無くなったため現在発生しません。`Verify production sites` は `workflow_dispatch` のみで、承認を要求しません。
 
-本番環境 `production` には、所有者の承認と `main` ブランチ制限を設定しています。Secretsを登録しても、GitHub Actionsの環境承認を通過するまで公開処理は開始されません。
-
-なお、GitHubの管理者バイパス設定は公開REST APIの環境更新項目ではないため、APIからは変更していません。GitHubの `Settings` → `Environments` → `production` で「管理者が保護ルールをバイパスできる」設定を無効にしてください。設定変更後も、Workflowは手動実行・確認語・`production` 承認・`main` 制限を要求します。

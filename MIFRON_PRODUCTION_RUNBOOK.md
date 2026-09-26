@@ -4,18 +4,17 @@
 
 ## 公開サイトの反映
 
-1. `Settings` → `Environments` → `production` を開く。
-2. 必須レビュアーが設定されていることを確認する。
-3. 「管理者が保護ルールをバイパスできる」を無効にする。
-4. `production` のデプロイブランチ制限が `main` のみであることを確認する。
-5. `CLOUDFLARE_API_TOKEN` だけをGitHubの `production` 環境Secretへ登録する。アカウントIDは非秘密のRepository Variable `CLOUDFLARE_ACCOUNT_ID` として登録する。値をチャットやリポジトリへ貼り付けない。
-6. `wrangler.toml` が現行のWorkers Static Assets構成（Worker名 `officialsites`、`main = "src/index.js"`）と一致することを確認する。
-7. `Deploy officialsites Worker` Workflowを確認し、`production` 環境承認後にデプロイする。現在のWorkflowは `main` へのpushでも実行されるため、production環境の保護ルールを必ず確認する。
-8. `mifron.mct-official.com`、`crewmate.mct-official.com`、`texroot.mct-official.com` の3ホストをCanary確認し、すべて成功するまで完了扱いにしない。
+本番への反映は **Cloudflare Workers Builds**（Cloudflare の GitHub 連携）が `main` へ merge された時点で自動実行します。デプロイ用のGitHub Actionsワークフローは置きません（二重デプロイ防止）。
 
-現行の公開基盤はCloudflare PagesではなくWorkers Static Assetsです。`MIFRON_PAGES_PROJECT` の設定やPages専用のデプロイ手順は使用しません。Workflow失敗時は再実行前にログとCloudflare側の状態を確認します。
+1. `wrangler.toml` が現行のWorkers Static Assets構成（Worker名 `officialsites`、`main = "src/index.js"`）と一致することを確認する。
+2. PRを `main` へ merge する。`Validate Mifron Pages` が通っていることを確認する。
+3. Workers Builds がデプロイを完了させる（マージ後 1〜3 分）。
+4. `Verify production sites` ワークフローを手動実行し、全5ホスト（`mct-official.com` / `mifron` / `crewmate` / `texroot` / `tatudragon`）が成功するまで完了扱いにしない。
+5. 反映に時間がかかり、`Verify production sites` のリトライ（既定 12 x 10 秒）が尽きる場合は時間を置いて再実行する。
 
-現在のリポジトリは所有者本人のみが共同編集者のため、`main` の必須PRレビューを有効にするとマージ不能になる可能性があります。また、GitHub FreeではPrivateリポジトリに必要なブランチ保護／Ruleset機能を利用できない場合があるため、Privateのままレビュー必須化する場合は、利用中のGitHubプランで利用可能な保護機能と信頼できるレビュアーを先に確認してください。準備後は `main` に必須PRレビュー1件・管理者にも適用・強制push禁止・削除禁止を設定してください。設定完了までは、手動公開Workflowと `production` 承認を必須の公開ゲートとして扱います。
+現行の公開基盤はCloudflare PagesではなくWorkers Static Assetsです。`MIFRON_PAGES_PROJECT` の設定やPages専用のデプロイ手順は使用しません。`CLOUDFLARE_API_TOKEN` を使った `Deploy officialsites Worker` は、`officialsites` Worker への `Workers Scripts: Edit` 権限がなく `No access to the specified service.` で失敗するため、2026-09-26 に削除しました（PR #81参照）。不要再になった `production` 環境のsecretと承認ルールは `Settings` → `Environments` から削除できます。
+
+現在のリポジトリは所有者本人のみが共同編集者のため、`main` の必須PRレビューを有効にするとマージ不能になる可能性があります。また、GitHub FreeではPrivateリポジトリに必要なブランチ保護／Ruleset機能を利用できない場合があるため、Privateのままレビュー必須化する場合は、利用中のGitHubプランで利用可能な保護機能と信頼できるレビュアーを先に確認してください。
 
 ## 支援導線の有効化
 
@@ -55,5 +54,5 @@ SUPPORT_WEBHOOK_PORT=8125
 - 秘密値をGit、Issue、Discord、ログへ保存する
 - AI/Codexに本番秘密・VM shell・mainへの直接変更権限を与える
 - 支援特典にPvP性能、MP倍率、ショップ優遇を付ける
-- GitHubのIssueやPRだけを根拠に本番完了と判断する
+- GitHubのIssueやPRだけを根拠に本番完了と判断する（必ず `Verify production sites` の実測で判断する）
 - Workflow失敗時にSecretsをログへ出力して調査する

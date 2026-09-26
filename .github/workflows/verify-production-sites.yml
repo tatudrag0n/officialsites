@@ -1,0 +1,117 @@
+name: Verify production sites
+
+# 本番デプロイは Cloudflare Workers Builds（GitHub 連携）が唯一の経路です。
+# このワークフローはデプロイせず、公開状態だけを確かめます。
+#
+# push では起動しません。Workers Builds のチェックランを
+# 「デプロイ完了」の信号として使えないためです（マージ直後に完了する
+# 起動 acknowledgment であり、反映完了の保証がないため）。
+# デプロイ後に手動で実行してください。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-production-sites
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check every production host
+        env:
+          # 反映待ちを吸収するための試行回数と間隔（既定 12 x 10s = 最大 2 分）
+          ATTEMPTS: '12'
+          RETRY_DELAY: '10'
+        run: |
+          set -uo pipefail
+
+          # host|期待するマーカー（この文字列が返らなければ古いビルド）
+          hosts=(
+            "mct-official.com|mct-wordmark-transparent"
+            "mifron.mct-official.com|mifron-icon"
+            "crewmate.mct-official.com|CREWMATE"
+            "texroot.mct-official.com|TEXROOT"
+            "tatudragon.mct-official.com|tatudragon-crewmate"
+          )
+
+          failed=0
+          for entry in "${hosts[@]}"; do
+            host="${entry%%|*}"
+            marker="${entry##*|}"
+            body="/tmp/verify-${host}.html"
+
+            echo "::group::$host"
+            ok=0
+            for attempt in $(seq 1 "$ATTEMPTS"); do
+              if curl --fail --silent --show-error \
+                   --max-time 20 \
+                   "https://${host}/" -o "$body" 2>/dev/null \
+                 && grep -q "$marker" "$body"; then
+                echo "OK   https://${host}/  ($(wc -c < "$body") bytes, marker '${marker}')"
+                ok=1
+                break
+              fi
+              echo "retry ${attempt}/${ATTEMPTS}: https://${host}/ not ready"
+              sleep "$RETRY_DELAY"
+            done
+
+            if [ "$ok" -ne 1 ]; then
+              echo "FAIL https://${host}/  did not serve the expected build"
+              failed=1
+            fi
+            echo "::endgroup::"
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            echo "One or more production hosts are not serving the expected build." >&2
+            exit 1
+          fi
+          echo "All production hosts are serving the expected build."
+
+      - name: Check branded 404 returns HTTP 404
+        run: |
+          set -uo pipefail
+          failed=0
+          for host in mifron.mct-official.com tatudragon.mct-official.com; do
+            # 存在しないパスが 404 を返さないと、検索エンジンが
+            # 存在しないURLをインデックスしてしまう。
+            code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+                    "https://${host}/__verify-missing-path__")"
+            if [ "$code" = "404" ]; then
+              echo "OK   https://${host}/  missing path -> 404"
+            else
+              echo "FAIL https://${host}/  missing path -> ${code} (expected 404)"
+              failed=1
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "A site served its 404 page with a non-404 status." >&2
+            exit 1
+          fi
+
+      - name: Check security headers
+        run: |
+          set -uo pipefail
+          failed=0
+          for host in mct-official.com mifron.mct-official.com tatudragon.mct-official.com; do
+            headers="$(curl --silent --head "https://${host}/")"
+            missing=""
+            echo "$headers" | grep -qi 'content-security-policy' || missing="$missing CSP"
+            echo "$headers" | grep -qi 'strict-transport-security' || missing="$missing HSTS"
+            echo "$headers" | grep -qi 'x-content-type-options: nosniff' || missing="$missing nosniff"
+            if [ -n "$missing" ]; then
+              echo "FAIL https://${host}/  missing:$missing"
+              failed=1
+            else
+              echo "OK   https://${host}/  CSP + HSTS + nosniff"
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "One or more hosts are missing security headers." >&2
+            exit 1
+          fi
