@@ -1,6 +1,6 @@
 # MCT 公式ポータル
 
-MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ独立したCloudflare Pagesサイトとして公開します。
+MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ページ（tatudragon）は、それぞれ独立したCloudflare Pagesサイトとして公開します。
 
 ## URL構成
 
@@ -8,8 +8,23 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOTは、それぞれ�
 - `https://mifron.mct-official.com/` Mifron
 - `https://crewmate.mct-official.com/` CREWMATE
 - `https://texroot.mct-official.com/` TEXROOT
+- `https://tatudragon.mct-official.com/` 開発者ページ（tatudragon）
 
 旧URLの `/mifron/`、`/crewmate/`、`/texroot/` は各独立サイトへ301リダイレクトします。
+
+## 開発者ページ（tatudragon）
+
+運営者の個人チャンネルの紹介ページで、`tatudragon/` 配下で完結しています。3つのブランド（Mifron / CREWMATE / TEXROOT）とは別枠で、ポータルのナビゲーションとフッターからのみリンクします。
+
+- 対応ホスト: `tatudragon.mct-official.com`
+- 公開ページは `tatudragon/index.html` のみ。チャンネルURLは `tatudragon/index.html` の `<!-- チャンネルURLはここを編集してください -->` の直下にあるリンクカードで管理します。
+- 配色はMCTポータルの白ベースを継承しつつ、アクセントのみ開発者ページ専用のローズ（`--dragon: #c02b6b`）にしています。Mifron（インディゴ）/ CREWMATE（グリーン）/ TEXROOT（オレンジ）と識別色として衝突しません。
+- `_headers` でMifronサイトと同じCSPとHSTSを適用しています。`style-src 'self'` のためインラインスタイルは使えず、フォントも `assets/fonts/` に自前ホストしています。
+- JavaScriptは使用していません。チャンネルリンクはHTMLに直書きなので、JSが失敗してもリンクとSEOは維持されます。
+
+ホスト名とディレクトリの対応は `src/index.js` の `SITE_ROOTS` に集約しています。可変サイト（Mifronと開発者ページ）は `serveSite()` が共通処理します。
+
+`tatudragon.mct-official.com` の Custom Domain はWranglerではなくダッシュボードで管理してください（`wrangler.toml` のコメントの通り、ルート設定の上書きを避けるためです）。
 
 ## Discordリンク
 

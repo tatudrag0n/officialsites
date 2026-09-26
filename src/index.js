@@ -164,6 +164,65 @@ async function fetchAsset(env, pathname) {
   return env.ASSETS.fetch(assetUrl(pathname));
 }
 
+// Custom domains that serve a site directory: hostname -> directory in assets.
+const SITE_ROOTS = {
+  "mifron.mct-official.com": "/mifron",
+  "tatudragon.mct-official.com": "/tatudragon",
+};
+
+// The URL parser collapses plain dot segments, but percent-encoded ones
+// (%2e%2e) survive it. Reject those so a request cannot escape its site
+// directory, and reject malformed encodings instead of passing them through.
+function isUnsafePath(pathname) {
+  let decoded;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return true;
+  }
+  if (decoded.includes("\0") || decoded.includes("\\")) return true;
+  return decoded.split("/").some((segment) => segment === "..");
+}
+
+// Serves one site directory. Resolves "/", "/page.html", extension-less
+// "/dir" to "/dir/index.html", and falls back to the site's own 404 page.
+async function serveSite(env, siteRoot, pathname) {
+  if (isUnsafePath(pathname)) {
+    return new Response("Not Found", { status: 404 });
+  }
+
+  const publicPath = pathname === "/" ? "/index.html" : pathname;
+  let response = await fetchAsset(env, `${siteRoot}${publicPath}`);
+
+  if (
+    response.status === 404 &&
+    !publicPath.endsWith("/") &&
+    !publicPath.includes(".")
+  ) {
+    response = await fetchAsset(env, `${siteRoot}${publicPath}/index.html`);
+  }
+
+  if (response.status !== 404) {
+    return response;
+  }
+
+  const notFound = await fetchAsset(env, `${siteRoot}/404.html`);
+  if (notFound.status === 404) {
+    return new Response("Not Found", { status: 404 });
+  }
+
+  // The branded 404 body must still be sent with a 404 status, otherwise
+  // search engines index every missing URL as a real page.
+  return new Response(notFound.body, {
+    status: 404,
+    headers: {
+      "content-type":
+        notFound.headers.get("content-type") || "text/html; charset=UTF-8",
+      "cache-control": "no-store",
+    },
+  });
+}
+
 const JSON_HEADERS = {
   "content-type": "application/json; charset=UTF-8",
   "cache-control": "no-store",
@@ -635,29 +694,9 @@ export default {
       return fetchAsset(env, pathname);
     }
 
-    if (host === "mifron.mct-official.com") {
-      const publicPath = url.pathname === "/" ? "/index.html" : url.pathname;
-      let response = await fetchAsset(env, `/mifron${publicPath}`);
-
-      if (
-        response.status === 404 &&
-        !publicPath.endsWith("/") &&
-        !publicPath.includes(".")
-      ) {
-        response = await fetchAsset(
-          env,
-          `/mifron${publicPath}/index.html`
-        );
-      }
-
-      if (response.status !== 404) {
-        return response;
-      }
-
-      const notFound = await fetchAsset(env, "/mifron/404.html");
-      return notFound.status !== 404
-        ? notFound
-        : new Response("Not Found", { status: 404 });
+    const siteRoot = SITE_ROOTS[host];
+    if (siteRoot) {
+      return serveSite(env, siteRoot, url.pathname);
     }
 
     return new Response("Not Found", { status: 404 });
