@@ -18,6 +18,8 @@ function preparationResponse(name) {
   const secondary = isCrewmate
     ? "制作・発信・コラボレーションを支えるサービスを準備しています。"
     : "PC・テクノロジー領域を中心に、新しいプロダクトを準備しています。";
+  // 公式Xアカウントは CREWMATE のみ。未開設のブランドはリンクを出さない。
+  const xAccount = isCrewmate ? { url: "https://x.com/mct_crewmate", label: "@mct_crewmate" } : null;
 
   const html = `<!doctype html>
 <html lang="ja">
@@ -131,6 +133,7 @@ footer{color:#676a72;border-color:var(--line)}
     <div class="actions">
       <a class="btn primary" href="https://mct-official.com/">MCT公式サイト</a>
       <a class="btn" href="https://mifron.mct-official.com/">Mifronを見る</a>
+      ${xAccount ? `<a class="btn" href="${xAccount.url}" target="_blank" rel="noopener noreferrer">X ${xAccount.label}</a>` : ""}
     </div>
   </div>
   <aside class="panel">
