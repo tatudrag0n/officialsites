@@ -113,9 +113,9 @@
         <div class="feature-grid">
           <article class="feature"><span class="tag">Hub</span><h3>ロビー</h3><p>拠点となるワールド。テレポーターから各ワールドへ移動します。</p></article>
           <article class="feature"><span class="tag">Survival</span><h3>サバイバル</h3><p>メインの生活ワールド。TNTと溶岩は使えません。OnlineShopはこのワールド限定です。</p></article>
-          <article class="feature"><span class="tag">Creative</span><h3>建築</h3><p>/mf build enter で入れるプレイヤーごとのフラットワールド。WorldEditが使え、完成した建築は提出して承認されるとSurvivalへ設置できます。</p></article>
+          <article class="feature"><span class="tag">Creative</span><h3>建築</h3><p>/mf build enter で入れる全員共有のフラットワールド。WorldEditが使え、完成した建築は提出して承認されるとSurvivalへ設置できます。</p></article>
           <article class="feature"><span class="tag">Athletic</span><h3>アスレチック</h3><p>計測付きコース。クリア、自己ベスト、歴代1位、月間ランキングにMP報酬が設定されています。</p></article>
-          <article class="feature"><span class="tag">Minigame</span><h3>ミニゲーム</h3><p>複数のミニゲームを遊べるワールド。一部のミニゲームはMPの納品によって解放されます。</p></article>
+          <article class="feature"><span class="tag">Minigame</span><h3>ミニゲーム</h3><p>PvPが有効なミニゲーム用ワールド。運営が個別に内容を設定して公開します。</p></article>
           <article class="feature"><span class="tag">FFA</span><h3>対戦</h3><p>18キットのPvPモード。キルでMPを獲得し、戦績は /mf ffa stats で確認できます。</p></article>
         </div>
         <div class="notice">
@@ -234,7 +234,7 @@
           <article class="feature"><span class="tag">残響の結晶</span><h3>残響の欠片 → ソニックビーム</h3><p>残響の欠片を取得・クラフトした時、2%で変化。ウォーデンのビームを放つ使い捨てアイテムです。</p></article>
           <article class="feature"><span class="tag">ファイアーボール</span><h3>ファイアチャージ → 火の玉</h3><p>ファイアチャージを取得・クラフトした時、0.1%で変化。ガストの火の玉を撃ち出す使い捨てアイテムです。</p></article>
           <article class="feature"><span class="tag">ローラースケート</span><h3>鉄のブーツ → 高速滑走</h3><p>鉄のブーツを取得・クラフトした時、0.01%で変化。走ると氷の上のように滑走します。</p></article>
-          <article class="feature accent-feature"><span class="tag">朽ちた剣</span><h3>ネザライトの剣 → 全エンチャントMAX</h3><p>ネザライトの剣を取得・クラフトした時、0.001%で変化。ごく低確率で手に入る、いつかの勇者の剣です。</p></article>
+          <article class="feature accent-feature"><span class="tag">朽ちた剣</span><h3>ネザライトの剣 → 効果準備中</h3><p>ネザライトの剣を取得・クラフトした時、0.001%で変化。ドロップはしますが、効果はまだ実装されていません。</p></article>
         </div>
         <div class="notice">
           <strong>特殊アイテムも提案できます</strong>
@@ -255,7 +255,7 @@
             <p class="eyebrow">クエスト</p>
             <h2>毎日の目標が報酬になる</h2>
           </div>
-          <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件が固定表示です。それぞれ「完全達成」クエストが用意され、反復・AFKの報酬は抑制されます。</p>
+          <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件が固定表示です。3タイプとも「完全達成」クエストが1件ずつ用意され、反復・AFKの報酬は抑制されます。</p>
         </div>
         <div class="feature-grid">
           <article class="feature"><span class="tag">Daily</span><h3>デイリー 候補10件→5件</h3><p>採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りなど。候補10件からその日の5件が抽選され、全達成で追加報酬。</p></article>
@@ -283,9 +283,9 @@
           <p>入口のキット選択で参加。キル報酬は50 MPで、同一相手への連続キルや反復狩りは報酬が段階的に抑制されます。退出は /mf ffa leave、戦績は /mf ffa stats。</p>
         </div>
         <div class="kit-grid">
-          <div class="kit"><div class="kit-head"><b>戦士</b><span class="kit-role">近接</span></div><p>鋭さIIのダイヤ斧＋鉄装備。移動速度が下がる代わりに一撃が重い。</p></div>
+          <div class="kit"><div class="kit-head"><b>戦士</b><span class="kit-role">近接</span></div><p>鋭さIIのダイヤ斧＋チェーン装備。脚取りのペナルティはなく、一撃が重いタイプ。</p></div>
           <div class="kit"><div class="kit-head"><b>狩人</b><span class="kit-role">遠距離</span></div><p>修繕なしのPower II・Infinity I弓＋矢1本。近接は石の剣。革・チェーン装備。</p></div>
-          <div class="kit"><div class="kit-head"><b>騎士</b><span class="kit-role">機動</span></div><p>ランジIIの鉄の槍と馬（体力24・速度0.22・跳躍0.65）。近接用の鉄剣付き。</p></div>
+          <div class="kit"><div class="kit-head"><b>騎士</b><span class="kit-role">機動</span></div><p>エンチャントなしの鉄の槍と馬（体力24・速度0.22・跳躍0.65）。近接用の鉄剣付き。</p></div>
           <div class="kit"><div class="kit-head"><b>リボルバー</b><span class="kit-role">遠距離</span></div><p>6発のクロスボウ。撃ち切ると自動でリロード（65tick）、与ダメージ0.85倍。</p></div>
           <div class="kit"><div class="kit-head"><b>剣士</b><span class="kit-role">近接</span></div><p>鋭さIの鉄剣。金リンゴは90秒ごとに再使用できる回復手段。</p></div>
           <div class="kit"><div class="kit-head"><b>シールダー</b><span class="kit-role">防御</span></div><p>石の剣＋盾。正面防御に強く、火力は控えめ。</p></div>
@@ -337,7 +337,7 @@
         </div>
         <div class="feature-grid">
           <article class="feature"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、称号「MSP / MSP+」、プロフィールバッジ、ネームカラー・チャットカラー・タブアイテムなどの装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
-          <article class="feature"><span class="tag">独自ストア</span><h3>公式ストア</h3><p>外部ストア(Tebex)を廃止し、Mifron公式のストアページでサポーターパスや装飾を取り扱います。</p></article>
+          <article class="feature"><span class="tag">独自ストア</span><h3>公式ストア</h3><p>サポーターパスや装飾を、Mifron公式サイト内の販売ページで取り扱います。販売ページの公開準備が進んだ段階で受付を開始します。</p></article>
           <article class="feature"><span class="tag">公開条件</span><h3>準備完了後に開始</h3><p data-support-pending>現在は支援受付を行っていません。決済事業者・価格・返金条件を確認し、公開ページを用意した後に受付を開始します。</p></article>
         </div>
         <div class="hero-actions">
