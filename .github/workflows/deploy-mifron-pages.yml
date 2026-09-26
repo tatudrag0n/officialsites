@@ -33,6 +33,7 @@ jobs:
           test -f wrangler.toml
           test -f src/index.js
           test -f mifron/index.html
+          test -f tatudragon/index.html
 
       - name: Validate Worker configuration
         run: npx --yes wrangler@4.127.0 deploy --dry-run
@@ -46,7 +47,7 @@ jobs:
       - name: Verify production hosts
         run: |
           set -euo pipefail
-          for host in mifron.mct-official.com crewmate.mct-official.com texroot.mct-official.com; do
+          for host in mifron.mct-official.com crewmate.mct-official.com texroot.mct-official.com tatudragon.mct-official.com; do
             echo "Checking https://$host/"
             curl --fail --silent --show-error --retry 8 --retry-delay 5 --retry-all-errors "https://$host/" -o "/tmp/$host.html"
             test -s "/tmp/$host.html"

@@ -1,0 +1,433 @@
+@charset "UTF-8";
+
+/* ============================================================
+   tatudragon 開発者ページ デザインシステム
+   - MCTポータル（assets/styles.css）と同じ白ベース
+   - アクセントは開発者ページ専用のローズ
+   - フォントは自前ホスト（CSP が 'self' のみ許可のため）
+   ============================================================ */
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/chakra-petch-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/chakra-petch-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/chakra-petch-700.woff2") format("woff2");
+}
+
+:root {
+  /* 基礎 */
+  --paper: #fafaf7;
+  --card: #ffffff;
+  --ink: #16181d;
+  --muted: #5c616b;
+  --line: #e3e4e0;
+  --line-strong: #c9cac5;
+  --mist: #f1f1ec;
+  --white: #ffffff;
+
+  /* 開発者ページ専用アクセント */
+  --dragon: #c02b6b;
+  --dragon-soft: #fbe7ef;
+  --youtube: #e02424;
+  --x: #16181d;
+  --github: #24292f;
+
+  --sans: "Chakra Petch", "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, system-ui, sans-serif;
+  --radius: 14px;
+  --shell-pad: 20px;
+}
+
+@media (min-width: 640px) { :root { --shell-pad: 40px; } }
+
+/* ---------- 基礎 ---------- */
+* { box-sizing: border-box; }
+html {
+  background: var(--paper);
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.8;
+  overflow-x: clip;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 0; letter-spacing: .015em; }
+p { margin: 0; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+small { line-height: 1.6; }
+
+.shell {
+  width: 100%;
+  max-width: 1140px;
+  margin-inline: auto;
+  padding-inline: var(--shell-pad);
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 12px; top: 12px; z-index: 999;
+  background: var(--white); color: var(--ink);
+  padding: 12px 16px; border: 2px solid var(--ink);
+}
+
+:where(a, button):focus-visible {
+  outline: 3px solid var(--dragon);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- ラベル ---------- */
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: var(--muted);
+}
+.kicker {
+  margin: 0 0 18px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  color: var(--dragon);
+}
+
+/* ---------- ヘッダー ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 250, 247, .88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 68px;
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: .02em;
+}
+.brand img { height: 26px; width: auto; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.25; }
+.brand-text small {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 13px;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: color .15s ease, border-color .15s ease;
+}
+.nav-links a:hover { color: var(--ink); border-bottom-color: var(--dragon); }
+
+/* ---------- ヒーロー ---------- */
+.hero { padding: clamp(56px, 9vw, 104px) 0 clamp(48px, 7vw, 88px); }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr);
+  gap: clamp(32px, 6vw, 72px);
+  align-items: end;
+}
+.hero h1 {
+  font-size: clamp(34px, 5.6vw, 62px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  margin: 0 0 22px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--dragon);
+}
+.lead {
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: var(--muted);
+  max-width: 46em;
+}
+.hero-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+.hero-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  color: var(--muted);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.hero-card-list {
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.hero-card-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-card-list span {
+  width: 20px;
+  text-align: center;
+  color: var(--dragon);
+  font-size: 12px;
+}
+
+/* ---------- ボタン ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+}
+.btn:hover { transform: translateY(-1px); border-color: var(--ink); }
+.btn.primary {
+  background: var(--dragon);
+  border-color: var(--dragon);
+  color: var(--white);
+}
+.btn.primary:hover { background: #a52259; border-color: #a52259; }
+
+/* ---------- セクション ---------- */
+.section { padding: clamp(52px, 7vw, 88px) 0; }
+.section.alt {
+  background: var(--mist);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px 40px;
+  align-items: end;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.section-head h2 {
+  font-size: clamp(24px, 3.2vw, 34px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.section-head > p {
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 42em;
+}
+
+/* ---------- チャンネルカード ---------- */
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+.channel-card {
+  --accent: var(--dragon);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.channel-card.youtube { --accent: var(--youtube); }
+.channel-card.x { --accent: var(--x); }
+.channel-card.github { --accent: var(--github); }
+.channel-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 16px 40px rgba(22, 24, 29, .08);
+}
+.channel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.channel-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--white);
+}
+.channel-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--muted);
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.channel-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+.channel-handle {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  word-break: break-all;
+}
+.channel-desc {
+  font-size: 14px;
+  color: var(--muted);
+  flex-grow: 1;
+}
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.go span { transition: transform .18s ease; }
+.channel-card:hover .go span { transform: translateX(4px); }
+
+/* ---------- プロフィール ---------- */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 18px;
+}
+.about-card {
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--dragon);
+  border-radius: 4px 12px 12px 4px;
+}
+.about-card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.about-card p { font-size: 14px; color: var(--muted); }
+
+/* ---------- 404 ---------- */
+.error-hero {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+  padding: 60px 0;
+}
+.error-inner { max-width: 640px; }
+.error-inner h1 {
+  font-size: clamp(30px, 5vw, 50px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  margin: 0 0 18px;
+}
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+/* ---------- フッター ---------- */
+.footer {
+  padding: 40px 0 44px;
+  border-top: 1px solid var(--line);
+}
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 40px;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-brand img { height: 24px; width: auto; }
+.legal { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  font-size: 13px;
+}
+.footer-links a { text-decoration: none; color: var(--muted); }
+.footer-links a:hover { color: var(--ink); text-decoration: underline; }
+
+/* ---------- レスポンシブ ---------- */
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr; align-items: start; }
+  .section-head { grid-template-columns: 1fr; align-items: start; }
+}
+@media (max-width: 560px) {
+  .nav { min-height: 60px; }
+  .nav-links { font-size: 12px; gap: 6px 16px; }
+  .footer-grid { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .btn:hover, .channel-card:hover, .channel-card:hover .go span { transform: none; }
+}
