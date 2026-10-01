@@ -40,9 +40,20 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 - 要注意: 高評価比率 30% 以下（3票以上）
 - 削除提案の優先比率: 提案への高評価 ÷（提案への高評価 ＋ 対象クエストの低評価）
 
+## MifronのブランドとMinecraftプロジェクトページ
+
+Mifronは「ゲームやデジタルサービスを開発するインディーゲームスタジオ」です（Games & Digital Experiences）。Minecraftサーバーは最初のプロジェクトとして整理されています。
+
+- `mifron/index.html` はスタジオのブランドサイト（Hero / Featured Projects / News / Community / Store / About）です。
+- `mifron/minecraft.html` は代表プロジェクト「Mifron Minecraft」のページです。参加方法、ワールド、MP経済、アイテム、特殊アイテム、クエスト、提案システム、FFAの説明はここに集約しています。
+- Minecraft の説明文は MifronPlugin の実装に合わせて更新されます。変更するときは `minecraft.html` を正本とし、トップページへ説明を書き戻さないでください。
+- 旧トップページのアンカー（`/join`, `/worlds`, `/ffa`, `/economy`, `/shop` など）は `_redirects` で `minecraft.html` の該当セクションへ転送します。
+
 ## スタイルシートの構成
 
-Mifronの各ページは、共通デザインシステムを統合した `mifron/assets/styles.css` と、ページ固有の `quests.css` / `proposals.css` / `admin.css` を読み込みます。MCTポータルはルートの `assets/styles.css` を使うため、共通デザインを変更するときは両方のファイルへ反映してください（Mifronサイトは独立して公開できるよう、`mifron/` 配下で完結させています）。
+Mifronの各ページは、共通デザインシステムを統合した `mifron/assets/styles.css` と、ページ固有の `quests.css` / `proposals.css` / `admin.css` / `store.css` を読み込みます。MCTポータルはルートの `assets/styles.css` を使うため、共通デザインを変更するときは両方のファイルへ反映してください（Mifronサイトは独立して公開できるよう、`mifron/` 配下で完結させています）。
+
+`mifron/assets/styles.css` 末尾の「スタジオサイト」節は、`body.studio-page` を付けたページ（トップページ、`minecraft.html`、`tutorial.html`）だけが対象のダークテーマです。トークン（`--paper` / `--card` / `--ink` / `--mifron` など）を差し替えて既存コンポーネントを転用しているため、プロジェクトを増やしたページにも同じクラスを付ければ同じ見た目になります。クエスト・提案・管理画面は操作性を優先して明るい配色のまま維持しています。
 
 ## 本番への公開
 

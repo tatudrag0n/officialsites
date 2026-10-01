@@ -1,19 +1,30 @@
-/join /#join 302
-/about /#main 302
-/ffa /#systems 302
-/kits /#systems 302
-/survival /#systems 302
-/build /#systems 302
-/athletic /#systems 302
-/economy /#systems 302
-/shop /#systems 302
-/auction /#systems 302
-/quest /#systems 302
-/events /#join 302
-/discord /#join 302
-/rules /#join 302
-/faq /#join 302
-/support /#support 302
+# スタジオサイトのナビゲーション
+/projects  /#projects  302
+/news      /#news      302
+/community /#community 302
+/about     /#about     302
+/support   /#support   302
+
+# 代表プロジェクト（Minecraft）
+/minecraft /minecraft.html 302
+
+# 旧トップページのアンカーはプロジェクトページへ移設
+/join     /minecraft.html#join     302
+/worlds   /minecraft.html#worlds   302
+/items    /minecraft.html#items    302
+/ffa      /minecraft.html#ffa      302
+/kits     /minecraft.html#ffa      302
+/economy  /minecraft.html#systems  302
+/shop     /minecraft.html#systems  302
+/auction  /minecraft.html#systems  302
+/survival /minecraft.html#systems  302
+/build    /minecraft.html#systems  302
+/athletic /minecraft.html#systems  302
+/quest    /minecraft.html#quest    302
+/events   /minecraft.html#join     302
+/discord  /#community              302
+/rules    /minecraft.html#join     302
+/faq      /minecraft.html#join     302
 
 # New site pages
 /tutorial    /tutorial.html    302
