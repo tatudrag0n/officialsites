@@ -863,3 +863,196 @@ h3 { font-size: 19px; font-weight: 700; }
   .quest-page .hero-actions .btn, .proposal-page .hero-actions .btn { width: 100%; }
   .quest-page .section, .proposal-page .section { padding: clamp(44px, 9vw, 64px) 0; }
 }
+
+/* ============================================================
+   Mifron スタジオサイト / Games & Digital Experiences
+   - body.studio-page を付けたブランドページだけダークテーマへ
+   - 既存トークンを差し替えて共通コンポーネントを転用する
+   - ツール画面（クエスト / 提案 / 管理）は明るい配色のまま
+   ============================================================ */
+
+.studio-page {
+  --paper: #0b0c10;
+  --card: #14161c;
+  --card-2: #1a1d25;
+  --ink: #f2f3f7;
+  --muted: #9aa1ae;
+  --line: #262a34;
+  --line-strong: #3a4150;
+  --mist: #121419;
+  --mifron: #8b7bff;
+  --mifron-soft: #1e1c36;
+  --gold: #f5d06f;
+  color: var(--ink);
+  background: var(--paper);
+}
+html:has(body.studio-page) { background: #0b0c10; }
+
+/* ---------- 既存コンポーネントの暗色対応 ---------- */
+.studio-page .site-header { background: rgba(11, 12, 16, .82); border-bottom-color: var(--line); }
+.studio-page .nav-links a:hover { background: var(--card-2); }
+.studio-page .nav-links .hot { background: var(--mifron); color: #fff; }
+.studio-page .nav-links .hot:hover { background: #7a68ff; }
+.studio-page .nav-links.open { background: var(--paper); border-bottom-color: var(--line); }
+.studio-page .menu { border-color: var(--line-strong); }
+.studio-page .menu span { background: var(--ink); }
+.studio-page .skip:focus { background: var(--card); color: var(--ink); border-color: var(--mifron); }
+
+/* ロゴは暗色のファイル。背景が暗いときも同じように見えるよう、明るいチップを敷く。 */
+.studio-page .brand .brand-icon {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px 6px;
+}
+
+.studio-page .btn { background: var(--card); color: var(--ink); border-color: var(--line-strong); }
+.studio-page .btn:hover { border-color: var(--mifron); }
+.studio-page .btn.primary { background: var(--mifron); color: #fff; border-color: var(--mifron); }
+.studio-page .btn.primary:hover { background: #7a68ff; border-color: #7a68ff; }
+.studio-page .btn.discord { background: var(--discord); border-color: var(--discord); color: #fff; }
+.studio-page .copy-button { background: var(--mifron); color: #fff; }
+.studio-page .copy-button:hover { background: #7a68ff; }
+.studio-page a.copy-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; text-align: center; text-decoration: none;
+}
+
+.studio-page .lead { color: #c6cbd6; }
+.studio-page .eyebrow, .studio-page .kicker { color: var(--gold); }
+.studio-page .kicker::before { background: var(--gold); }
+.studio-page .hero { position: relative; }
+.studio-page .hero-status { background: var(--card); border-color: var(--line); box-shadow: 0 24px 60px rgba(0,0,0,.45); }
+.studio-page .hero-status::before { content: "MIFRON / STUDIO"; color: var(--mifron); }
+.studio-page .hero-status.project-status-line::before { content: "MIFRON / MINECRAFT"; }
+.studio-page .hero-status .copy-button { margin-top: 12px; width: 100%; }
+.studio-page .join-address { background: var(--mist); border-color: var(--line); }
+
+.studio-page .section.alt { background: var(--mist); }
+.studio-page .section.dark, .studio-page .dark { background: #101319; }
+.studio-page .stat-ribbon { background: var(--card); }
+.studio-page .stat-ribbon > div { border-color: var(--line); }
+.studio-page .stat-ribbon span { color: var(--muted); }
+.studio-page .contact-panel { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.studio-page .contact-panel p { color: var(--muted); }
+.studio-page .contact-panel .btn { background: var(--mifron); color: #fff; border-color: var(--mifron); }
+.studio-page .contact-panel .btn:hover { background: #7a68ff; border-color: #7a68ff; }
+.studio-page .notice { background: var(--card); }
+.studio-page .discord-widget { background: var(--card); border-color: var(--line); }
+.studio-page .footer { background: var(--mist); }
+.studio-page .footer-brand img { background: #ffffff; border-color: var(--line); }
+.studio-page .disclaimer { color: #7d8493; }
+.studio-page .empty-state, .studio-page .mc-empty-state { background: var(--card); border-color: var(--line); }
+
+/* ---------- 余白を効かせたブランド用レイアウト ---------- */
+.studio-page .hero { padding: clamp(56px, 12vw, 152px) 0 clamp(48px, 9vw, 104px); }
+.studio-page .hero h1 { font-size: clamp(50px, 13vw, 132px); letter-spacing: -.02em; }
+.studio-page .section { padding: clamp(72px, 13vw, 152px) 0; }
+.studio-page .section-head { margin-bottom: clamp(32px, 5vw, 56px); }
+.studio-page .sub-hero { padding: clamp(40px, 8vw, 88px) 0 clamp(28px, 5vw, 48px); }
+
+/* ---------- Featured Projects（大型プロジェクトカード） ---------- */
+.project-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 760px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } }
+@media (min-width: 1080px) { .project-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.project-card {
+  display: flex; flex-direction: column;
+  height: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.project-card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: 0 28px 60px rgba(0,0,0,.45); }
+.project-art {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+  aspect-ratio: 16 / 9;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #2a2450, #6d5cff);
+}
+.project-art.mc { background: linear-gradient(135deg, #1d3b2a 0%, #2f7a4a 52%, #8fd36b 100%); }
+.project-art.games { background: linear-gradient(135deg, #2a2450 0%, #5646ff 58%, #8b7bff 100%); }
+.project-art.apps { background: linear-gradient(135deg, #1d2333 0%, #3c4a70 58%, #7f92c7 100%); }
+.project-mark { font-size: 12px; font-weight: 700; letter-spacing: .2em; color: rgba(255,255,255,.86); }
+.project-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  background: rgba(11,12,16,.55);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  color: #fff;
+}
+.project-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; flex: none; }
+.project-status.released::before { background: #4ade80; }
+.project-status.development::before { background: var(--gold); }
+.project-status.planning::before { background: #a396ff; }
+
+.project-body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 26px 24px 24px; }
+.project-body h3 { font-size: clamp(20px, 3vw, 26px); }
+.project-body > p { font-size: 14px; color: var(--muted); }
+.project-meta { display: grid; gap: 10px; margin-top: 6px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; }
+.project-meta div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.project-meta dt { color: #6f7684; }
+.project-meta dd { color: var(--muted); text-align: right; }
+.project-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 20px; }
+.project-foot .go { font-size: 13.5px; font-weight: 700; color: var(--mifron); text-decoration: none; }
+.project-foot .go:hover { text-decoration: underline; }
+.project-foot .soon { font-size: 12.5px; color: #6f7684; }
+
+/* ---------- 開発ニュース ---------- */
+.news-list { border-top: 1px solid var(--line); }
+.news-item { display: grid; gap: 6px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 760px) { .news-item { grid-template-columns: 120px minmax(0, 1fr) auto; align-items: baseline; gap: 32px; padding: 26px 0; } }
+.news-date { font-size: 12px; font-weight: 600; letter-spacing: .1em; color: var(--muted); }
+.news-item h3 { font-size: 17px; }
+.news-item p { font-size: 13.5px; color: var(--muted); }
+.news-kind { justify-self: start; margin-top: 8px; }
+@media (min-width: 760px) { .news-kind { justify-self: end; margin-top: 0; } }
+
+/* ---------- 概要 / 数字 ---------- */
+.summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 900px) { .summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+.summary-card {
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.summary-card b { display: block; font-size: clamp(22px, 3.4vw, 30px); font-weight: 700; }
+.summary-card span { display: block; margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+
+/* ---------- プロジェクトページ内メニュー ---------- */
+.project-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.project-toc a {
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  transition: color .15s ease, border-color .15s ease;
+}
+.project-toc a:hover { color: var(--ink); border-color: var(--mifron); }
+
+/* ---------- About ---------- */
+.about-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 760px) { .about-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; } }
+.about-card { padding: 30px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
+.about-card h3 { font-size: 19px; }
+.about-card p { margin-top: 12px; font-size: 14px; color: var(--muted); }
+.about-card .go { display: inline-flex; align-items: center; margin-top: 18px; font-size: 13.5px; font-weight: 700; color: var(--mifron); text-decoration: none; }
+.about-card .go:hover { text-decoration: underline; }
+
+/* ---------- モバイル ---------- */
+@media (max-width: 640px) {
+  .studio-page .hero-actions { display: grid; grid-template-columns: 1fr; }
+  .studio-page .hero-actions .btn { width: 100%; }
+  .project-art { aspect-ratio: 16 / 10; }
+  .project-body { padding: 22px 20px 22px; }
+}
