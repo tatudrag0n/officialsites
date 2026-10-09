@@ -223,6 +223,34 @@ small { line-height: 1.6; }
   font-size: 12px;
 }
 
+/* ---------- ヒーロー背景動画 ---------- */
+/* 装飾目的のミュート動画。読み込み前・省モーション設定ではポスター画像を表示。 */
+.hero { position: relative; }
+.hero-media {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+  background: url("hero-poster.webp") center / cover no-repeat;
+}
+.hero-video { width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+.hero-media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(250,250,247,.30) 0%, rgba(250,250,247,.75) 60%, var(--paper) 100%);
+}
+.hero-grid { position: relative; z-index: 1; }
+
+/* ---------- スクロール連動の表示アニメーション ---------- */
+/* JS不要。対応ブラウザでは画面に入るとフェードアップ、非対応では常時表示。 */
+@supports (animation-timeline: view()) {
+  .reveal { animation: reveal-in linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  .reveal:nth-child(2) { animation-delay: 70ms; }
+  .reveal:nth-child(3) { animation-delay: 140ms; }
+  .reveal:nth-child(4) { animation-delay: 210ms; }
+}
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* ---------- ボタン ---------- */
 .btn {
   display: inline-flex;
@@ -430,4 +458,7 @@ small { line-height: 1.6; }
   html { scroll-behavior: auto; }
   * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
   .btn:hover, .channel-card:hover, .channel-card:hover .go span { transform: none; }
+  .reveal { animation: none; }
+  /* 背景動画は止め、ポスター画像だけを見せる */
+  .hero-video { display: none; }
 }

@@ -153,7 +153,10 @@ h3 { font-size: 19px; font-weight: 700; }
   background: rgba(250, 250, 247, .92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
+  transition: box-shadow .25s ease;
 }
+.site-header.is-scrolled { box-shadow: 0 12px 32px rgba(22,24,29,.08); }
+.studio-page .site-header.is-scrolled { box-shadow: 0 12px 32px rgba(0,0,0,.55); }
 .nav {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px;
@@ -191,6 +194,7 @@ h3 { font-size: 19px; font-weight: 700; }
 }
 .nav-links a:hover { background: var(--mist); }
 .nav-links a[aria-current="page"] { color: var(--mifron); }
+.nav-links a.is-active { color: var(--mifron); }
 .nav-links .hot {
   background: var(--ink); color: var(--white);
   min-height: 40px; min-width: 44px;
@@ -225,6 +229,7 @@ h3 { font-size: 19px; font-weight: 700; }
     border-bottom: 1px solid var(--line);
     box-shadow: 0 18px 30px rgba(0,0,0,.07);
     max-height: calc(100vh - 64px);
+    max-height: calc(100dvh - 64px);
     overflow: auto;
   }
   .nav-links.open a { width: 100%; min-height: 50px; padding: 12px 8px; border-radius: 8px; }
@@ -296,6 +301,45 @@ h3 { font-size: 19px; font-weight: 700; }
 .status-list dt { font-weight: 700; font-size: 14px; }
 .status-list dd { font-size: 12px; color: var(--muted); text-align: right; }
 
+/* ---------- ヒーロー背景動画 ---------- */
+/* 装飾目的のミュート動画。CSP は default-src 'self' なので自前ホストのみ。
+   動画が読み込まれるまで・省モーション設定ではポスター画像を表示する。 */
+.hero { position: relative; }
+.hero-media {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+  background: url("hero-poster.webp") center / cover no-repeat;
+}
+.hero-video { width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+.hero-media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(250,250,247,.35) 0%, rgba(250,250,247,.78) 60%, var(--paper) 100%);
+}
+.hero-grid { position: relative; z-index: 1; }
+.hero::before { z-index: 2; }
+
+/* スクロール誘導（ヒーロー直下） */
+.scroll-cue {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-top: clamp(28px, 5vw, 48px);
+}
+.scroll-cue-label { font-size: 10px; font-weight: 700; letter-spacing: .3em; color: var(--muted); }
+.scroll-cue-line {
+  position: relative; width: 1px; height: 44px;
+  background: linear-gradient(var(--muted), transparent);
+  overflow: hidden;
+}
+.scroll-cue-line::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(transparent, var(--mifron));
+  animation: scroll-cue-drop 2.2s ease-in-out infinite;
+}
+@keyframes scroll-cue-drop {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
+
 /* ---------- セクション ---------- */
 .section { padding: clamp(56px, 10vw, 104px) 0; }
 .section.alt { background: var(--mist); }
@@ -345,7 +389,8 @@ h3 { font-size: 19px; font-weight: 700; }
   font-size: 13px; font-weight: 700;
   color: var(--brand, var(--ink));
 }
-.brand-card .go span { margin-left: 6px; }
+.brand-card .go span { display: inline-block; margin-left: 6px; transition: transform .2s ease; }
+.brand-card:hover .go span { transform: translateX(4px); }
 .brand-card.mifron { --brand: var(--mifron); }
 .brand-card.mifron:hover { box-shadow: 0 20px 44px rgba(86,70,255,.16); }
 .brand-card.crewmate { --brand: var(--crew); }
@@ -446,6 +491,8 @@ h3 { font-size: 19px; font-weight: 700; }
 }
 .stat-ribbon b { font-size: 21px; font-weight: 700; letter-spacing: .01em; }
 .stat-ribbon span { font-size: 11.5px; color: #a7abb5; }
+.stat-ribbon > div:last-child { border-right: 0; }
+@media (max-width: 899px) { .stat-ribbon > div:nth-child(2n) { border-right: 0; } }
 
 /* キット表 */
 .kit-grid { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
@@ -822,6 +869,9 @@ h3 { font-size: 19px; font-weight: 700; }
 /* 表示アニメーション: JS不要のスクロール連動。未対応ブラウザでは常時表示。 */
 @supports (animation-timeline: view()) {
   .reveal { animation: reveal-in linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  .reveal:nth-child(2) { animation-delay: 70ms; }
+  .reveal:nth-child(3) { animation-delay: 140ms; }
+  .reveal:nth-child(4) { animation-delay: 210ms; }
 }
 @keyframes reveal-in {
   from { opacity: 0; transform: translateY(12px); }
@@ -1055,4 +1105,59 @@ html:has(body.studio-page) { background: #0b0c10; }
   .studio-page .hero-actions .btn { width: 100%; }
   .project-art { aspect-ratio: 16 / 10; }
   .project-body { padding: 22px 20px 22px; }
+}
+
+/* ============================================================
+   UX改善: スタジオの背景動画オーバーレイ / 紹介動画 / sticky目次
+   ============================================================ */
+
+/* スタジオ（ダーク）のヒーロー動画: テキストの可読性を優先したオーバーレイ */
+.studio-page .hero-video { opacity: .8; }
+.studio-page .hero-media::after {
+  background:
+    linear-gradient(90deg, rgba(11,12,16,.92) 0%, rgba(11,12,16,.45) 55%, rgba(11,12,16,.65) 100%),
+    linear-gradient(180deg, rgba(11,12,16,.30) 0%, rgba(11,12,16,.10) 45%, rgba(11,12,16,.90) 100%);
+}
+
+/* 紹介動画（Minecraftページ）: ポスター画像を下敷きにして読み込み前も見栄えを保つ */
+.video-frame {
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0c1a12 url("minecraft-poster.webp") center / cover no-repeat;
+  box-shadow: 0 30px 80px rgba(0,0,0,.45);
+}
+.showcase-video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video-frame figcaption { margin-top: 12px; font-size: 12.5px; color: var(--muted); }
+@media (max-width: 640px) { .video-frame { border-radius: 14px; } }
+
+/* プロジェクトページの目次: ヘッダー直下に固定して長いページの移動を助ける */
+.toc-bar {
+  position: sticky; top: 64px; z-index: 40;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.toc-bar .project-toc { padding-block: 10px; }
+@media (min-width: 900px) { .toc-bar { top: 72px; } }
+html:has(body.studio-page) { scroll-padding-top: 140px; }
+.project-toc a.is-active { color: var(--ink); border-color: var(--mifron); background: var(--mifron-soft); }
+
+/* プロジェクトカードのアートをホバーで拡大 */
+.project-art { transition: transform .35s ease; }
+.project-card:hover .project-art { transform: scale(1.04); }
+
+/* 「→」のホバーモーション */
+.project-foot .go span, .about-card .go span, .quick-card .go span {
+  display: inline-block;
+  transition: transform .2s ease;
+}
+.project-card:hover .project-foot .go span,
+.about-card:hover .go span,
+.quick-card:hover .go span { transform: translateX(4px); }
+
+/* 省モーション設定: 動画は止めてポスターのみ表示 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video, .showcase-video, .scroll-cue { display: none; }
 }
