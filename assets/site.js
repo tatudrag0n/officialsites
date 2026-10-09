@@ -109,7 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 背景動画: 画面外では一時停止し、省モーション設定・データ節約モードでは再生しない
   const videos = document.querySelectorAll('video[data-smart-video]');
   if (!videos.length) return;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // matchMedia を持たない環境（一部の組み込みWebView等）でも落ちないようにする
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : { matches: false, addEventListener: null };
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const saveData = Boolean(
     connection && (connection.saveData || /^(2g|3g)$/.test(connection.effectiveType || ''))
