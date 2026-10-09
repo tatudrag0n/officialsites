@@ -72,3 +72,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// UX改善: ヘッダーのスクロール影、セクション追従、背景動画の賢い再生制御
+document.addEventListener('DOMContentLoaded', () => {
+  // ヘッダー: スクロール位置で影を切り替える
+  const header = document.querySelector('.site-header');
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // ナビゲーション: 表示中セクションのリンクをハイライト
+  const navLinks = Array.from(
+    document.querySelectorAll('.nav-links a[href^="#"], .project-toc a[href^="#"]')
+  );
+  const linksBySection = new Map();
+  navLinks.forEach((link) => {
+    const id = link.getAttribute('href').slice(1);
+    const section = id ? document.getElementById(id) : null;
+    if (!section) return;
+    if (!linksBySection.has(section)) linksBySection.set(section, []);
+    linksBySection.get(section).push(link);
+  });
+  if (linksBySection.size && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => link.classList.remove('is-active'));
+        (linksBySection.get(entry.target) || []).forEach((link) => link.classList.add('is-active'));
+      });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    linksBySection.forEach((_links, section) => observer.observe(section));
+  }
+
+  // 背景動画: 画面外では一時停止し、省モーション設定・データ節約モードでは再生しない
+  const videos = document.querySelectorAll('video[data-smart-video]');
+  if (!videos.length) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const saveData = Boolean(
+    connection && (connection.saveData || /^(2g|3g)$/.test(connection.effectiveType || ''))
+  );
+  const canPlay = () => !reduceMotion.matches && !saveData;
+  videos.forEach((video) => {
+    if (!canPlay()) {
+      video.removeAttribute('autoplay');
+      video.pause();
+      return;
+    }
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) video.play().catch(() => {});
+          else video.pause();
+        });
+      }, { rootMargin: '80px' });
+      observer.observe(video);
+    }
+    if (reduceMotion.addEventListener) {
+      reduceMotion.addEventListener('change', (event) => {
+        if (event.matches) video.pause();
+        else video.play().catch(() => {});
+      });
+    }
+  });
+});
