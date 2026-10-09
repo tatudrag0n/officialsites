@@ -41,7 +41,7 @@
 
   function getDemoProposals() {
     return [
-      { id: 'prop_001', title: '新しいFFAキットの追加', description: '新しいFFAキットを追加してほしいです。アーチャー、タンク、サポートなどのバリエーションを増やしてください。', type: 'feature', status: 'open', author: 'Player1', upvotes: 15, priority: 'medium', tags: ['FFA', 'キット'], createdAt: new Date().toISOString() },
+      { id: 'prop_001', title: '新しいジョブの追加', description: '今ある7職に加えて、新しいジョブを追加してほしいです。', type: 'feature', status: 'open', author: 'Player1', upvotes: 15, priority: 'medium', tags: ['ジョブ'], createdAt: new Date().toISOString() },
       { id: 'prop_002', title: 'ショップUIの改善', description: 'ショップのUIをもっと使いやすくしてほしいです。アイテム検索やカテゴリー分けを追加してください。', type: 'feature', status: 'in_progress', author: 'Player2', upvotes: 23, priority: 'high', tags: ['ショップ', 'UI'], createdAt: new Date(Date.now() - 86400000).toISOString() },
       { id: 'prop_003', title: 'バグ: テレポートが動かない', description: '/tp コマンドを使ったときに「プレイヤーが見つかりません」というエラーが出ます。', type: 'bug', status: 'completed', author: 'Player3', upvotes: 8, priority: 'critical', tags: ['バグ'], createdAt: new Date(Date.now() - 172800000).toISOString() },
       { id: 'prop_004', title: '新しいクエスト: 鉱石コレクター', description: '全ての鉱石を集めるクエストを追加してほしいです。報酬はMPと特殊アイテムを考えています。', type: 'quest', status: 'open', author: 'Player4', upvotes: 12, priority: 'medium', tags: ['クエスト'], createdAt: new Date(Date.now() - 259200000).toISOString() },

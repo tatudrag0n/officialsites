@@ -6,7 +6,7 @@
   <meta name="mifron-site" content="mifron-standalone-v2">
   <meta name="theme-color" content="#0b0c10">
   <title>Mifron Minecraft | Mifron</title>
-  <meta name="description" content="Mifronの最初のプロジェクト「Mifron Minecraft」。参加方法、ワールド、MP経済、クエスト、提案システム、FFA、ストア、特殊アイテムをまとめています。">
+  <meta name="description" content="Mifronの最初のプロジェクト「Mifron Minecraft」。参加方法、ワールド、MP経済、クエスト、提案システム、ジョブ、取引、ストア、特殊アイテムをまとめています。">
   <link rel="canonical" href="https://mifron.mct-official.com/minecraft.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Mifron">
@@ -16,7 +16,7 @@
   <meta property="og:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.webp">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Mifron Minecraft | Mifron">
-  <meta name="twitter:description" content="参加方法、ワールド、MP経済、クエスト、提案システム、FFA、ストアをまとめています。">
+  <meta name="twitter:description" content="参加方法、ワールド、MP経済、クエスト、提案システム、ジョブ、取引、ストアをまとめています。">
   <meta name="twitter:image" content="https://mifron.mct-official.com/assets/mifron-icon-720.webp">
   <link rel="icon" href="assets/mifron-favicon.png">
   <link rel="icon" type="image/webp" href="assets/mifron-favicon-64.webp">
@@ -77,7 +77,7 @@
       <a href="#special-items">特殊アイテム</a>
       <a href="#quest">クエスト</a>
       <a href="#proposals">提案システム</a>
-      <a href="#ffa">FFA</a>
+      <a href="#jobs">ジョブ</a>
       <a href="./tutorial.html">チュートリアル</a>
     </nav>
 
@@ -94,19 +94,19 @@
         <div class="feature-grid">
           <article class="feature"><span class="tag">STEP 1</span><h3>Discordに参加</h3><p>招待リンクから参加します。参加認証、イベント告知、提案と投票はすべてDiscordで行われます。</p></article>
           <article class="feature"><span class="tag">STEP 2</span><h3>6桁コードで認証</h3><p>初回接続時のキック画面に6桁コードが表示されます。Discordの認証チャンネルへ数字だけ送信してください。</p></article>
-          <article class="feature"><span class="tag">STEP 3</span><h3>再接続して遊ぶ</h3><p>認証完了後、もう一度接続するとそのまま遊べます。ロビーからテレポーターで各ワールドへ移動します。</p></article>
+          <article class="feature"><span class="tag">STEP 3</span><h3>再接続して遊ぶ</h3><p>認証完了後、もう一度接続するとそのまま遊べます。/travelやメニューから各ワールドへ移動できます。</p></article>
         </div>
         <div class="notice">
           <strong>より詳しい操作はチュートリアルにまとめています</strong>
-          <p>アイテムの使い方、ショップ、FFA、クエストの消化方法まで、手順付きで説明しています。</p>
+          <p>アイテムの使い方、ショップ、ジョブ、クエストの消化方法まで、手順付きで説明しています。</p>
         </div>
       </div>
     </section>
 
     <!-- 統計 -->
     <div class="stat-ribbon" aria-label="サーバー概要">
-      <div><b>6エリア</b><span>テレポーターで移動</span></div>
-      <div><b>18キット</b><span>FFAラインナップ</span></div>
+      <div><b>7ジョブ</b><span>選べる職業システム</span></div>
+      <div><b>50クエスト</b><span>ジョブ限定も毎日更新</span></div>
       <div><b>59種</b><span>クエスト</span></div>
       <div><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
     </div>
@@ -119,19 +119,18 @@
             <p class="eyebrow">ワールド</p>
             <h2>遊び場を選ぶ</h2>
           </div>
-          <p>テレポーターを右クリックすると移動先が目の前に表示され、アイテムを左クリックすると移動できます。迷ったら <strong>/mf list</strong> で一覧、<strong>/mf tp &lt;ワールド名&gt;</strong> で移動。</p>
+          <p><strong>/travel</strong> でhub・survival・mainへ即時移動(冒険者ジョブは無料)。迷ったら <strong>/mf list</strong> で一覧を確認。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">Hub</span><h3>ロビー</h3><p>拠点となるワールド。テレポーターから各ワールドへ移動します。</p></article>
+          <article class="feature"><span class="tag">Hub</span><h3>ロビー</h3><p>拠点となるワールド。/travelとメニューから各ワールドへ移動します。</p></article>
           <article class="feature"><span class="tag">Survival</span><h3>サバイバル</h3><p>メインの生活ワールド。TNTと溶岩は使えません。OnlineShopはこのワールド限定です。</p></article>
           <article class="feature"><span class="tag">Creative</span><h3>建築</h3><p>/mf build enter で入れる全員共有のフラットワールド。WorldEditが使え、完成した建築は提出して承認されるとSurvivalへ設置できます。</p></article>
-          <article class="feature"><span class="tag">Athletic</span><h3>アスレチック</h3><p>計測付きコース。クリア、自己ベスト、歴代1位、月間ランキングにMP報酬が設定されています。</p></article>
-          <article class="feature"><span class="tag">Minigame</span><h3>ミニゲーム</h3><p>PvPが有効なミニゲーム用ワールド。運営が個別に内容を設定して公開します。</p></article>
-          <article class="feature"><span class="tag">FFA</span><h3>対戦</h3><p>18キットのPvPモード。キルでMPを獲得し、戦績は /mf ffa stats で確認できます。</p></article>
+          <article class="feature"><span class="tag">Jobs</span><h3>ジョブ</h3><p>7職+無職から選択。対応行動の所得ボーナスと職固有特典(上限突破・確定ドロップ・溶岩半減など)。ジョブ限定クエストも毎日選べます。</p></article>
+          <article class="feature"><span class="tag">Trade</span><h3>安全な取引</h3><p>/trade で相手と専用UIを開き、アイテムとMPを同時交換。提示変更で確定リセット、退出時は全額返却の詐欺防止設計です。</p></article>
         </div>
         <div class="notice">
           <strong>ワールドごとに持ち物が分かれます</strong>
-          <p>Survival系・通常系でインベントリ、装備、経験値、満腹度が別管理です。KeepInventoryは全ワールドで有効です。FFAの持ち物は保存グループに含まれず、退出するとFFA前の状態に戻ります。</p>
+          <p>Survival系・通常系でインベントリ、装備、経験値、満腹度が別管理です。KeepInventoryは全ワールドで有効です。</p>
         </div>
       </div>
     </section>
@@ -144,7 +143,7 @@
             <p class="eyebrow">経済</p>
             <h2>MPでつながる</h2>
           </div>
-          <p>討伐、進捗、クエスト、取引、アスレ、ミニゲームなどで増減します。残高は0〜20億MP、FFA以外で死亡すると所持MPの50%を失います（端数切り捨て）。</p>
+          <p>討伐、進捗、クエスト、ジョブ、取引などで増減します。残高は0〜20億MP、死亡すると所持MPの50%を失います（端数切り捨て）。</p>
         </div>
         <div class="systems">
           <article class="system-panel featured-system">
@@ -153,7 +152,7 @@
             <p>初回参加時に配布される専用アイテムです。収納には使えません。</p>
             <ul>
               <li>左クリック: MP残高を確認</li>
-              <li>棚ショップ・スロット・オークションで持って右クリック: 使用</li>
+              <li>棚ショップ・オークションで持って右クリック: 使用</li>
               <li>送金は /mf pay &lt;プレイヤー&gt; &lt;金額&gt;</li>
             </ul>
           </article>
@@ -182,14 +181,13 @@
             </ul>
           </article>
           <article class="system-panel">
-            <span class="tag">Slot</span>
-            <h3>スロット</h3>
-            <p>賭け金を先払いし、棚の3列をそれぞれ右クリックして止めるスロットマシンです。</p>
+            <span class="tag">Trade</span>
+            <h3>安全な取引</h3>
+            <p>/trade で相手と専用UIを開き、アイテムとMPを同時交換します。提示変更で確定リセット、退出時は全額返却の詐欺防止設計です。</p>
             <ul>
-              <li>賭け金: Easy 100 / Normal 1,000 / Hard 10,000 / Expert 100,000 MP</li>
-              <li>赤石3つで無料再抽選（最大8回）</li>
-              <li>ダイヤ当選で次の10回はジャックポットモード</li>
-              <li>ネザライト当選で称号「ギャンブラー」を解放</li>
+              <li>双方が確定して初めて成立</li>
+              <li>メニューの「取引」から相手選択でも申込可</li>
+              <li>1回の提示MP上限は100万MP</li>
             </ul>
           </article>
           <article class="system-panel">
@@ -217,9 +215,9 @@
           <p>参加時に自動で配布・更新されます。なくした場合は再接続で再配布されます。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">ウォレット</span><h3>MP残高を確認</h3><p>左クリックで残高表示。ショップやスロットでは持って右クリックで支払います。</p></article>
+          <article class="feature"><span class="tag">ウォレット</span><h3>MP残高を確認</h3><p>左クリックで残高表示。ショップでは持って右クリックで支払います。</p></article>
           <article class="feature"><span class="tag">ステータス</span><h3>自分の記録を見る</h3><p>右クリックでステータスUIを開きます。進捗、転生、称号、討伐数を確認できます。</p></article>
-          <article class="feature"><span class="tag">テレポーター</span><h3>ワールドへ移動</h3><p>右クリックで移動先を表示し、アイテムを左クリックで移動。エンドポータルフレームに使うと登録地点へ移動します。</p></article>
+          <article class="feature"><span class="tag">移動</span><h3>/travelで移動</h3><p>hub・survival・mainへ即時移動。冒険者ジョブなら無料・短いクールダウンで使えます。</p></article>
           <article class="feature"><span class="tag">クエスト本</span><h3>クエストを確認</h3><p>右クリックでクエスト一覧を開きます。デイリー・ウィークリーの進捗もここから確認できます。</p></article>
           <article class="feature"><span class="tag">OnlineShop</span><h3>カタログ購入</h3><p>右クリックで商品一覧を開きます。Survivalワールドでのみ使用できます。</p></article>
           <article class="feature"><span class="tag">Store</span><h3>公式ストアを開く</h3><p>右クリックでMifron公式ストアを開きます。サポーターパスや装飾特典はここから購入できます。</p></article>
@@ -269,7 +267,7 @@
           <p>デイリーとウィークリーは候補10件から5件が抽選、マンスリーは9件が固定表示です。3タイプとも「完全達成」クエストが1件ずつ用意され、反復・AFKの報酬は抑制されます。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">Daily</span><h3>デイリー 候補10件→5件</h3><p>採掘、建築、討伐、農業、取引、探索、アスレ、ミニゲーム、釣りなど。候補10件からその日の5件が抽選され、全達成で追加報酬。</p></article>
+          <article class="feature"><span class="tag">Daily</span><h3>デイリー 候補10件→5件</h3><p>採掘、建築、討伐、農業、取引、探索、釣りなど。候補10件からその日の5件が抽選され、全達成で追加報酬。選択中ジョブ限定のクエスト(J01-J07)も表示されます。</p></article>
           <article class="feature"><span class="tag">Weekly</span><h3>ウィークリー 候補10件→5件</h3><p>数千ブロックの採掘・建築や連続対戦など、週単位の目標。候補10件から5件が抽選され、全達成で追加報酬。</p></article>
           <article class="feature"><span class="tag">Monthly</span><h3>マンスリー 9件</h3><p>月間採掘王、月間建築家など固定の9件。報酬は数千MP規模です。</p></article>
           <article class="feature"><span class="tag">Special</span><h3>スペシャル 29種</h3><p>初ドラゴン討伐、バベル到達、転生、全進捗挑戦など条件発生型の特別クエスト。最高報酬は50,000 MPです。</p></article>
@@ -307,39 +305,28 @@
       </div>
     </section>
 
-    <!-- FFA -->
-    <section class="section" id="ffa">
+    <!-- Jobs -->
+    <section class="section" id="jobs">
       <div class="shell">
         <div class="section-head">
           <div>
-            <p class="eyebrow">FFA</p>
-            <h2>18キットで戦う</h2>
+            <p class="eyebrow">Job System</p>
+            <h2>7つの職業で遊び方を強くする</h2>
           </div>
-          <p>入口のキット選択で参加。キル報酬は50 MPで、同一相手への連続キルや反復狩りは報酬が段階的に抑制されます。退出は /mf ffa leave、戦績は /mf ffa stats。</p>
+          <p>/mf job で確認、2段階確定で変更(24時間クールダウン)。対応行動の所得が増え、その職でしか得られない特典が使えます。ジョブ限定デイリークエストJ01-J07も毎日選べます。</p>
         </div>
         <div class="kit-grid">
-          <div class="kit"><div class="kit-head"><b>戦士</b><span class="kit-role">近接</span></div><p>鋭さIIのダイヤ斧＋チェーン装備。脚取りのペナルティはなく、一撃が重いタイプ。</p></div>
-          <div class="kit"><div class="kit-head"><b>狩人</b><span class="kit-role">遠距離</span></div><p>修繕なしのPower II・Infinity I弓＋矢1本。近接は石の剣。革・チェーン装備。</p></div>
-          <div class="kit"><div class="kit-head"><b>騎士</b><span class="kit-role">機動</span></div><p>エンチャントなしの鉄の槍と馬（体力24・速度0.22・跳躍0.65）。近接用の鉄剣付き。</p></div>
-          <div class="kit"><div class="kit-head"><b>リボルバー</b><span class="kit-role">遠距離</span></div><p>6発のクロスボウ。撃ち切ると自動でリロード（65tick）、与ダメージ0.85倍。</p></div>
-          <div class="kit"><div class="kit-head"><b>剣士</b><span class="kit-role">近接</span></div><p>鋭さIの鉄剣。金リンゴは90秒ごとに再使用できる回復手段。</p></div>
-          <div class="kit"><div class="kit-head"><b>シールダー</b><span class="kit-role">防御</span></div><p>石の剣＋盾。正面防御に強く、火力は控えめ。</p></div>
-          <div class="kit"><div class="kit-head"><b>海の戦士</b><span class="kit-role">近接</span></div><p>忠誠IIIのトライデント。投げると手元に戻り、他のプレイヤーは拾えません。</p></div>
-          <div class="kit"><div class="kit-head"><b>重戦士</b><span class="kit-role">近接</span></div><p>メイス＋ウィンドチャージ10個（使い切ると8秒で10個補充）。最終ダメージ上限10、落下耐性IV。</p></div>
-          <div class="kit"><div class="kit-head"><b>ギャンブラー</b><span class="kit-role">特殊</span></div><p>攻撃ダメージが−10〜+20でランダム（マイナスは相手回復、0は不発）。被ダメージも−5〜+5で変動。与えたダメージに応じてMPも−10〜+10変動します。</p></div>
-          <div class="kit"><div class="kit-head"><b>ケミスト</b><span class="kit-role">支援</span></div><p>鈍化・負傷・毒・弱化・盲目の5種のスプラッシュポーション。再使用は10/13/16/13/22秒。</p></div>
-          <div class="kit"><div class="kit-head"><b>スナイパー</b><span class="kit-role">遠距離</span></div><p>貫通IVの単発クロスボウ。手動リロード100tick（中は鈍足IV）、与ダメージ2.5倍。</p></div>
-          <div class="kit"><div class="kit-head"><b>ヴァンパイア</b><span class="kit-role">特殊</span></div><p>与ダメージの30%を体力と満腹度に吸収。累計60ダメージごとに攻撃力+12.5%（最大4段階、4段階目で速度I）。直射日光でダメージ。</p></div>
-          <div class="kit"><div class="kit-head"><b>グラップラー</b><span class="kit-role">機動</span></div><p>武器・防具なし。速度I・攻撃力I・跳躍I・耐性Iが常時発動の素手型。</p></div>
-          <div class="kit"><div class="kit-head"><b>アサシン</b><span class="kit-role">特殊</span></div><p>防具なし。致命の短剣は体力を4（ハート2個）まで削ると消滅し、2キルごとに補充。毒剣は毒4秒。</p></div>
-          <div class="kit"><div class="kit-head"><b>ネクロマンサー</b><span class="kit-role">召喚</span></div><p>召喚エッグは15秒の共通クールダウンで8種から抽選。召喚Mobは20秒で消滅し、体数の上限はありません。</p></div>
-          <div class="kit"><div class="kit-head"><b>トラッパー</b><span class="kit-role">罠</span></div><p>爆発・蜘蛛の巣・毒・火炎の4種の罠。設置後30秒で消滅、能力の再使用は16秒。火炎は初撃2・燃焼6秒・半径2.5。</p></div>
-          <div class="kit"><div class="kit-head"><b>バグマニア</b><span class="kit-role">召喚</span></div><p>攻撃時15%で銀魚召喚（所有5体・全体30体まで）。被弾時20%、死亡時10%でも発生。</p></div>
-          <div class="kit"><div class="kit-head"><b>クラッシャー</b><span class="kit-role">特殊</span></div><p>攻撃・被弾時に周囲爆発。50%は不発、成功時は4/8/16/32ダメージのいずれか。発動後30tickのクールダウン。</p></div>
+          <div class="kit"><div class="kit-head"><b>狩人 Hunter</b><span class="kit-role">戦闘</span></div><p>討伐報酬+20%。エリート討伐でダイヤ確定+討伐証を獲得。</p></div>
+          <div class="kit"><div class="kit-head"><b>農民 Farmer</b><span class="kit-role">生産</span></div><p>完熟作物の収穫で確定+1ドロップ。収穫のたびにMPも獲得。</p></div>
+          <div class="kit"><div class="kit-head"><b>付呪師 Enchanter</b><span class="kit-role">加工</span></div><p>金床のMPコスト-20%。エンチャント上限が+5(20→25)突破でき、超過MP倍率も半減。</p></div>
+          <div class="kit"><div class="kit-head"><b>商人 Merchant</b><span class="kit-role">経済</span></div><p>ショップ売却額+10%。購入割引も+10%上乗せ。</p></div>
+          <div class="kit"><div class="kit-head"><b>釣り人 Fisher</b><span class="kit-role">生産</span></div><p>釣果のたびにMP獲得。宝釣りでダイヤ・エメラルドが釣れることがあります。</p></div>
+          <div class="kit"><div class="kit-head"><b>鉱夫 Miner</b><span class="kit-role">生産</span></div><p>採掘でMP獲得。深層鉱石は追加ドロップ確定、溶岩ダメージ半減。</p></div>
+          <div class="kit"><div class="kit-head"><b>冒険者 Adventurer</b><span class="kit-role">探索</span></div><p>未踏破チャンクの初回訪問報酬が2倍。/travel移動が無料で10分ごとに使えます。</p></div>
         </div>
         <div class="notice">
-          <strong>フィールドアイテムとイベント</strong>
-          <p>戦場にはCommon〜Legendaryの5段階のレアリティでアイテムが出現します（重み付き抽選、落下後90秒で消滅）。150〜240秒間隔で雨・雪・吹雪・バーサーク・スピード・アイアンボディ・オーバードライブなどのイベントが発生します。アイテムの所持上限は9個、拾えるのはFFA参加中のみです。</p>
+          <strong>安全なプレイヤー間取引</strong>
+          <p>/trade &lt;player&gt; で申込、メニューの「取引」から相手選択でも申込できます。承諾で共有取引UIが開き、提示枠(各16枠)と提示MPを設定。提示を変更すると確定がリセットされ、両者が確定して初めて同時に交換されます。閉鎖・退出・タイムアウト時は提示を全額返却。1回の提示MP上限は100万MPです。</p>
         </div>
       </div>
     </section>
