@@ -267,6 +267,138 @@ async function readKvList(namespace, prefix, limit = 100) {
   return records.filter((record) => record !== null);
 }
 
+/* ---------- KV 一覧のキャッシュ ----------
+   KV の list() は無料枠で 1日 1,000 回までしか使えない。一覧系の GET
+   （提案・クエスト・評価の集計）が毎回 list() を呼ぶと、外部からの
+   定期ポーリングだけで上限を超えてしまうため、一覧結果をキャッシュする。
+   1) isolate 内メモリ  2) caches.default（同じデータセンター内で共有）
+   の順に参照し、どちらにも無いときだけ KV を一覧する。
+   書き込み（投稿・評価・支持数の同期）時は KV の追加操作なしで
+   キャッシュ内の一覧を直接更新するので、書き込み直後の結果も変わらない。 */
+const DEFAULT_LIST_CACHE_TTL_SECONDS = 300;
+const MAX_LIST_CACHE_TTL_SECONDS = 3600;
+const LIST_CACHE_PATH = "/__kv-list-cache/";
+const LIST_CACHE_EXPIRES_HEADER = "x-kv-list-cache-expires";
+// isolate 内メモリは他の isolate の書き込みを知らないため、短時間だけ使う。
+const MEMORY_LIST_CACHE_MS = 30 * 1000;
+const memoryListCache = new Map();
+
+function rememberList(cacheId, value, expires) {
+  memoryListCache.set(cacheId, {
+    value,
+    expires,
+    memoryUntil: Math.min(expires, Date.now() + MEMORY_LIST_CACHE_MS),
+  });
+}
+
+function listCacheTtlSeconds(env) {
+  const raw = Number.parseInt(env && env.KV_LIST_CACHE_TTL_SECONDS, 10);
+  if (!Number.isFinite(raw)) return DEFAULT_LIST_CACHE_TTL_SECONDS;
+  return Math.max(0, Math.min(MAX_LIST_CACHE_TTL_SECONDS, raw));
+}
+
+// 一覧キャッシュの操作に必要な情報（キャッシュキーの origin、waitUntil、TTL）。
+function createListCacheContext(request, env, ctx) {
+  return {
+    origin: new URL(request.url).origin,
+    ctx: ctx && typeof ctx.waitUntil === "function" ? ctx : null,
+    ttl: listCacheTtlSeconds(env),
+  };
+}
+
+function edgeCache() {
+  try {
+    return typeof caches !== "undefined" && caches && caches.default ? caches.default : null;
+  } catch {
+    return null;
+  }
+}
+
+function listCacheKey(cacheCtx, cacheId) {
+  return new Request(`${cacheCtx.origin}${LIST_CACHE_PATH}${encodeURIComponent(cacheId)}`);
+}
+
+async function readListCache(cacheCtx, cacheId) {
+  if (!cacheCtx || cacheCtx.ttl <= 0) return null;
+  const now = Date.now();
+  const memory = memoryListCache.get(cacheId);
+  if (memory && memory.memoryUntil > now) {
+    return { value: memory.value, expires: memory.expires };
+  }
+  memoryListCache.delete(cacheId);
+
+  const cache = edgeCache();
+  if (!cache) return null;
+  try {
+    const response = await cache.match(listCacheKey(cacheCtx, cacheId));
+    if (!response) return null;
+    const expires = Number(response.headers.get(LIST_CACHE_EXPIRES_HEADER)) || 0;
+    if (expires <= now) return null;
+    const value = await response.json();
+    if (!Array.isArray(value)) return null;
+    rememberList(cacheId, value, expires);
+    return { value, expires };
+  } catch {
+    return null;
+  }
+}
+
+async function writeListCache(cacheCtx, cacheId, value, expires) {
+  if (!cacheCtx || cacheCtx.ttl <= 0) return;
+  const until = expires || Date.now() + cacheCtx.ttl * 1000;
+  const maxAge = Math.ceil((until - Date.now()) / 1000);
+  if (maxAge <= 0) {
+    memoryListCache.delete(cacheId);
+    return;
+  }
+  rememberList(cacheId, value, until);
+
+  const cache = edgeCache();
+  if (!cache) return;
+  const response = new Response(JSON.stringify(value), {
+    headers: {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": `public, max-age=${maxAge}`,
+      [LIST_CACHE_EXPIRES_HEADER]: String(until),
+    },
+  });
+  const pending = cache.put(listCacheKey(cacheCtx, cacheId), response).catch(() => {});
+  if (cacheCtx.ctx) cacheCtx.ctx.waitUntil(pending);
+  else await pending;
+}
+
+// キャッシュがあればそれを、無ければ KV を一覧してキャッシュする。
+async function readCachedList(cacheCtx, cacheId, loader) {
+  const cached = await readListCache(cacheCtx, cacheId);
+  if (cached) return cached.value;
+  const value = await loader();
+  await writeListCache(cacheCtx, cacheId, value);
+  return value;
+}
+
+// 書き込み後にキャッシュ内の一覧を更新する（KV 操作は増やさない）。
+// キャッシュが無いときは何もせず、次の GET で KV から読み直す。
+// 有効期限は延長しない（他のデータセンターでの変更も TTL 内に反映させるため）。
+async function patchListCache(cacheCtx, cacheId, mutate) {
+  const cached = await readListCache(cacheCtx, cacheId);
+  if (!cached) return;
+  await writeListCache(cacheCtx, cacheId, mutate(cached.value.slice()), cached.expires);
+}
+
+// KV の list() はキー名の昇順で返すため、追加後も同じ順序・件数上限を保つ。
+function upsertSortedRecord(records, record, limit) {
+  const next = records.filter((item) => !(item && item.id === record.id));
+  next.push(record);
+  next.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return next.slice(0, limit);
+}
+
+const QUEST_LIST_CACHE_ID = "quests:quest_";
+const PROPOSAL_LIST_CACHE_ID = "proposals:prop_";
+const QUEST_VOTES_CACHE_ID = "quests:qv_";
+const PROPOSAL_VOTES_CACHE_ID = "proposals:pv_";
+const RECORD_LIST_LIMIT = 100;
+
 const RATE_LIMIT_WINDOW_SECONDS = 600;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 // 評価（高評価/低評価）は1人1票なので、投稿系より緩い上限にする。
@@ -306,28 +438,55 @@ function cleanVoter(value) {
   return value.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
 }
 
-async function readVotes(namespace, prefix, voter = "") {
+// 評価レコードを KV から一覧する（集計に必要な id / vote / voter のみ保持）。
+async function readVoteRecords(namespace, prefix) {
   const list = await namespace.list({ prefix, limit: 1000 });
-  const counts = {};
-  const mine = {};
-  await Promise.all(
+  const records = await Promise.all(
     list.keys.map(async (key) => {
       const raw = await namespace.get(key.name);
-      if (!raw) return;
+      if (!raw) return null;
       let record;
       try {
         record = JSON.parse(raw);
       } catch {
-        return;
+        return null;
       }
-      if (!isPlainObject(record) || typeof record.id !== "string") return;
-      const vote = record.vote === "down" ? "down" : "up";
-      const tally = counts[record.id] || (counts[record.id] = { up: 0, down: 0 });
-      tally[vote] += 1;
-      if (voter && record.voter === voter) mine[record.id] = vote;
+      if (!isPlainObject(record) || typeof record.id !== "string") return null;
+      return {
+        id: record.id,
+        vote: record.vote === "down" ? "down" : "up",
+        voter: record.voter,
+      };
     })
   );
+  return records.filter((record) => record !== null);
+}
+
+function tallyVotes(records, voter = "") {
+  const counts = {};
+  const mine = {};
+  for (const record of records) {
+    const vote = record.vote === "down" ? "down" : "up";
+    const tally = counts[record.id] || (counts[record.id] = { up: 0, down: 0 });
+    tally[vote] += 1;
+    if (voter && record.voter === voter) mine[record.id] = vote;
+  }
   return { counts, mine };
+}
+
+async function readVotes(namespace, prefix, voter = "", cacheCtx = null, cacheId = "") {
+  const records = cacheId
+    ? await readCachedList(cacheCtx, cacheId, () => readVoteRecords(namespace, prefix))
+    : await readVoteRecords(namespace, prefix);
+  return tallyVotes(records, voter);
+}
+
+// 自分の1票を一覧へ反映する（KV の list は結果整合のため、直後の一覧に
+// 書き込みが現れないことがある。キーは「対象ID + 投票者ID」で一意）。
+function applyVoteRecord(records, id, voter, vote) {
+  const next = records.filter((record) => !(record.id === id && record.voter === voter));
+  if (vote !== "none") next.push({ id, vote, voter });
+  return next;
 }
 
 async function writeVote(namespace, prefix, id, voter, vote) {
@@ -339,13 +498,13 @@ async function writeVote(namespace, prefix, id, voter, vote) {
   await namespace.put(key, JSON.stringify({ id, vote, voter, at: Date.now() }));
 }
 
-async function handleVoteApi(request, env, options) {
-  const { namespace, prefix, bucket, idField } = options;
+async function handleVoteApi(request, env, options, cacheCtx = null) {
+  const { namespace, prefix, bucket, idField, cacheId } = options;
   const url = new URL(request.url);
   const voter = cleanVoter(url.searchParams.get("voter"));
 
   if (request.method === "GET") {
-    return jsonResponse(await readVotes(namespace, prefix, voter));
+    return jsonResponse(await readVotes(namespace, prefix, voter, cacheCtx, cacheId));
   }
 
   if (request.method !== "POST") {
@@ -378,7 +537,12 @@ async function handleVoteApi(request, env, options) {
     "anonymous";
 
   await writeVote(namespace, prefix, id, who, vote);
-  const { counts, mine } = await readVotes(namespace, prefix, who);
+  // キャッシュがあれば KV を一覧せずに更新し、無ければ従来どおり一覧する。
+  const cached = await readListCache(cacheCtx, cacheId);
+  const base = cached ? cached.value : await readVoteRecords(namespace, prefix);
+  const records = applyVoteRecord(base, id, who, vote);
+  await writeListCache(cacheCtx, cacheId, records, cached ? cached.expires : 0);
+  const { counts, mine } = tallyVotes(records, who);
   return jsonResponse({
     success: true,
     id,
@@ -388,7 +552,7 @@ async function handleVoteApi(request, env, options) {
 }
 
 // 提案一覧は提案レコードの upvotes を参照するため、集計値を同期しておく。
-async function syncProposalUpvotes(env, proposalId, up) {
+async function syncProposalUpvotes(env, proposalId, up, cacheCtx = null) {
   const raw = await env.PROPOSALS.get(proposalId);
   if (!raw) return;
   let record;
@@ -400,6 +564,9 @@ async function syncProposalUpvotes(env, proposalId, up) {
   if (!isPlainObject(record)) return;
   record.upvotes = Math.max(0, Number.parseInt(up, 10) || 0);
   await env.PROPOSALS.put(proposalId, JSON.stringify(record));
+  await patchListCache(cacheCtx, PROPOSAL_LIST_CACHE_ID, (records) =>
+    records.map((item) => (item && item.id === proposalId ? record : item))
+  );
 }
 
 // Proposal notifications are emailed to the Mifron operations inbox.
@@ -467,7 +634,7 @@ async function sendProposalNotification(env, subject, rows) {
   }
 }
 
-async function handleQuestsApi(request, env) {
+async function handleQuestsApi(request, env, cacheCtx = null) {
   if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
   const pathname = new URL(request.url).pathname;
 
@@ -477,11 +644,16 @@ async function handleQuestsApi(request, env) {
       prefix: QUEST_VOTE_PREFIX,
       bucket: "quest_vote",
       idField: "questId",
-    });
+      cacheId: QUEST_VOTES_CACHE_ID,
+    }, cacheCtx);
   }
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.QUESTS, "quest_", 100));
+    return jsonResponse(
+      await readCachedList(cacheCtx, QUEST_LIST_CACHE_ID, () =>
+        readKvList(env.QUESTS, "quest_", RECORD_LIST_LIMIT)
+      )
+    );
   }
 
   if (request.method !== "POST") {
@@ -543,6 +715,9 @@ async function handleQuestsApi(request, env) {
   }
 
   await env.QUESTS.put(quest.id, JSON.stringify(quest));
+  await patchListCache(cacheCtx, QUEST_LIST_CACHE_ID, (records) =>
+    upsertSortedRecord(records, quest, RECORD_LIST_LIMIT)
+  );
 
   const notified = await sendProposalNotification(
     env,
@@ -569,7 +744,7 @@ async function handleQuestsApi(request, env) {
   return jsonResponse({ success: true, id: quest.id, notified }, 201);
 }
 
-async function handleProposalsApi(request, env) {
+async function handleProposalsApi(request, env, cacheCtx = null) {
   if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
   const pathname = new URL(request.url).pathname;
 
@@ -579,16 +754,23 @@ async function handleProposalsApi(request, env) {
       prefix: PROPOSAL_VOTE_PREFIX,
       bucket: "proposal_vote",
       idField: "proposalId",
-    });
+      cacheId: PROPOSAL_VOTES_CACHE_ID,
+    }, cacheCtx);
     if (request.method === "POST" && response.status === 200) {
       const payload = await response.clone().json().catch(() => null);
-      if (payload && payload.id) await syncProposalUpvotes(env, payload.id, payload.count.up);
+      if (payload && payload.id) {
+        await syncProposalUpvotes(env, payload.id, payload.count.up, cacheCtx);
+      }
     }
     return response;
   }
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.PROPOSALS, "prop_", 100));
+    return jsonResponse(
+      await readCachedList(cacheCtx, PROPOSAL_LIST_CACHE_ID, () =>
+        readKvList(env.PROPOSALS, "prop_", RECORD_LIST_LIMIT)
+      )
+    );
   }
 
   if (request.method !== "POST") {
@@ -649,6 +831,9 @@ async function handleProposalsApi(request, env) {
   }
 
   await env.PROPOSALS.put(proposal.id, JSON.stringify(proposal));
+  await patchListCache(cacheCtx, PROPOSAL_LIST_CACHE_ID, (records) =>
+    upsertSortedRecord(records, proposal, RECORD_LIST_LIMIT)
+  );
 
   const notified = await sendProposalNotification(
     env,
@@ -673,19 +858,19 @@ async function handleProposalsApi(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const host = url.hostname.toLowerCase();
 
     if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) {
-      return handleQuestsApi(request, env);
+      return handleQuestsApi(request, env, createListCacheContext(request, env, ctx));
     }
 
     if (
       url.pathname === "/api/proposals" ||
       url.pathname.startsWith("/api/proposals/")
     ) {
-      return handleProposalsApi(request, env);
+      return handleProposalsApi(request, env, createListCacheContext(request, env, ctx));
     }
 
     if (PREPARING[host]) {
