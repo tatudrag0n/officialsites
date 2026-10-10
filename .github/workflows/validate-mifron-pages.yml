@@ -43,7 +43,7 @@ jobs:
       - name: Check Worker syntax and run Worker tests
         run: |
           node --check src/index.js
-          node --test test/
+          node --test test/*.test.mjs
 
       - name: Validate static release invariants
         shell: bash
