@@ -35,6 +35,12 @@
 
   <main id="main">
     <section class="hero">
+      <div class="hero-media" aria-hidden="true">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" tabindex="-1">
+          <source src="assets/hero-loop.webm" type="video/webm">
+          <source src="assets/hero-loop.mp4" type="video/mp4">
+        </video>
+      </div>
       <div class="shell hero-grid">
         <div class="hero-copy">
           <p class="kicker">CREATOR &amp; DEVELOPER — MCT</p>
@@ -56,7 +62,7 @@
     <!-- チャンネルURLはここを編集してください -->
     <section id="channels" class="section">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">チャンネル</p>
             <h2>つながる場所</h2>
@@ -65,7 +71,7 @@
         </div>
 
         <div class="channel-grid">
-          <a class="channel-card youtube" href="https://www.youtube.com/@tatudragon-crewmate" target="_blank" rel="noopener noreferrer">
+          <a class="channel-card youtube reveal" href="https://www.youtube.com/@tatudragon-crewmate" target="_blank" rel="noopener noreferrer">
             <div class="channel-head">
               <span class="channel-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" focusable="false"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.5 15.5v-7l6.5 3.5-6.5 3.5Z"/></svg>
@@ -78,7 +84,7 @@
             <span class="go">チャンネルを開く<span aria-hidden="true">→</span></span>
           </a>
 
-          <a class="channel-card x" href="https://x.com/tatudrag0n" target="_blank" rel="noopener noreferrer">
+          <a class="channel-card x reveal" href="https://x.com/tatudrag0n" target="_blank" rel="noopener noreferrer">
             <div class="channel-head">
               <span class="channel-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" focusable="false"><path d="M18.9 2H22l-7.1 8.1L23.2 22h-6.5l-5.1-6.7L5.8 22H2.7l7.6-8.7L1.5 2H8l4.6 6.1L18.9 2Zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20Z"/></svg>
@@ -91,7 +97,7 @@
             <span class="go">フォローする<span aria-hidden="true">→</span></span>
           </a>
 
-          <a class="channel-card github" href="https://github.com/tatudrag0n" target="_blank" rel="noopener noreferrer">
+          <a class="channel-card github reveal" href="https://github.com/tatudrag0n" target="_blank" rel="noopener noreferrer">
             <div class="channel-head">
               <span class="channel-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" focusable="false"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0C16.5 4.6 17.5 5 17.5 5c.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg>
@@ -109,7 +115,7 @@
 
     <section id="about" class="section alt">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">プロフィール</p>
             <h2>つくっているもの</h2>
@@ -117,19 +123,19 @@
           <p>MCT（Minerva Creative Technologies）を運営。Minecraftサーバー「Mifron」の開発と運営を軸に、小説・うた・絵も続けています。</p>
         </div>
         <div class="about-grid">
-          <div class="about-card">
+          <div class="about-card reveal">
             <h3>サーバー運営</h3>
             <p>Mifron の開発と運営をしています。経済・クエスト・提案のシステムから公式サイトまで、ゲームの体験そのものを設計しています。</p>
           </div>
-          <div class="about-card">
+          <div class="about-card reveal">
             <h3>歌と高音域</h3>
             <p>合唱部で歌っています。高音域が得意で、女性の声も出せます。歌の動画も YouTube に上げています。</p>
           </div>
-          <div class="about-card">
+          <div class="about-card reveal">
             <h3>小説</h3>
             <p>趣味で物語を書いています。骨組みからキャラクター、場面まで一人で積み上げています。</p>
           </div>
-          <div class="about-card">
+          <div class="about-card reveal">
             <h3>絵と動画編集</h3>
             <p>イラストを描くことと、動画の編集ができます。歌の動画も含めて仕上げています。</p>
           </div>

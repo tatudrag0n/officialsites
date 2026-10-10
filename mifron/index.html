@@ -48,6 +48,12 @@
   <main id="main">
     <!-- 左上: ブランド → 右下: スタジオの現在地 -->
     <section class="hero">
+      <div class="hero-media" aria-hidden="true">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" tabindex="-1" data-smart-video>
+          <source src="assets/hero-loop.webm" type="video/webm">
+          <source src="assets/hero-loop.mp4" type="video/mp4">
+        </video>
+      </div>
       <div class="shell hero-grid">
         <div class="hero-copy">
           <p class="kicker">Games &amp; Digital Experiences</p>
@@ -69,12 +75,13 @@
           <a class="copy-button" href="./minecraft.html">Mifron Minecraftをプレイ</a>
         </aside>
       </div>
+      <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL</span><span class="scroll-cue-line"></span></div>
     </section>
 
     <!-- Featured Projects -->
     <section class="section" id="projects">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">Featured Projects</p>
             <h2>開発中のプロジェクト</h2>
@@ -82,7 +89,7 @@
           <p>ゲームとデジタルサービスを、ひとつずつ形にしていきます。各プロジェクトの詳細はプロジェクトページに掲載します。</p>
         </div>
         <div class="project-grid">
-          <article class="project-card">
+          <article class="project-card reveal">
             <div class="project-art mc">
               <span class="project-mark">MIFRON</span>
               <span class="project-status released">Released</span>
@@ -98,7 +105,7 @@
               <p class="project-foot"><a class="go" href="./minecraft.html">プロジェクトを見る<span aria-hidden="true"> →</span></a></p>
             </div>
           </article>
-          <article class="project-card">
+          <article class="project-card reveal">
             <div class="project-art games">
               <span class="project-mark">MIFRON</span>
               <span class="project-status development">Development</span>
@@ -114,7 +121,7 @@
               <p class="project-foot"><span class="soon">公開予定なし</span></p>
             </div>
           </article>
-          <article class="project-card">
+          <article class="project-card reveal">
             <div class="project-art apps">
               <span class="project-mark">MIFRON</span>
               <span class="project-status planning">Planning</span>
@@ -137,7 +144,7 @@
     <!-- 代表プロジェクトの概要 -->
     <section class="section alt" id="minecraft">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">Flagship</p>
             <h2>Mifron Minecraft</h2>
@@ -145,12 +152,12 @@
           <p>採掘・建築・取引・対戦をひとつの経済「MP」でつなぐサーバーです。ワールド、MP経済、クエスト、提案システムの詳細はプロジェクトページにまとめています。</p>
         </div>
         <div class="summary-grid">
-          <div class="summary-card"><b>6エリア</b><span>テレポーターで移動</span></div>
-          <div class="summary-card"><b>18キット</b><span>FFAラインナップ</span></div>
-          <div class="summary-card"><b>59種</b><span>クエスト</span></div>
-          <div class="summary-card"><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
+          <div class="summary-card reveal"><b>6エリア</b><span>テレポーターで移動</span></div>
+          <div class="summary-card reveal"><b>18キット</b><span>FFAラインナップ</span></div>
+          <div class="summary-card reveal"><b>59種</b><span>クエスト</span></div>
+          <div class="summary-card reveal"><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
         </div>
-        <div class="hero-actions">
+        <div class="hero-actions reveal">
           <a class="btn primary" href="./minecraft.html">プロジェクトページを開く</a>
           <a class="btn" href="./quests/">クエストボード</a>
           <a class="btn" href="./proposals/">提案一覧</a>
@@ -162,7 +169,7 @@
     <!-- News -->
     <section class="section" id="news">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">News</p>
             <h2>開発ニュース</h2>
@@ -170,7 +177,7 @@
           <p>公開した機能と実装した提案をプロジェクトごとに記録しています。</p>
         </div>
         <div class="news-list">
-          <article class="news-item">
+          <article class="news-item reveal">
             <time class="news-date" datetime="2026-09-24">2026.09.24</time>
             <div>
               <h3>クエストの評価と運営レビューを追加</h3>
@@ -178,7 +185,7 @@
             </div>
             <span class="tag news-kind">Update</span>
           </article>
-          <article class="news-item">
+          <article class="news-item reveal">
             <time class="news-date" datetime="2026-08-30">2026.08.30</time>
             <div>
               <h3>FFAのキットとフィールドイベントを刷新</h3>
@@ -186,7 +193,7 @@
             </div>
             <span class="tag news-kind">Update</span>
           </article>
-          <article class="news-item">
+          <article class="news-item reveal">
             <time class="news-date" datetime="2026-07-21">2026.07.21</time>
             <div>
               <h3>Mifronをゲーム・デジタル体験の開発ブランドとして再編</h3>
@@ -194,7 +201,7 @@
             </div>
             <span class="tag news-kind">Studio</span>
           </article>
-          <article class="news-item">
+          <article class="news-item reveal">
             <time class="news-date" datetime="2026-06-12">2026.06.12</time>
             <div>
               <h3>OnlineShopと商人を解放</h3>
@@ -209,7 +216,7 @@
     <!-- Community -->
     <section class="section alt" id="community">
       <div class="shell community-grid">
-        <div class="community-copy">
+        <div class="community-copy reveal">
           <p class="eyebrow">Community</p>
           <h2>コミュニティ</h2>
           <p>告知・サポート・提案はすべてDiscordで受け付けています。実装された提案は、サイトの提案一覧で状態を確認できます。クエストの追加や削除はクエストボードから募集しています。</p>
@@ -219,14 +226,14 @@
             <a class="btn" href="./quests/propose.html">クエストを提案</a>
           </div>
         </div>
-        <iframe class="discord-widget" src="https://discord.com/widget?id=1511014329342754907&amp;theme=dark" width="330" height="480" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" title="Mifron Discordサーバーウィジェット" loading="lazy"></iframe>
+        <iframe class="discord-widget reveal" src="https://discord.com/widget?id=1511014329342754907&amp;theme=dark" width="330" height="480" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" title="Mifron Discordサーバーウィジェット" loading="lazy"></iframe>
       </div>
     </section>
 
     <!-- 支援 -->
     <section class="section" id="support">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">Support</p>
             <h2>運営を支える</h2>
@@ -234,11 +241,11 @@
           <p>支援は任意です。ゲーム内の有利不利に影響する特典は行いません。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、称号「MSP / MSP+」、プロフィールバッジ、ネームカラー・チャットカラー・タブアイテムなどの装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
-          <article class="feature"><span class="tag">独自ストア</span><h3>公式ストア</h3><p>サポーターパスや装飾を、Mifron公式サイト内の販売ページで取り扱います。販売ページの公開準備が進んだ段階で受付を開始します。</p></article>
-          <article class="feature"><span class="tag">公開条件</span><h3>準備完了後に開始</h3><p data-support-pending>現在は支援受付を行っていません。決済事業者・価格・返金条件を確認し、公開ページを用意した後に受付を開始します。</p></article>
+          <article class="feature reveal"><span class="tag">Non Pay-to-Win</span><h3>特典の方針</h3><p>候補はDiscordのサポーターロール、称号「MSP / MSP+」、プロフィールバッジ、ネームカラー・チャットカラー・タブアイテムなどの装飾系コスメティックです。FFA・Survival・MP・ショップの性能には影響しません。</p></article>
+          <article class="feature reveal"><span class="tag">独自ストア</span><h3>公式ストア</h3><p>サポーターパスや装飾を、Mifron公式サイト内の販売ページで取り扱います。販売ページの公開準備が進んだ段階で受付を開始します。</p></article>
+          <article class="feature reveal"><span class="tag">公開条件</span><h3>準備完了後に開始</h3><p data-support-pending>現在は支援受付を行っていません。決済事業者・価格・返金条件を確認し、公開ページを用意した後に受付を開始します。</p></article>
         </div>
-        <div class="hero-actions">
+        <div class="hero-actions reveal">
           <a class="btn primary" href="./store/">ストアを見る</a>
           <a class="btn" data-support-link href="#" hidden>支援ページを開く</a>
         </div>
@@ -248,7 +255,7 @@
     <!-- About -->
     <section class="section alt" id="about">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">About</p>
             <h2>Mifronについて</h2>
@@ -256,15 +263,15 @@
           <p>MCT（Minerva Creative Technologies）が運営するインディーゲームスタジオ。Minecraftサーバーの運営から始めて、ゲームとデジタルサービスの設計を積み上げています。</p>
         </div>
         <div class="about-grid">
-          <article class="about-card">
+          <article class="about-card reveal">
             <h3>つくる人</h3>
             <p>ゲーム、サーバー、Webアプリの実装と運営を小さなチームで行っています。仕様から実装までを同じ人が追えることを前提にしています。</p>
           </article>
-          <article class="about-card">
+          <article class="about-card reveal">
             <h3>方針</h3>
             <p>勘定ではなく遊びを基準に設計します。遊べる状態を維持し、プレイヤーが次に何をしたいかを最初に考えます。</p>
           </article>
-          <article class="about-card">
+          <article class="about-card reveal">
             <h3>関連ブランド</h3>
             <p>MCTの傘下には、クリエイターコミュニティ「CREWMATE」と、テクノロジー・プロダクトのブランド「TEXROOT」があります。</p>
             <a class="go" href="https://mct-official.com/">MCT公式ポータル<span aria-hidden="true"> →</span></a>
@@ -277,7 +284,7 @@
     <!-- 最終導線 -->
     <section class="section">
       <div class="shell">
-        <div class="contact-panel">
+        <div class="contact-panel reveal">
           <div>
             <p class="eyebrow">Join</p>
             <h2>次の体験へ。</h2>

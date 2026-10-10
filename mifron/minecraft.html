@@ -47,6 +47,12 @@
 
   <main id="main">
     <section class="hero">
+      <div class="hero-media" aria-hidden="true">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" tabindex="-1" data-smart-video>
+          <source src="assets/hero-loop.webm" type="video/webm">
+          <source src="assets/hero-loop.mp4" type="video/mp4">
+        </video>
+      </div>
       <div class="shell hero-grid">
         <div class="hero-copy">
           <p class="kicker">Project 01 / Released</p>
@@ -68,23 +74,51 @@
           <button class="copy-button" type="button" data-copy-join="java">アドレスをコピー</button>
         </aside>
       </div>
+      <div class="scroll-cue" aria-hidden="true"><span class="scroll-cue-label">SCROLL</span><span class="scroll-cue-line"></span></div>
     </section>
 
-    <nav class="shell project-toc" aria-label="プロジェクト内メニュー">
-      <a href="#join">参加方法</a>
-      <a href="#worlds">ワールド</a>
-      <a href="#systems">MP経済</a>
-      <a href="#special-items">特殊アイテム</a>
-      <a href="#quest">クエスト</a>
-      <a href="#proposals">提案システム</a>
-      <a href="#ffa">FFA</a>
-      <a href="./tutorial.html">チュートリアル</a>
-    </nav>
+    <div class="toc-bar">
+      <nav class="shell project-toc" aria-label="プロジェクト内メニュー">
+        <a href="#showcase">雰囲気</a>
+        <a href="#join">参加方法</a>
+        <a href="#worlds">ワールド</a>
+        <a href="#systems">MP経済</a>
+        <a href="#special-items">特殊アイテム</a>
+        <a href="#quest">クエスト</a>
+        <a href="#proposals">提案システム</a>
+        <a href="#ffa">FFA</a>
+        <a href="./tutorial.html">チュートリアル</a>
+      </nav>
+    </div>
+
+    <!-- 紹介映像: 参加前にサーバーの雰囲気をつかむ -->
+    <section class="section showcase" id="showcase">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Showcase</p>
+            <h2>サーバーの雰囲気</h2>
+          </div>
+          <p>ワールドの空気感を短いループ映像にまとめました。参加する前に、どんな世界かを先に感じ取れます。</p>
+        </div>
+        <figure class="video-frame reveal">
+          <video class="showcase-video" autoplay muted loop playsinline preload="metadata" poster="assets/minecraft-poster.webp" tabindex="-1" aria-hidden="true" data-smart-video>
+            <source src="assets/minecraft-loop.webm" type="video/webm">
+            <source src="assets/minecraft-loop.mp4" type="video/mp4">
+          </video>
+          <figcaption>イメージ映像（音声なし・ループ再生）。実際のワールドの見た目とは異なる場合があります。</figcaption>
+        </figure>
+        <div class="hero-actions reveal">
+          <a class="btn primary" href="#join">参加方法を見る</a>
+          <a class="btn" href="./tutorial.html">チュートリアルを読む</a>
+        </div>
+      </div>
+    </section>
 
     <!-- 参加の流れ -->
     <section class="section" id="join">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">はじめての方</p>
             <h2>3ステップで参加</h2>
@@ -114,7 +148,7 @@
     <!-- ワールド -->
     <section class="section" id="worlds">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">ワールド</p>
             <h2>遊び場を選ぶ</h2>
@@ -139,7 +173,7 @@
     <!-- 経済 -->
     <section class="section dark" id="systems">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">経済</p>
             <h2>MPでつながる</h2>
@@ -209,7 +243,7 @@
     <!-- 便利アイテム -->
     <section class="section" id="items">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">アイテム</p>
             <h2>持っているだけで便利</h2>
@@ -231,7 +265,7 @@
     <!-- 特殊アイテム -->
     <section class="section alt" id="special-items">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">特殊アイテム</p>
             <h2>低確率で手に入る特別なアイテム</h2>
@@ -261,7 +295,7 @@
     <!-- クエスト -->
     <section class="section" id="quest">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">クエスト</p>
             <h2>毎日の目標が報酬になる</h2>
@@ -286,7 +320,7 @@
     <!-- 提案システム -->
     <section class="section alt" id="proposals">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">提案システム</p>
             <h2>みんなで決める</h2>
@@ -310,7 +344,7 @@
     <!-- FFA -->
     <section class="section" id="ffa">
       <div class="shell">
-        <div class="section-head">
+        <div class="section-head reveal">
           <div>
             <p class="eyebrow">FFA</p>
             <h2>18キットで戦う</h2>
