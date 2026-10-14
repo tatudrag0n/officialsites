@@ -12,8 +12,8 @@
 /join     /minecraft.html#join     302
 /worlds   /minecraft.html#worlds   302
 /items    /minecraft.html#items    302
-/ffa      /minecraft.html#ffa      302
-/kits     /minecraft.html#ffa      302
+/ffa      /minecraft.html#jobs     302
+/kits     /minecraft.html#jobs     302
 /economy  /minecraft.html#systems  302
 /shop     /minecraft.html#systems  302
 /auction  /minecraft.html#systems  302
@@ -21,7 +21,7 @@
 /build    /minecraft.html#systems  302
 /athletic /minecraft.html#systems  302
 /quest    /minecraft.html#quest    302
-/events   /minecraft.html#join     302
+/events   /minecraft.html#quest    302
 /discord  /#community              302
 /rules    /minecraft.html#join     302
 /faq      /minecraft.html#join     302
