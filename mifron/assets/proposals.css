@@ -136,7 +136,7 @@
 .proposal-section { padding: 18px 0; border-bottom: 1px solid var(--line); }
 .proposal-section:last-of-type { border-bottom: 0; }
 .proposal-section h3 { font-size: 13px; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; }
-.proposal-body { margin: 0; font-size: 15px; line-height: 1.8; white-space: pre-line; }
+.proposal-body { margin: 0; font-size: 15px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag-chip { display: inline-flex; padding: 4px 12px; font-size: 12px; background: var(--mist); border-radius: 999px; color: var(--muted); }
 .proposal-vote p { color: var(--muted); margin: 0 0 14px; }

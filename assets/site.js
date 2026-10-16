@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
       nav.classList.remove('open');
       menu.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-label', 'メニューを開く');
     }));
   }
 
@@ -60,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // アドレスコピー
   document.querySelectorAll('[data-copy-join]').forEach((button) => {
+    button.setAttribute('aria-live', 'polite');
     button.addEventListener('click', async () => {
       const value = joinValues[button.dataset.copyJoin] || 'play.mct-official.com';
       let ok = false;

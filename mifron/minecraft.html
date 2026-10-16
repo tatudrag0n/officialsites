@@ -23,13 +23,14 @@
   <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/config.js" defer></script>
   <script src="assets/site.js" defer></script>
+  <script src="assets/motion.js" defer></script>
 </head>
 <body class="studio-page">
   <a class="skip" href="#main">本文へ移動</a>
   <header class="site-header">
     <div class="shell nav">
       <a class="brand" href="./">
-        <img class="brand-icon" src="./assets/mifron-icon.webp" alt="Mifron">
+        <img class="brand-icon" src="./assets/mifron-icon.webp" alt="Mifron" width="512" height="512">
         <span class="brand-text">Mifron<small>Games &amp; Digital Experiences</small></span>
       </a>
       <nav class="nav-links" id="nav-panel" aria-label="サイト内ナビゲーション">
@@ -70,7 +71,7 @@
             <div><dt>Bedrock版</dt><dd>ポート <strong data-join-value="port">19132</strong></dd></div>
             <div><dt>認証</dt><dd>Discord 6桁コード</dd></div>
           </dl>
-          <p class="join-address" aria-label="サーバーアドレス"><strong data-join-value="java">play.mct-official.com</strong></p>
+          <p class="join-address"><span class="sr-only">サーバーアドレス: </span><strong data-join-value="java">play.mct-official.com</strong></p>
           <button class="copy-button" type="button" data-copy-join="java">アドレスをコピー</button>
         </aside>
       </div>
@@ -138,7 +139,7 @@
     </section>
 
     <!-- 統計 -->
-    <div class="stat-ribbon" aria-label="サーバー概要">
+    <div class="stat-ribbon" role="group" aria-label="サーバー概要">
       <div><b>7職</b><span>ジョブ選択制</span></div>
       <div><b>46種</b><span>クエスト</span></div>
       <div><b>9種</b><span>特殊アイテム</span></div>
@@ -385,7 +386,7 @@
   <footer class="footer">
     <div class="shell footer-grid">
       <div class="footer-brand">
-        <img src="assets/mct-wordmark-transparent.png" alt="MCT">
+        <img src="assets/mct-wordmark-transparent.png" alt="MCT" width="1536" height="512" loading="lazy">
         <p class="legal">© 2026 MCT. All rights reserved.</p>
       </div>
       <nav class="footer-links" aria-label="フッター">

@@ -40,7 +40,7 @@
   border: 1px solid var(--line);
   border-left: 4px solid var(--line-strong);
   border-radius: var(--radius);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  transition: transform .18s ease, border-color .18s ease;
 }
 .review-card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(22, 24, 29, .10); }
 /* 強調カードはブランドの帯で一覧の中で目を引くようにする */

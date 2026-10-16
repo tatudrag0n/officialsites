@@ -683,6 +683,28 @@
     if (zoomOut) zoomOut.addEventListener('click', function () { zoomTo(scale / 1.3); });
     if (zoomReset) zoomReset.addEventListener('click', function () { fitView(); });
 
+    // ---- キーボード操作（矢印でパン、+ / - でズーム、0 で全体表示） ----
+    board.addEventListener('keydown', function (e) {
+      if (e.target !== board) return;
+      if (e.key.indexOf('Arrow') === 0) {
+        var step = e.shiftKey ? 180 : 60;
+        if (e.key === 'ArrowLeft') tx += step;
+        else if (e.key === 'ArrowRight') tx -= step;
+        else if (e.key === 'ArrowUp') ty += step;
+        else if (e.key === 'ArrowDown') ty -= step;
+      } else if (e.key === '+' || e.key === '=') {
+        zoomTo(scale * 1.2);
+      } else if (e.key === '-' || e.key === '_') {
+        zoomTo(scale / 1.2);
+      } else if (e.key === '0') {
+        fitView();
+      } else {
+        return;
+      }
+      e.preventDefault();
+      applyTransform();
+    });
+
     function fitView() {
       // 全体表示: フィルタ後のキャンバス範囲を実測して収める
       var cards = Array.prototype.slice.call(canvas.querySelectorAll('.quest-card'));
@@ -711,6 +733,7 @@
         searchTimer = setTimeout(function () {
           query = searchEl.value.trim();
           render();
+          syncUrl();
         }, 180);
       });
     }
@@ -722,6 +745,7 @@
           btn.classList.add('active');
           apply(btn.dataset[attr]);
           render();
+          syncUrl();
         });
       });
     }
@@ -734,8 +758,43 @@
       proposedToggle.addEventListener('change', function () {
         showProposed = proposedToggle.checked;
         render();
+        syncUrl();
       });
     }
+
+    // ---- URL クエリとフィルタ状態の同期（共有・再訪で復元） ----
+    function activateFromQuery(bar, attr, value) {
+      if (!bar || !value) return false;
+      var btn = bar.querySelector('.filter-btn[data-' + attr + '="' + value + '"]');
+      if (!btn) return false;
+      bar.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      return true;
+    }
+    function syncUrl() {
+      var params = new URLSearchParams();
+      if (activeType !== 'all') params.set('type', activeType);
+      if (activeState !== 'all') params.set('state', activeState);
+      if (query) params.set('q', query);
+      if (showProposed) params.set('proposed', '1');
+      var qs = params.toString();
+      try {
+        window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : '') + window.location.hash);
+      } catch (_) { /* file:// などではURL同期をあきらめる */ }
+    }
+    (function restoreFromUrl() {
+      var params = new URLSearchParams(window.location.search);
+      var type = params.get('type');
+      if (activateFromQuery(typeFilter, 'type', type)) activeType = type;
+      var state = params.get('state');
+      if (activateFromQuery(stateFilter, 'state', state)) activeState = state;
+      var qv = params.get('q');
+      if (qv) { query = qv; if (searchEl) searchEl.value = qv; }
+      if (params.get('proposed') === '1') {
+        showProposed = true;
+        if (proposedToggle) proposedToggle.checked = true;
+      }
+    })();
 
     // ヒント
     if (hint) {
@@ -857,6 +916,15 @@
     var templateGrid = document.getElementById('questTemplateGrid');
     var message = document.getElementById('questFormMessage');
     var titleGroup = document.getElementById('questTitleGroup');
+
+    // 離脱ガード: 入力途中でページを離れるときは確認を出す
+    var dirty = false;
+    form.addEventListener('input', function () { dirty = true; });
+    window.addEventListener('beforeunload', function (e) {
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = '';
+    });
 
     function setField(name, value) {
       var field = form.elements[name];
@@ -982,6 +1050,7 @@
         if (response.ok) {
           feedback('提案を受け付けました。運営へ通知しました。審査後にクエストボードへ反映されます。', true);
           form.reset();
+          dirty = false;
           form.querySelectorAll('[data-count-for]').forEach(function (c) { c.textContent = '0'; });
           syncTitleGroup();
           if (templateGrid) {

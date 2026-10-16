@@ -15,7 +15,7 @@ h1,h2,h3,h4{letter-spacing:.01em}
 .section.alt{background:var(--mist)}
 .section-head{margin-bottom:30px}
 .feature-grid,.systems,.value-grid,.brand-grid{gap:0}
-.feature,.system-panel,.value-card,.brand-card{border-radius:0;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 22px rgba(22,24,29,.045);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.feature,.system-panel,.value-card,.brand-card{border-radius:0;background:var(--card);border:1px solid var(--line);box-shadow:0 8px 22px rgba(22,24,29,.045);transition:transform .2s ease,border-color .2s ease}
 .feature:hover,.system-panel:hover,.value-card:hover,.brand-card:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:0 14px 28px rgba(22,24,29,.08)}
 .feature{padding:24px}
 .feature h3{font-size:20px;margin-top:10px}
@@ -23,7 +23,7 @@ h1,h2,h3,h4{letter-spacing:.01em}
 .tag{display:inline-flex;align-items:center;min-height:26px;padding:3px 8px;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);font-size:10px;font-weight:700;letter-spacing:.08em}
 
 .stat-ribbon{background:var(--ink);color:var(--white);border:0}
-.stat-ribbon b{font-family:var(--sans)}
+.stat-ribbon b{font-family:var(--sans);font-variant-numeric:tabular-nums}
 .stat-ribbon span{color:#cfd2d8}
 
 .dark{background:#292842}

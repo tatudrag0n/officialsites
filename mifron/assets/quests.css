@@ -464,3 +464,6 @@
 /* ---------- 旧要素の互換（detail.html等） ---------- */
 [hidden] { display: none !important; }
 .quest-form .btn[disabled] { opacity: .55; pointer-events: none; }
+
+/* ---------- キーボード操作の可視化 ---------- */
+.board:focus-visible { outline: 3px solid var(--mifron); outline-offset: -3px; }

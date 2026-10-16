@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     menu.addEventListener('click',()=>{
       const open=nav.classList.toggle('open');
       menu.setAttribute('aria-expanded',String(open));
+      menu.setAttribute('aria-label',open?'メニューを閉じる':'メニューを開く');
     });
     nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
       nav.classList.remove('open');
       menu.setAttribute('aria-expanded','false');
+      menu.setAttribute('aria-label','メニューを開く');
     }));
   }
 
@@ -53,17 +55,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(value) node.textContent=value;
   });
   document.querySelectorAll('[data-copy-join]').forEach(button=>{
+    button.setAttribute('aria-live','polite');
     button.addEventListener('click',async()=>{
       const value=joinValues[button.dataset.copyJoin];
-      if(!value || !navigator.clipboard) return;
-      try{
-        await navigator.clipboard.writeText(value);
-        const original=button.textContent;
-        button.textContent='コピーしました';
-        window.setTimeout(()=>{button.textContent=original;},1600);
-      }catch(_error){
-        button.textContent='手動でコピーしてください';
+      if(!value) return;
+      let ok=false;
+      if(navigator.clipboard){
+        try{ await navigator.clipboard.writeText(value); ok=true; }catch(_error){ /* fallthrough */ }
       }
+      const original=button.textContent;
+      button.textContent=ok?'コピーしました':'手動でコピーしてください';
+      window.setTimeout(()=>{button.textContent=original;},1600);
     });
   });
 
