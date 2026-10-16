@@ -114,9 +114,32 @@
     var filters = document.querySelectorAll('.proposal-filters .filter-btn');
     var all = [];
 
-    function render() {
+    function getFilter() {
       var active = document.querySelector('.proposal-filters .filter-btn.active');
-      var filter = active ? active.dataset.filter : 'all';
+      return active ? active.dataset.filter : 'all';
+    }
+
+    function syncUrl() {
+      var filter = getFilter();
+      var params = new URLSearchParams();
+      if (filter !== 'all') params.set('status', filter);
+      var qs = params.toString();
+      try {
+        window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+      } catch (_) { /* file:// などではURL同期をあきらめる */ }
+    }
+
+    (function restoreFromUrl() {
+      var status = new URLSearchParams(window.location.search).get('status');
+      if (!status) return;
+      var btn = document.querySelector('.proposal-filters .filter-btn[data-filter="' + status + '"]');
+      if (!btn) return;
+      filters.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    })();
+
+    function render() {
+      var filter = getFilter();
       var list = filter === 'all' ? all : all.filter(function (p) { return p.status === filter; });
 
       if (!list.length) {
@@ -147,6 +170,7 @@
         filters.forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
         render();
+        syncUrl();
       });
     });
 
@@ -287,6 +311,15 @@
     var templateGrid = document.getElementById('proposalTemplateGrid');
     var message = document.getElementById('formMessage');
 
+    // 離脱ガード: 入力途中でページを離れるときは確認を出す
+    var dirty = false;
+    form.addEventListener('input', function () { dirty = true; });
+    window.addEventListener('beforeunload', function (e) {
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = '';
+    });
+
     function setField(name, value) {
       var field = form.elements[name];
       if (field) field.value = value == null ? '' : value;
@@ -375,6 +408,7 @@
         if (response.ok) {
           feedback('提案を受け付けました。運営へ通知しました。審査後に提案一覧へ反映されます。', true);
           form.reset();
+          dirty = false;
           form.querySelectorAll('[data-count-for]').forEach(function (c) { c.textContent = '0'; });
           if (templateGrid) {
             templateGrid.querySelectorAll('.proposal-template').forEach(function (card) {
