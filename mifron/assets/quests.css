@@ -84,7 +84,17 @@
    ヘッダーを除いた高さをボードに使い切る。
    ============================================================ */
 .quest-board-page { --quest-header: 65px; }
-@media (min-width: 900px) { .quest-board-page { --quest-header: 73px; } }
+@media (min-width: 641px) {
+  /* タブレット以上: フィルタを2カラムに畳んでバーを低く保つ */
+  .quest-board-page .quest-toolbar { grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  .quest-board-page .quest-topbar,
+  .quest-board-page .quest-toolbar-row { grid-column: 1 / -1; }
+  .quest-board-page .quest-type-filter,
+  .quest-board-page .quest-state-filter { padding-bottom: 2px; }
+}
+@media (min-width: 900px) {
+  .quest-board-page { --quest-header: 73px; }
+}
 
 .quest-board-page .quest-canvas-section {
   display: flex;
@@ -100,11 +110,15 @@
   max-width: none;
   padding: 12px clamp(12px, 3vw, 20px) 14px;
 }
+/* ツールバーの空白を詰めて、その分をボードの高さに回す */
+.quest-board-page .quest-toolbar { row-gap: 8px; margin-bottom: 0; }
+.quest-board-page .quest-topbar { padding-bottom: 8px; }
+
 .quest-board-page .board-frame {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 320px;
+  min-height: clamp(440px, 60svh, 900px);
   box-shadow: 0 14px 34px rgba(22, 24, 29, .07);
 }
 /* ブランドの帯（ヒーローと同じ Mifron→ゴールドのグラデーション） */
@@ -130,9 +144,90 @@
   .quest-board-page .board-controls { right: 10px; bottom: 10px; }
 }
 
-/* 縦が低い端末ではキャンバスの最低高さを抑える */
+/* タブレット以上: キャンバスをウィンドウいっぱいに広げ、ツールバーは上部のバーとして浮かせる */
+@media (min-width: 641px) {
+  .quest-board-page .quest-canvas-section {
+    display: block;
+    position: relative;
+    height: calc(100svh - var(--quest-header));
+    min-height: 0;
+    overflow: hidden;
+  }
+  .quest-board-page .quest-shell {
+    display: block;
+    height: 100%;
+    padding: 0;
+  }
+  .quest-board-page .board-frame {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .quest-board-page .quest-toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    margin: 0;
+    padding: 8px clamp(12px, 2.4vw, 22px) 10px;
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 14px 34px rgba(22, 24, 29, .08);
+  }
+  .quest-board-page .quest-toolbar h1 { font-size: 22px; }
+  .quest-board-page .quest-toolbar-row { display: flex; align-items: center; gap: 10px 16px; }
+  .quest-board-page .quest-search { flex: 1 1 auto; min-width: 0; }
+  .quest-board-page .quest-toolbar-meta { flex: none; flex-wrap: nowrap; gap: 6px 14px; }
+  .quest-board-page .board-legend {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 6;
+    max-width: calc(100% - 200px);
+    margin: 0;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, .9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(22, 24, 29, .10);
+  }
+  .quest-board-page .board-hint { left: auto; top: auto; right: 14px; bottom: 184px; }
+}
+
+/* 大画面: バーを横一列に畳んでさらに薄くする */
+@media (min-width: 1100px) {
+  .quest-board-page .quest-toolbar {
+    grid-template-columns: auto minmax(230px, 330px) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: 18px;
+    row-gap: 0;
+  }
+  .quest-board-page .quest-topbar,
+  .quest-board-page .quest-toolbar-row { grid-column: auto; }
+  .quest-board-page .quest-topbar { padding-bottom: 0; border-bottom: 0; }
+  .quest-board-page .quest-search-label {
+    position: absolute; width: 1px; height: 1px; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+  .quest-board-page .quest-search input { min-height: 44px; padding: 8px 14px; }
+  .quest-board-page .proposed-toggle { min-height: 40px; }
+  .quest-board-page .quest-add { min-height: 44px; padding: 0 14px; }
+  .quest-board-page .filter-btn { min-height: 40px; }
+}
+
+/* 縦が低い端末でも最低限のキャンバス高さを確保する（必要ならページがスクロールする） */
 @media (max-height: 620px) {
-  .quest-board-page .board-frame { min-height: 240px; }
+  .quest-board-page .board-frame { min-height: 340px; }
 }
 
 /* ---------- ボード ---------- */
