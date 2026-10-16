@@ -8,78 +8,68 @@
 
   /* ============================================================
      実クエストデータ（mifronplugin: src/main/resources/quests.yml）
-     D01–D10 / W01–W10 / M01–M10 / S02–S30 の59件。
-     デイリー・ウィークリーは「10候補から5件抽選」、
-     マンスリーは「9件固定表示＋完全達成」、
-     スペシャルは「条件発生・1回限り」。
+     D01–D10 / J01–J07 / W01–W10 / M01–M10 / S03–S30 の46件。
+     デイリー・ウィークリーは「期間ごとに5件抽選」、
+     デイリーは加えて選択中のジョブの日課（J01–J07）と完全達成を表示、
+     マンスリーは「固定表示＋完全達成」、
+     スペシャルは「条件発生・1回限り」（S30は釣り大会開催中のみ）。
      ============================================================ */
   var QUESTS = [
-    // ---- デイリー（10候補から5件抽選） ----
-    { id: 'D01', type: 'daily', name: '今日の採掘', condition: '石系/鉱石系ブロックを合計300個採掘', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D02', type: 'daily', name: '今日の建築', condition: '任意の建材ブロックを200個設置', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D03', type: 'daily', name: '小規模討伐', condition: '敵対Mobを30体、直接討伐', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D04', type: 'daily', name: '農作業日和', condition: '生活ポイントを150獲得（採集1 / 釣り17 / 繁殖8）', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D05', type: 'daily', name: '商売の一歩', condition: 'ショップまたは商人で3回取引', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D06', type: 'daily', name: '軽い探索', condition: '初めて入るチャンクを20チャンク訪問', reward: '300 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D07', type: 'daily', name: '今日のアスレ', condition: '任意難易度のアスレを2回クリア', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D08', type: 'daily', name: 'ミニゲーム参加', condition: 'ミニゲームの参加または勝利処理を合計3回', reward: '350 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D09', type: 'daily', name: '釣りと収集', condition: '釣り成功または採集を合計20回', reward: '250 MP', cycle: '毎日リセット / 1日1回', candidate: '10候補から5件抽選' },
-    { id: 'D10', type: 'daily', name: 'デイリー完全達成', condition: 'その日に表示されたデイリー5件を全達成', reward: '500 MP', cycle: '毎日リセット', candidate: '表示分の全達成で発生' },
+    // ---- デイリー（期間ごとに5件抽選） ----
+    { id: 'D01', type: 'daily', name: '今日の採掘', condition: '石系/鉱石系ブロックを合計300個採掘', reward: '150 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D02', type: 'daily', name: '今日の建築', condition: '任意の建材ブロックを200個設置', reward: '125 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D03', type: 'daily', name: '小規模討伐', condition: '敵対Mobを30体、直接討伐', reward: '175 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D04', type: 'daily', name: '農作業日和', condition: '生活ポイントを150獲得（対象作物・自然物の採集1、釣り成功17、繁殖8）', reward: '125 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D05', type: 'daily', name: '商売の一歩', condition: 'ショップまたは商人で3回取引', reward: '150 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D06', type: 'daily', name: '軽い探索', condition: '初めて入るチャンクを20チャンク訪問', reward: '150 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D09', type: 'daily', name: '釣りと収集', condition: '釣り成功または対象作物・自然物の採集を合計20回', reward: '125 MP', cycle: '毎日リセット / 1日1回', candidate: '毎日5件抽選' },
+    { id: 'D10', type: 'daily', name: 'デイリー完全達成', condition: 'その日に表示されたデイリー5件を全達成', reward: '250 MP', cycle: '毎日リセット', candidate: '表示分の全達成で発生' },
 
-    // ---- ウィークリー（10候補から5件抽選） ----
-    { id: 'W01', type: 'weekly', name: '週間採掘計画', condition: '石系/鉱石系ブロックを合計3,000個採掘', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W02', type: 'weekly', name: '週間建築計画', condition: '建材ブロックを2,000個設置', reward: '1,600 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W03', type: 'weekly', name: '討伐遠征', condition: '敵対Mobを300体、直接討伐', reward: '2,200 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W04', type: 'weekly', name: '交易週間', condition: 'ショップ/商人で20回取引', reward: '1,600 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W05', type: 'weekly', name: 'アスレ週間', condition: 'アスレを合計10回クリア', reward: '2,000 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W06', type: 'weekly', name: 'ミニゲーム週間', condition: 'ミニゲームの参加または勝利処理を合計15回', reward: '2,000 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W07', type: 'weekly', name: '探索遠征', condition: '初めて入るチャンクを150チャンク訪問', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W08', type: 'weekly', name: '進捗挑戦', condition: '任意の進捗を3個達成', reward: '2,500 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W09', type: 'weekly', name: '共同納品', condition: 'ミニゲーム解放へ合計1,000MPを納品', reward: '1,800 MP', cycle: '毎週リセット', candidate: '10候補から5件抽選' },
-    { id: 'W10', type: 'weekly', name: 'ウィークリー完全達成', condition: 'その週に表示されたウィークリー5件を全達成', reward: '3,500 MP', cycle: '毎週リセット', candidate: '表示分の全達成で発生' },
+    // ---- ジョブ日課（該当職のみ表示） ----
+    { id: 'J01', type: 'daily', name: '狩人の日課', condition: '【狩人限定】敵対Mobを30体、直接討伐', reward: '200 MP', cycle: '毎日リセット / 1日1回', candidate: '狩人選択時のみ表示' },
+    { id: 'J02', type: 'daily', name: '農民の日課', condition: '【農民限定】作物を50個収穫', reward: '150 MP', cycle: '毎日リセット / 1日1回', candidate: '農民選択時のみ表示' },
+    { id: 'J03', type: 'daily', name: '鍛冶屋の日課', condition: '【鍛冶屋限定】高度な金床で3回合成', reward: '200 MP', cycle: '毎日リセット / 1日1回', candidate: '鍛冶屋選択時のみ表示' },
+    { id: 'J04', type: 'daily', name: '商人の日課', condition: '【商人限定】ショップで10回売却', reward: '200 MP', cycle: '毎日リセット / 1日1回', candidate: '商人選択時のみ表示' },
+    { id: 'J05', type: 'daily', name: '釣り人の日課', condition: '【釣り人限定】魚を10匹釣る', reward: '150 MP', cycle: '毎日リセット / 1日1回', candidate: '釣り人選択時のみ表示' },
+    { id: 'J06', type: 'daily', name: '鉱夫の日課', condition: '【鉱夫限定】鉱石・石系ブロックを100個採掘', reward: '175 MP', cycle: '毎日リセット / 1日1回', candidate: '鉱夫選択時のみ表示' },
+    { id: 'J07', type: 'daily', name: '冒険者の日課', condition: '【冒険者限定】未踏破チャンクを20訪問', reward: '175 MP', cycle: '毎日リセット / 1日1回', candidate: '冒険者選択時のみ表示' },
+
+    // ---- ウィークリー（期間ごとに5件抽選） ----
+    { id: 'W01', type: 'weekly', name: '週間採掘計画', condition: '石系/鉱石系ブロックを合計3,000個採掘', reward: '900 MP', cycle: '毎週リセット / 週1回', candidate: '毎週5件表示' },
+    { id: 'W02', type: 'weekly', name: '週間建築計画', condition: '建材ブロックを2,000個設置', reward: '800 MP', cycle: '毎週リセット / 週1回', candidate: '毎週5件表示' },
+    { id: 'W03', type: 'weekly', name: '討伐遠征', condition: '敵対Mobを300体、直接討伐', reward: '1,100 MP', cycle: '毎週リセット / 週1回', candidate: '毎週5件表示' },
+    { id: 'W04', type: 'weekly', name: '交易週間', condition: 'ショップ/商人で20回取引', reward: '800 MP', cycle: '毎週リセット / 週1回', candidate: '毎週5件表示' },
+    { id: 'W07', type: 'weekly', name: '探索遠征', condition: '初めて入るチャンクを150チャンク訪問', reward: '900 MP', cycle: '毎週リセット / 週1回', candidate: '毎週5件表示' },
+    { id: 'W10', type: 'weekly', name: 'ウィークリー完全達成', condition: 'その週に表示されたウィークリー5件を全達成', reward: '1,750 MP', cycle: '毎週リセット', candidate: '表示分の全達成で発生' },
 
     // ---- マンスリー（固定表示） ----
-    { id: 'M01', type: 'monthly', name: '月間採掘王', condition: '石系/鉱石系ブロックを30,000個採掘', reward: '9,000 MP', cycle: '毎月リセット' },
-    { id: 'M02', type: 'monthly', name: '月間建築家', condition: '建材ブロックを20,000個設置', reward: '9,000 MP', cycle: '毎月リセット' },
-    { id: 'M03', type: 'monthly', name: '月間討伐者', condition: '敵対Mobを2,000体、直接討伐', reward: '9,000 MP', cycle: '毎月リセット' },
-    { id: 'M04', type: 'monthly', name: '月間商人', condition: 'ショップまたは商人で合計100回取引', reward: '8,000 MP', cycle: '毎月リセット' },
-    { id: 'M05', type: 'monthly', name: '月間冒険者', condition: '初めて入るチャンクを1,000チャンク訪問', reward: '8,000 MP', cycle: '毎月リセット' },
-    { id: 'M06', type: 'monthly', name: '月間挑戦者', condition: 'アスレ・ミニゲーム・勝利処理を合計60回', reward: '8,500 MP', cycle: '毎月リセット' },
-    { id: 'M07', type: 'monthly', name: '進捗探究者', condition: '任意の進捗を10個達成', reward: '10,000 MP', cycle: '毎月リセット' },
-    { id: 'M08', type: 'monthly', name: '生活基盤整備', condition: '生活ポイントを5,000獲得', reward: '7,000 MP', cycle: '毎月リセット' },
-    { id: 'M09', type: 'monthly', name: '共同開拓', condition: 'ミニゲーム解放へ1MP以上を納品', reward: '8,000 MP', cycle: '毎月リセット' },
-    { id: 'M10', type: 'monthly', name: 'マンスリー完全達成', condition: '月間クエスト9件を全達成', reward: '12,000 MP', cycle: '毎月リセット' },
+    { id: 'M01', type: 'monthly', name: '月間採掘王', condition: '石系/鉱石系ブロックを30,000個採掘', reward: '4,500 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M02', type: 'monthly', name: '月間建築家', condition: '建材ブロックを20,000個設置', reward: '4,500 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M03', type: 'monthly', name: '月間討伐者', condition: '敵対Mobを2,000体、直接討伐', reward: '4,500 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M04', type: 'monthly', name: '月間商人', condition: 'ショップまたは商人で合計100回取引', reward: '4,000 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M05', type: 'monthly', name: '月間冒険者', condition: '初めて入るチャンクを1,000チャンク訪問', reward: '4,000 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M08', type: 'monthly', name: '生活基盤整備', condition: '生活ポイントを5,000獲得（対象作物・自然物の採集1、釣り成功17、繁殖8）', reward: '3,500 MP', cycle: '毎月リセット / 月1回', candidate: '月間固定表示' },
+    { id: 'M10', type: 'monthly', name: 'マンスリー完全達成', condition: 'その月に表示されたマンスリーを全達成', reward: '6,000 MP', cycle: '毎月リセット', candidate: '表示分の全達成で発生' },
 
     // ---- スペシャル（条件発生・1回限り） ----
-    { id: 'S02', type: 'special', name: '村の救世主', condition: 'ゾンビ村人を治療し、進捗を達成', reward: '7,000 MP' },
-    { id: 'S03', type: 'special', name: '初ドラゴン討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してエンダードラゴン討伐に参加', reward: '20,000 MP' },
-    { id: 'S04', type: 'special', name: '初ウィザー討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してウィザー討伐に参加', reward: '18,000 MP' },
-    { id: 'S05', type: 'special', name: '古代都市調査', condition: 'スカルクの振動を回避する進捗を達成', reward: '12,000 MP' },
-    { id: 'S06', type: 'special', name: '海底神殿制圧', condition: 'エルダーガーディアンを3体討伐（各討伐に参加）', reward: '10,000 MP' },
-    { id: 'S07', type: 'special', name: '砦の略奪者', condition: 'ピグリン要塞を発見する進捗を達成', reward: '10,000 MP' },
-    { id: 'S08', type: 'special', name: 'エンドシティ到達', condition: 'エンドシティ発見またはエリトラ関連の進捗を達成', reward: '15,000 MP' },
-    { id: 'S09', type: 'special', name: 'バベルの挑戦者', condition: 'babel_towerワールドへ到達', reward: '12,000 MP' },
-    { id: 'S10', type: 'special', name: '深淵到達', condition: 'ginnungagapワールドへ到達', reward: '12,000 MP' },
-    { id: 'S11', type: 'special', name: '地下帝国の客人', condition: 'agarthaワールドへ到達', reward: '15,000 MP' },
-    { id: 'S12', type: 'special', name: 'エリシオン巡礼', condition: 'elysionワールドへ到達', reward: '12,000 MP' },
-    { id: 'S13', type: 'special', name: '全進捗への一歩', condition: '累計進捗25個達成', reward: '8,000 MP' },
-    { id: 'S14', type: 'special', name: '進捗蒐集家', condition: '累計進捗50個達成', reward: '15,000 MP' },
-    { id: 'S15', type: 'special', name: '全能への道', condition: '累計進捗75個達成', reward: '25,000 MP' },
-    { id: 'S16', type: 'special', name: '初めての転生', condition: '初回転生を実行', reward: '30,000 MP' },
-    { id: 'S17', type: 'special', name: '二度目の覚醒', condition: '2回目の転生を実行', reward: '40,000 MP' },
-    { id: 'S18', type: 'special', name: '商人の常連', condition: '累計取引500回達成', reward: '12,000 MP' },
-    { id: 'S19', type: 'special', name: 'オークション参加者', condition: 'オークション額縁を1回作成', reward: '7,000 MP' },
-    { id: 'S20', type: 'special', name: '国家の礎', condition: 'nationまたはnationsワールドへ到達', reward: '10,000 MP' },
-    { id: 'S21', type: 'special', name: '建築コンテスト参加', condition: 'Buildワールドからschematicを1件提出', reward: '15,000 MP' },
-    { id: 'S22', type: 'special', name: 'ミニゲーム王者', condition: 'ミニゲームで1回勝利', reward: '20,000 MP' },
-    { id: 'S23', type: 'special', name: 'アスレ覇者', condition: 'hardcore設定のアスレチックを1回完走', reward: '25,000 MP' },
-    { id: 'S24', type: 'special', name: '釣り名人', condition: '釣りで弓・エンチャント本・釣竿・名札・オウムガイ・鞍のいずれかを獲得', reward: '8,000 MP' },
-    { id: 'S25', type: 'special', name: '農業王', condition: '棚ショップまたは商人へ農作物を1回売却', reward: '10,000 MP' },
-    { id: 'S26', type: 'special', name: '鍛冶の探究者', condition: '鍛冶型を1個拾得', reward: '15,000 MP' },
-    { id: 'S27', type: 'special', name: '全モブ観察', condition: '報酬対象Mobを1種類以上、直接攻撃で討伐', reward: '20,000 MP' },
-    { id: 'S28', type: 'special', name: '共同解放の功労者', condition: 'ミニゲーム解放へ1MP以上を納品', reward: '25,000 MP' },
-    { id: 'S29', type: 'special', name: 'クリエイターの第一歩', condition: '提出したschematicが1件承認される', reward: '15,000 MP' },
-    { id: 'S30', type: 'special', name: 'Mifronの伝説', condition: '転生2回・進捗75個・Mob討伐2,000体・ブロック設置20,000個・取引500回をすべて達成', reward: '50,000 MP' }
+    { id: 'S03', type: 'special', name: '初ドラゴン討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してエンダードラゴン討伐に参加', reward: '10,000 MP' },
+    { id: 'S04', type: 'special', name: '初ウィザー討伐', condition: '討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してウィザー討伐に参加', reward: '9,000 MP' },
+    { id: 'S06', type: 'special', name: '海底神殿制圧', condition: '各討伐前30秒以内に最大体力の20%以上を与えるか、とどめを刺してエルダーガーディアンを3体討伐', reward: '5,000 MP' },
+    { id: 'S09', type: 'special', name: 'バベルの挑戦者', condition: 'babel_towerワールドへ到達', reward: '6,000 MP' },
+    { id: 'S10', type: 'special', name: '深淵到達', condition: 'ginnungagapワールドへ到達', reward: '6,000 MP' },
+    { id: 'S11', type: 'special', name: '地下帝国の客人', condition: 'agarthaワールドへ到達', reward: '7,500 MP' },
+    { id: 'S12', type: 'special', name: 'エリシオン巡礼', condition: 'elysionワールドへ到達', reward: '6,000 MP' },
+    { id: 'S16', type: 'special', name: '初めての転生', condition: '初回転生を実行', reward: '15,000 MP' },
+    { id: 'S17', type: 'special', name: '二度目の覚醒', condition: '2回目の転生を実行', reward: '20,000 MP' },
+    { id: 'S18', type: 'special', name: '商人の常連', condition: '累計取引500回達成', reward: '6,000 MP' },
+    { id: 'S20', type: 'special', name: '国家の礎', condition: 'nationまたはnationsワールドへ到達', reward: '5,000 MP' },
+    { id: 'S21', type: 'special', name: '建築コンテスト参加', condition: 'schematicを1件提出し、管理者が承認', reward: '7,500 MP' },
+    { id: 'S24', type: 'special', name: '釣り名人', condition: '釣りで弓・エンチャント本・釣竿・名札・オウムガイ・鞍のいずれかを獲得', reward: '4,000 MP' },
+    { id: 'S25', type: 'special', name: '農業王', condition: '棚ショップまたは商人へ農作物を1回売却', reward: '5,000 MP' },
+    { id: 'S26', type: 'special', name: '鍛冶の探究者', condition: '鍛冶型を1個拾得', reward: '7,500 MP' },
+    { id: 'S27', type: 'special', name: '全モブ観察', condition: '報酬対象Mobを1種類以上、直接攻撃で討伐', reward: '10,000 MP' },
+    { id: 'S29', type: 'special', name: 'クリエイターの第一歩', condition: '提出したschematicが1件承認される', reward: '7,500 MP' },
+    { id: 'S30', type: 'special', name: '釣り大会 完走', condition: '「釣り大会」開催中に魚を10匹釣る', reward: '3,000 MP', candidate: '釣り大会開催中のみ' }
   ];
 
   // 管理者レビュー（/admin/）でも同じクエスト定義を参照できるようにする。
@@ -100,7 +90,7 @@
       var goal = group.find(function (q) { return q.id.slice(-2) === '10'; });
       if (!goal) return;
       group.forEach(function (q) {
-        if (q !== goal && q.id !== 'D10' && q.id !== 'W10' && q.id !== 'M09') edges.push([q.id, goal.id]);
+        if (q !== goal && q.id !== 'D10' && q.id !== 'W10' && q.id !== 'M10') edges.push([q.id, goal.id]);
       });
     });
     return edges;
@@ -815,7 +805,7 @@
     },
     {
       key: 'trade', icon: '💰', label: '取引',
-      hint: 'ショップやオークションで経済を動かす',
+      hint: 'ショップや取引で経済を動かす',
       data: {
         name: 'デイリー：マーケット活動', description: 'ショップで売買を行い、Mifronの経済を活性化させます。',
         type: 'daily', difficulty: 'easy', condition: 'ショップで3回売買する', conditionTypes: ['mp_gain'],

@@ -57,7 +57,7 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 Mifronは「ゲームやデジタルサービスを開発するインディーゲームスタジオ」です（Games & Digital Experiences）。Minecraftサーバーは最初のプロジェクトとして整理されています。
 
 - `mifron/index.html` はスタジオのブランドサイト（Hero / Featured Projects / News / Community / Store / About）です。
-- `mifron/minecraft.html` は代表プロジェクト「Mifron Minecraft」のページです。参加方法、ワールド、MP経済、アイテム、特殊アイテム、クエスト、提案システム、FFAの説明はここに集約しています。
+- `mifron/minecraft.html` は代表プロジェクト「Mifron Minecraft」のページです。参加方法、ワールド、MP経済、アイテム、特殊アイテム、クエスト、ジョブ、提案システムの説明はここに集約しています。
 - Minecraft の説明文は MifronPlugin の実装に合わせて更新されます。変更するときは `minecraft.html` を正本とし、トップページへ説明を書き戻さないでください。
 - 旧トップページのアンカー（`/join`, `/worlds`, `/ffa`, `/economy`, `/shop` など）は `_redirects` で `minecraft.html` の該当セクションへ転送します。
 
