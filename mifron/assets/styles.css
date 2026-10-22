@@ -1334,3 +1334,145 @@ html:has(body.studio-page) { scroll-padding-top: 140px; }
   @keyframes m-fade { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
   @keyframes m-underline { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
+
+/* ============================================================
+   UI改善（2026-10）
+   - プロジェクトカードを「カバー画像 + 番号」の表紙として見せる
+   - セクション見出しに通し番号を入れて読み進める位置を分かりやすく
+   - 小さすぎる補助文字のコントラストとタップ領域を補正
+   ============================================================ */
+
+/* ---------- セクション番号 ---------- */
+.eyebrow .step {
+  display: inline-block;
+  margin-right: 10px;
+  color: var(--mifron);
+  font-variant-numeric: tabular-nums;
+}
+.eyebrow .step::after {
+  content: "/";
+  margin-left: 10px;
+  color: var(--line-strong);
+}
+.studio-page .eyebrow .step { color: var(--mifron); }
+.contact-panel .eyebrow .step { color: var(--gold); }
+.dark .eyebrow .step { color: var(--gold); }
+
+/* ---------- プロジェクトカバー ---------- */
+.project-art { position: relative; isolation: isolate; }
+.project-art.mc { background: #16281d url("minecraft-poster.webp") center / cover no-repeat; }
+.project-art.games { background: #1a1a33 url("hero-poster.webp") center / cover no-repeat; }
+.project-art.apps {
+  background:
+    radial-gradient(120% 120% at 18% 12%, rgba(150, 170, 220, .35), transparent 62%),
+    linear-gradient(135deg, #1b2233 0%, #38445f 55%, #7486b3 100%);
+}
+.project-art::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(11, 12, 16, .04) 0%, rgba(11, 12, 16, .22) 52%, rgba(11, 12, 16, .82) 100%),
+    radial-gradient(90% 70% at 100% 0%, rgba(255, 255, 255, .14), transparent 60%);
+}
+.project-art::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 82%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 82%);
+}
+.project-art > * { position: relative; z-index: 1; }
+.project-index {
+  font-size: clamp(34px, 6vw, 54px);
+  font-weight: 700;
+  line-height: .9;
+  letter-spacing: -.02em;
+  color: rgba(255, 255, 255, .94);
+  text-shadow: 0 6px 24px rgba(0, 0, 0, .45);
+  font-variant-numeric: tabular-nums;
+}
+.project-status { backdrop-filter: blur(6px); }
+
+/* カード全体をクリック領域にする（リンクのあるカードだけ） */
+.project-card { position: relative; }
+.project-card .project-foot .go::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 3;
+  border-radius: 20px;
+}
+.project-foot .go {
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  padding-block: 6px;
+}
+
+/* ---------- ヒーロー補足とCTA ---------- */
+.status-note {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.btn-arrow { display: inline-block; transition: transform .2s ease; }
+.copy-button:hover .btn-arrow { transform: translateX(4px); }
+
+/* ---------- 数字カード ---------- */
+.summary-card { position: relative; overflow: hidden; }
+.summary-card::before {
+  content: "";
+  position: absolute; inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--mifron), var(--gold));
+}
+.summary-card b { font-variant-numeric: tabular-nums; }
+
+/* ---------- 開発ニュース ---------- */
+@media (min-width: 760px) {
+  .news-item {
+    padding-inline: 14px;
+    margin-inline: -14px;
+    border-radius: 12px;
+    transition: background .2s ease;
+  }
+  .news-item:hover { background: var(--card); }
+}
+.news-list .news-item:last-child { border-bottom: 0; }
+
+/* ---------- 補助文字のコントラスト ---------- */
+.project-meta dt,
+.project-foot .soon { color: #8d94a3; }
+.news-date { color: #a6adba; }
+.studio-page .disclaimer { color: #8b93a3; }
+
+/* ---------- 余白とカバーの微調整（2026-10 追記） ---------- */
+.studio-page .section { padding: clamp(64px, 8.5vw, 120px) 0; }
+.studio-page .hero { padding: clamp(48px, 9vw, 120px) 0 clamp(36px, 5vw, 64px); }
+.studio-page .hero + .section { padding-top: clamp(56px, 7vw, 96px); }
+
+.project-art { border-bottom: 1px solid rgba(255, 255, 255, .06); }
+.project-art.apps {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .16) 1px, transparent 0),
+    radial-gradient(120% 120% at 18% 12%, rgba(150, 170, 220, .35), transparent 62%),
+    linear-gradient(135deg, #1b2233 0%, #38445f 55%, #7486b3 100%);
+  background-size: 20px 20px, auto, auto;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+@media (min-width: 760px) {
+  .news-item { grid-template-columns: 96px minmax(0, 1fr) auto; gap: 24px; }
+}
+
+/* ---------- フッター: ブランド列の幅を確保してコピーライトの折返しを防ぐ ---------- */
+@media (min-width: 640px) {
+  .studio-page .footer-grid { grid-template-columns: minmax(200px, auto) minmax(0, 1fr); }
+  .studio-page .footer-links { justify-content: flex-end; }
+}
+.studio-page .legal { white-space: nowrap; }

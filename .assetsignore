@@ -8,3 +8,8 @@ MIFRON_PRODUCTION_RUNBOOK.md
 functions/
 src/
 tools/
+node_modules/
+.wrangler/
+package.json
+package-lock.json
+ui-policy.json
