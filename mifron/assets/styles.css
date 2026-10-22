@@ -1476,3 +1476,12 @@ html:has(body.studio-page) { scroll-padding-top: 140px; }
   .studio-page .footer-links { justify-content: flex-end; }
 }
 .studio-page .legal { white-space: nowrap; }
+
+/* ---------- ダークテーマ内の金カード: 濃色文字でコントラストを確保 ---------- */
+.studio-page .featured-system { color: #241f0c; }
+.studio-page .featured-system h3,
+.studio-page .featured-system p,
+.studio-page .featured-system ul,
+.studio-page .featured-system li { color: #3f3517; }
+.studio-page .featured-system h3 { color: #241f0c; }
+.studio-page .featured-system .tag { color: #241f0c; border-color: #241f0c; }

@@ -78,7 +78,7 @@
       }
     },
     {
-      key: 'balance', icon: '⚖️', label: 'バランス調整', hint: 'キット・経済・報酬の調整',
+      key: 'balance', icon: '⚖️', label: 'バランス調整', hint: 'ジョブ・経済・報酬の調整',
       data: {
         title: '', type: 'feature', priority: 'medium', tags: 'バランス',
         description: '【調整したい対象】\n\n【現状の問題】\n\n【提案する数値・仕様】\n\n【想定される影響】'
