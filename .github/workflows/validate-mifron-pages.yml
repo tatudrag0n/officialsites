@@ -6,6 +6,7 @@ on:
       - 'mifron/**'
       - 'tatudragon/**'
       - 'src/**'
+      - 'tools/**'
       - '404.html'
       - 'assets/**'
       - '_headers'
@@ -17,6 +18,7 @@ on:
       - 'mifron/**'
       - 'tatudragon/**'
       - 'src/**'
+      - 'tools/**'
       - '404.html'
       - 'assets/**'
       - '_headers'
@@ -37,6 +39,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Test Worker API
+        run: node tools/test_worker_api.mjs
 
       - name: Validate static release invariants
         shell: bash

@@ -39,6 +39,18 @@ SUPPORT_WEBHOOK_PORT=8125
 
 `<...>` は実値の投入例ではなく、VM管理者が安全な経路で置き換える項目です。販売開始前に`SUPPORT_SALES_ENABLED=false`と`SUPPORT_WEBHOOK_ENABLED=false`を維持します。販売を有効化する場合は、決済事業者・規約・返金・未成年者対応・Minecraft Usage Guidelinesの確認、sandbox検証、明示承認を先に完了し、その後にBotを再起動して購入ボタン・署名検証・重複イベント・返金・Supporterロール剥奪をテストします。販売設定が不完全な場合、Botは購入ボタンを表示しません。
 
+## KV無料枠の保護
+
+Mifronの公開APIはCloudflare KVを使います。無料枠は read 100,000/日、write 1,000/日、list 1,000/日です。過去にDiscord botが `/api/proposals` を60秒間隔で取得し、Worker側も一覧取得のたびに `list` していたため、list枠が毎日枯渇して `/api/proposals` が500を返していました。
+
+- Workerは一覧を `__index:quests` / `__index:proposals` から読み、`list` はindex再構築（1時間に1回まで）だけに使う。
+- `list` が失敗してもstale indexがあれば200を返す。indexが無い場合だけ503（`retry-after: 60`）。
+- `GET` の公開APIは300秒キャッシュする。投票・投稿時は関連キャッシュをpurgeする。
+- botの `SITE_SYNC_INTERVAL_SECONDS` は300秒以上にする。60秒では約1,440 list/日になり無料枠を超える。300秒なら約288 list/日。
+- 投票はKVレート制限を行わない。投票の乱用対策はWAF Rate LimitingまたはTurnstileで行う。
+
+障害時はCloudflareダッシュボードの Workers & Pages → KV → 各namespace の Metrics で `list` 回数を確認します。list枠が枯渇していてもindexが残っていればAPIは200を返します。indexが無い場合は、KVの個別キー（`quest_*` / `prop_*`）が残っていることを確認してから、アクセスが少ない時間帯に `GET /api/quests` と `GET /api/proposals` を1回ずつ実行してindexを再構築します。
+
 ## リリース前チェック
 
 - `systemctl is-active minecraft.service minoru-bot.service` が両方 `active`

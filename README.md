@@ -52,6 +52,27 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 - 要注意: 高評価比率 30% 以下（3票以上）
 - 削除提案の優先比率: 提案への高評価 ÷（提案への高評価 ＋ 対象クエストの低評価）
 
+## APIとKVの構成
+
+公開APIは `src/index.js` のWorkerが返します。Cloudflare KVの無料枠は list 1,000回/日と少ないため、一覧取得で `list` を繰り返さない構成にしています。
+
+- 一覧は `__index:quests` / `__index:proposals` の単一キーから読む。indexが1時間より古い場合だけ、旧来の個別キー（`quest_*` / `prop_*`）を `list` して再構築する。
+- `list` が失敗してもindexが残っていれば、そのstale indexを返す（500を避ける）。indexが無い場合のみ `503` と `retry-after: 60` を返す。
+- 投票の集計は `__tally:quests` / `__tally:proposals`、投票者ごとの選択は `__votes:<section>:<voter>` に保存する。票数に比例した `list` や全件 `get` は行わない。
+- `GET /api/quests`、`GET /api/proposals`、`GET /api/*/votes`（`voter` 無し）はCache APIで300秒キャッシュし、`ETag` / `304` に対応する。投稿・投票時は関連キーをpurgeする。
+- 投稿系のみKVベースのレート制限を行う。投票はKV操作を抑えるためレート制限せず、乱用対策はCloudflare WAF Rate Limiting / Turnstileへ移す。
+- 旧Cloudflare Pages Functions（`functions/`）はWorkers移行後に無効だったため削除した。APIの実装は `src/index.js` のみを正本とする。
+
+KVのnamespace名は歴史的経緯で `QUESTS` bindingが `Mifron_proposals`、`PROPOSALS` bindingが `Mifron_quests` を指していますが、bindingとキー接頭辞の対応は `wrangler.toml` の通りで正しいです。名前だけを見て付け替えないでください。
+
+回帰テストはNode.jsだけで実行できます（Wrangler不要）。
+
+```sh
+node tools/test_worker_api.mjs
+```
+
+Mifronサイトを同期するDiscord botは `SITE_SYNC_INTERVAL_SECONDS` を300秒以上にしてください。bot側のコードで下限300秒にclampしています。60秒に戻すとKV list枠を再び超過します。
+
 ## MifronのブランドとMinecraftプロジェクトページ
 
 Mifronは「ゲームやデジタルサービスを開発するインディーゲームスタジオ」です（Games & Digital Experiences）。Minecraftサーバーは最初のプロジェクトとして整理されています。
