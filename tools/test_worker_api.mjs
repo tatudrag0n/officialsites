@@ -160,6 +160,21 @@ test("GET /api/quests は index を1回だけ構築し、2回目はキャッシ�
   assert.deepEqual(kv.stats, statsBefore, "304 must not touch KV");
 });
 
+test("index 再構築は100件を超えるレコードも取りこぼさない", async () => {
+  useFreshCache();
+  const seed = {};
+  for (let index = 0; index < 150; index += 1) {
+    const id = `quest_${String(index).padStart(3, "0")}`;
+    seed[id] = JSON.stringify({ id, name: id });
+  }
+  const kv = createKv(seed);
+
+  const response = await call({ QUESTS: kv }, request("/api/quests"));
+  assert.equal(response.status, 200);
+  assert.equal((await readJson(response)).length, 150);
+  assert.equal(kv.stats.list, 1);
+});
+
 test("古い index は legacy キーから再構築される", async () => {
   useFreshCache();
   const kv = createKv({

@@ -229,7 +229,10 @@ async function serveSite(env, siteRoot, pathname) {
 const JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 const API_CACHE_SECONDS = 300;
 const INDEX_REFRESH_MS = 60 * 60 * 1000;
-const LEGACY_LIST_LIMIT = 100;
+// Cloudflare Workers allows 1,000 KV operations per invocation. Keeping the
+// legacy scan at 900 keys leaves room for the index get/put and avoids
+// silently truncating records as the site grows.
+const LEGACY_LIST_LIMIT = 900;
 const QUEST_INDEX_KEY = "__index:quests";
 const PROPOSAL_INDEX_KEY = "__index:proposals";
 const QUEST_TALLY_KEY = "__tally:quests";
