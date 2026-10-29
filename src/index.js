@@ -226,13 +226,121 @@ async function serveSite(env, siteRoot, pathname) {
   });
 }
 
-const JSON_HEADERS = {
-  "content-type": "application/json; charset=UTF-8",
-  "cache-control": "no-store",
-};
+const JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
+const API_CACHE_SECONDS = 300;
+const INDEX_REFRESH_MS = 60 * 60 * 1000;
+// Cloudflare Workers allows 1,000 KV operations per invocation. Keeping the
+// legacy scan at 900 keys leaves room for the index get/put and avoids
+// silently truncating records as the site grows.
+const LEGACY_LIST_LIMIT = 900;
+const QUEST_INDEX_KEY = "__index:quests";
+const PROPOSAL_INDEX_KEY = "__index:proposals";
+const QUEST_TALLY_KEY = "__tally:quests";
+const PROPOSAL_TALLY_KEY = "__tally:proposals";
+const VOTER_KEY_PREFIX = "__votes:";
 
-function jsonResponse(body, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+function jsonResponse(body, status = 200, headers = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": JSON_CONTENT_TYPE,
+      "cache-control": "no-store",
+      ...headers,
+    },
+  });
+}
+
+function hashString(value) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
+function cachedJsonResponse(request, body, maxAge = API_CACHE_SECONDS) {
+  const json = JSON.stringify(body);
+  const etag = `"${hashString(json)}"`;
+  const cacheControl = `public, max-age=60, s-maxage=${maxAge}`;
+  if (request.headers.get("If-None-Match") === etag) {
+    return new Response(null, {
+      status: 304,
+      headers: { etag, "cache-control": cacheControl },
+    });
+  }
+  return new Response(json, {
+    status: 200,
+    headers: {
+      "content-type": JSON_CONTENT_TYPE,
+      "cache-control": cacheControl,
+      etag,
+    },
+  });
+}
+
+// Serves public GET responses from the local Cloudflare cache. A cache hit
+// never touches KV. The body is built lazily so a hit skips KV entirely.
+async function cachedJson(request, ctx, build, maxAge = API_CACHE_SECONDS) {
+  const cache = typeof caches === "undefined" ? null : caches.default;
+  const cacheKey = cache ? new Request(request.url, { method: "GET" }) : null;
+  if (cache) {
+    try {
+      const hit = await cache.match(cacheKey);
+      if (hit) {
+        const etag = hit.headers.get("etag");
+        if (etag && request.headers.get("If-None-Match") === etag) {
+          return new Response(null, {
+            status: 304,
+            headers: {
+              etag,
+              "cache-control":
+                hit.headers.get("cache-control") || `public, max-age=${maxAge}`,
+            },
+          });
+        }
+        return hit;
+      }
+    } catch (error) {
+      console.warn("Cache read failed:", error);
+    }
+  }
+
+  const body = await build();
+  if (body instanceof Response) return body;
+
+  const response = cachedJsonResponse(request, body, maxAge);
+  if (cache && ctx && typeof ctx.waitUntil === "function") {
+    const cacheResponse = new Response(response.clone().body, {
+      status: response.status,
+      headers: response.headers,
+    });
+    cacheResponse.headers.set("cache-control", `public, max-age=${maxAge}`);
+    ctx.waitUntil(cache.put(cacheKey, cacheResponse).catch(() => {}));
+  }
+  return response;
+}
+
+function purgeApiCache(ctx, request, paths) {
+  const cache = typeof caches === "undefined" ? null : caches.default;
+  if (!cache) return;
+  const origin = new URL(request.url).origin;
+  const work = Promise.all(
+    paths.map((path) =>
+      cache.delete(new Request(`${origin}${path}`, { method: "GET" })).catch(() => {})
+    )
+  );
+  if (ctx && typeof ctx.waitUntil === "function") ctx.waitUntil(work);
+}
+
+function storageError(scope, error) {
+  console.error(
+    `KV ${scope} API failed:`,
+    (error && (error.code || error.message)) || error
+  );
+  return jsonResponse({ error: "Storage temporarily unavailable" }, 503, {
+    "retry-after": "60",
+  });
 }
 
 function cleanText(value, maxLength) {
@@ -251,7 +359,9 @@ function isPlainObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function readKvList(namespace, prefix, limit = 100) {
+// Legacy namespaces store each record under its own key. This scan only runs
+// when the index is missing or older than INDEX_REFRESH_MS.
+async function readLegacyList(namespace, prefix, limit = LEGACY_LIST_LIMIT) {
   const list = await namespace.list({ prefix, limit });
   const records = await Promise.all(
     list.keys.map(async (key) => {
@@ -267,10 +377,73 @@ async function readKvList(namespace, prefix, limit = 100) {
   return records.filter((record) => record !== null);
 }
 
+async function readJson(namespace, key, fallback) {
+  const raw = await namespace.get(key);
+  if (raw === null || raw === undefined) return fallback;
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed === null ? fallback : parsed;
+  } catch {
+    return fallback;
+  }
+}
+
+// The index is a read model for list endpoints. It is refreshed from the
+// per-record keys once per hour so manual KV edits and the operator's sync
+// tools are picked up. If the refresh fails (for example, the daily list
+// quota is exhausted), a stale index is still served instead of a 500.
+async function readIndex(namespace, indexKey, prefix) {
+  let staleRecords = null;
+  const raw = await namespace.get(indexKey);
+  if (raw !== null && raw !== undefined) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.records)) {
+        staleRecords = parsed.records;
+        if (Number(parsed.updatedAt) > Date.now() - INDEX_REFRESH_MS) {
+          return staleRecords;
+        }
+      }
+    } catch {
+      // Fall through to the legacy scan.
+    }
+  }
+
+  try {
+    const records = await readLegacyList(namespace, prefix);
+    await namespace.put(
+      indexKey,
+      JSON.stringify({ updatedAt: Date.now(), records })
+    );
+    return records;
+  } catch (error) {
+    if (staleRecords) {
+      console.warn(
+        `KV index refresh failed for ${indexKey}; serving stale index.`,
+        error
+      );
+      return staleRecords;
+    }
+    throw error;
+  }
+}
+
+async function appendToIndex(namespace, indexKey, prefix, record) {
+  const records = await readIndex(namespace, indexKey, prefix);
+  const existing = records.findIndex((item) => item && item.id === record.id);
+  if (existing >= 0) records[existing] = record;
+  else records.push(record);
+  await namespace.put(
+    indexKey,
+    JSON.stringify({ updatedAt: Date.now(), records })
+  );
+}
+
 const RATE_LIMIT_WINDOW_SECONDS = 600;
 const RATE_LIMIT_MAX_REQUESTS = 5;
-// 評価（高評価/低評価）は1人1票なので、投稿系より緩い上限にする。
-const VOTE_RATE_LIMIT_MAX_REQUESTS = 60;
+
+// KVベースのレート制限は投稿系のみに使う。投票は1票あたりのKV操作を
+// 抑えるため、ここではカウントしない（乱用対策はWAF/Turnstileへ移す）。
 
 async function enforceRateLimit(
   request,
@@ -291,10 +464,11 @@ async function enforceRateLimit(
 }
 
 /* ---------- 評価（高評価 / 低評価） ----------
-   1人1票。KVのキー（接頭辞 + 対象ID + 投票者ID）で重複を防ぎ、
-   集計は同じ接頭辞を一覧して行う。低評価数は一般向けUIでは表示しない。 */
-const QUEST_VOTE_PREFIX = "qv_";
-const PROPOSAL_VOTE_PREFIX = "pv_";
+   1人1票。集計は __tally:* に、投票者ごとの選択は __votes:<section>:<voter> に
+   保持する。以前は list + 全件get で集計していたが、票数に比例してKV読み取りが
+   増えるため、O(1)で読める集計キー方式に変更した。
+   KVには原子的な更新がないため、同時投票では稀に集計がずれる可能性がある。
+   厳密な整合性が必要になったらD1へ移行する。 */
 
 function cleanIdentifier(value, maxLength = 80) {
   if (typeof value !== "string") return "";
@@ -306,54 +480,81 @@ function cleanVoter(value) {
   return value.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
 }
 
-async function readVotes(namespace, prefix, voter = "") {
-  const list = await namespace.list({ prefix, limit: 1000 });
-  const counts = {};
-  const mine = {};
-  await Promise.all(
-    list.keys.map(async (key) => {
-      const raw = await namespace.get(key.name);
-      if (!raw) return;
-      let record;
-      try {
-        record = JSON.parse(raw);
-      } catch {
-        return;
-      }
-      if (!isPlainObject(record) || typeof record.id !== "string") return;
-      const vote = record.vote === "down" ? "down" : "up";
-      const tally = counts[record.id] || (counts[record.id] = { up: 0, down: 0 });
-      tally[vote] += 1;
-      if (voter && record.voter === voter) mine[record.id] = vote;
-    })
-  );
-  return { counts, mine };
+function adjustTally(tally, id, previous, next) {
+  const current = isPlainObject(tally[id]) ? tally[id] : { up: 0, down: 0 };
+  const count = {
+    up: Math.max(0, Number(current.up) || 0),
+    down: Math.max(0, Number(current.down) || 0),
+  };
+  if (previous === "up") count.up = Math.max(0, count.up - 1);
+  if (previous === "down") count.down = Math.max(0, count.down - 1);
+  if (next === "up") count.up += 1;
+  if (next === "down") count.down += 1;
+  if (count.up === 0 && count.down === 0) delete tally[id];
+  else tally[id] = count;
+  return count;
 }
 
-async function writeVote(namespace, prefix, id, voter, vote) {
-  const key = `${prefix}${id}_${voter}`;
-  if (vote === "none") {
-    await namespace.delete(key);
-    return;
+async function readVoteState(namespace, tallyKey, voterSection, voter = "") {
+  const voterKey = voter ? `${VOTER_KEY_PREFIX}${voterSection}:${voter}` : "";
+  const [tallyRaw, voterRaw] = await Promise.all([
+    readJson(namespace, tallyKey, {}),
+    voterKey ? readJson(namespace, voterKey, {}) : Promise.resolve({}),
+  ]);
+  return {
+    counts: isPlainObject(tallyRaw) ? tallyRaw : {},
+    mine: voterKey && isPlainObject(voterRaw) ? voterRaw : {},
+  };
+}
+
+async function applyVote(namespace, tallyKey, voterSection, voter, id, vote) {
+  const next = vote === "none" ? null : vote;
+  const voterKey = `${VOTER_KEY_PREFIX}${voterSection}:${voter}`;
+  const [tallyRaw, voterRaw] = await Promise.all([
+    readJson(namespace, tallyKey, {}),
+    readJson(namespace, voterKey, {}),
+  ]);
+  const tally = isPlainObject(tallyRaw) ? tallyRaw : {};
+  const sectionVotes = isPlainObject(voterRaw) ? { ...voterRaw } : {};
+  const previous = sectionVotes[id] || null;
+
+  if (previous === next) {
+    return {
+      count: isPlainObject(tally[id]) ? tally[id] : { up: 0, down: 0 },
+      myVote: previous,
+    };
   }
-  await namespace.put(key, JSON.stringify({ id, vote, voter, at: Date.now() }));
+
+  const count = adjustTally(tally, id, previous, next);
+  if (next === null) delete sectionVotes[id];
+  else sectionVotes[id] = next;
+
+  await Promise.all([
+    namespace.put(tallyKey, JSON.stringify(tally)),
+    namespace.put(voterKey, JSON.stringify(sectionVotes)),
+  ]);
+
+  return { count, myVote: next };
 }
 
-async function handleVoteApi(request, env, options) {
-  const { namespace, prefix, bucket, idField } = options;
+async function handleVoteApi(request, env, ctx, options) {
+  const { namespace, tallyKey, voterSection, idField } = options;
   const url = new URL(request.url);
   const voter = cleanVoter(url.searchParams.get("voter"));
 
   if (request.method === "GET") {
-    return jsonResponse(await readVotes(namespace, prefix, voter));
+    if (!voter) {
+      return cachedJson(request, ctx, () =>
+        readVoteState(namespace, tallyKey, voterSection)
+      );
+    }
+    return jsonResponse(
+      await readVoteState(namespace, tallyKey, voterSection, voter)
+    );
   }
 
   if (request.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
-  }
-
-  if (await enforceRateLimit(request, namespace, bucket, VOTE_RATE_LIMIT_MAX_REQUESTS)) {
-    return jsonResponse({ error: "Too many requests. Try again later." }, 429);
   }
 
   let body;
@@ -377,29 +578,22 @@ async function handleVoteApi(request, env, options) {
     cleanVoter(request.headers.get("CF-Connecting-IP") || "") ||
     "anonymous";
 
-  await writeVote(namespace, prefix, id, who, vote);
-  const { counts, mine } = await readVotes(namespace, prefix, who);
+  const result = await applyVote(namespace, tallyKey, voterSection, who, id, vote);
+
+  purgeApiCache(
+    ctx,
+    request,
+    voterSection === "quests"
+      ? ["/api/quests/votes"]
+      : ["/api/proposals", "/api/proposals/votes"]
+  );
+
   return jsonResponse({
     success: true,
     id,
-    count: counts[id] || { up: 0, down: 0 },
-    myVote: mine[id] || null,
+    count: result.count,
+    myVote: result.myVote,
   });
-}
-
-// 提案一覧は提案レコードの upvotes を参照するため、集計値を同期しておく。
-async function syncProposalUpvotes(env, proposalId, up) {
-  const raw = await env.PROPOSALS.get(proposalId);
-  if (!raw) return;
-  let record;
-  try {
-    record = JSON.parse(raw);
-  } catch {
-    return;
-  }
-  if (!isPlainObject(record)) return;
-  record.upvotes = Math.max(0, Number.parseInt(up, 10) || 0);
-  await env.PROPOSALS.put(proposalId, JSON.stringify(record));
 }
 
 // Proposal notifications are emailed to the Mifron operations inbox.
@@ -467,21 +661,23 @@ async function sendProposalNotification(env, subject, rows) {
   }
 }
 
-async function handleQuestsApi(request, env) {
+async function handleQuestsApi(request, env, ctx) {
   if (!env.QUESTS) return jsonResponse({ error: "Storage unavailable" }, 503);
   const pathname = new URL(request.url).pathname;
 
   if (pathname === "/api/quests/votes" || pathname === "/api/quests/vote") {
-    return handleVoteApi(request, env, {
+    return handleVoteApi(request, env, ctx, {
       namespace: env.QUESTS,
-      prefix: QUEST_VOTE_PREFIX,
-      bucket: "quest_vote",
+      tallyKey: QUEST_TALLY_KEY,
+      voterSection: "quests",
       idField: "questId",
     });
   }
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.QUESTS, "quest_", 100));
+    return cachedJson(request, ctx, () =>
+      readIndex(env.QUESTS, QUEST_INDEX_KEY, "quest_")
+    );
   }
 
   if (request.method !== "POST") {
@@ -543,6 +739,8 @@ async function handleQuestsApi(request, env) {
   }
 
   await env.QUESTS.put(quest.id, JSON.stringify(quest));
+  await appendToIndex(env.QUESTS, QUEST_INDEX_KEY, "quest_", quest);
+  purgeApiCache(ctx, request, ["/api/quests"]);
 
   const notified = await sendProposalNotification(
     env,
@@ -569,26 +767,34 @@ async function handleQuestsApi(request, env) {
   return jsonResponse({ success: true, id: quest.id, notified }, 201);
 }
 
-async function handleProposalsApi(request, env) {
+async function readProposals(namespace) {
+  const [records, tallyRaw] = await Promise.all([
+    readIndex(namespace, PROPOSAL_INDEX_KEY, "prop_"),
+    readJson(namespace, PROPOSAL_TALLY_KEY, {}),
+  ]);
+  const tally = isPlainObject(tallyRaw) ? tallyRaw : {};
+  return records.map((record) => {
+    const counts = record && tally[record.id];
+    if (!counts) return record;
+    return { ...record, upvotes: Math.max(0, Number(counts.up) || 0) };
+  });
+}
+
+async function handleProposalsApi(request, env, ctx) {
   if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
   const pathname = new URL(request.url).pathname;
 
   if (pathname === "/api/proposals/votes" || pathname === "/api/proposals/vote") {
-    const response = await handleVoteApi(request, env, {
+    return handleVoteApi(request, env, ctx, {
       namespace: env.PROPOSALS,
-      prefix: PROPOSAL_VOTE_PREFIX,
-      bucket: "proposal_vote",
+      tallyKey: PROPOSAL_TALLY_KEY,
+      voterSection: "proposals",
       idField: "proposalId",
     });
-    if (request.method === "POST" && response.status === 200) {
-      const payload = await response.clone().json().catch(() => null);
-      if (payload && payload.id) await syncProposalUpvotes(env, payload.id, payload.count.up);
-    }
-    return response;
   }
 
   if (request.method === "GET") {
-    return jsonResponse(await readKvList(env.PROPOSALS, "prop_", 100));
+    return cachedJson(request, ctx, () => readProposals(env.PROPOSALS));
   }
 
   if (request.method !== "POST") {
@@ -649,6 +855,8 @@ async function handleProposalsApi(request, env) {
   }
 
   await env.PROPOSALS.put(proposal.id, JSON.stringify(proposal));
+  await appendToIndex(env.PROPOSALS, PROPOSAL_INDEX_KEY, "prop_", proposal);
+  purgeApiCache(ctx, request, ["/api/proposals", "/api/proposals/votes"]);
 
   const notified = await sendProposalNotification(
     env,
@@ -673,19 +881,27 @@ async function handleProposalsApi(request, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const host = url.hostname.toLowerCase();
 
     if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) {
-      return handleQuestsApi(request, env);
+      try {
+        return await handleQuestsApi(request, env, ctx);
+      } catch (error) {
+        return storageError("quests", error);
+      }
     }
 
     if (
       url.pathname === "/api/proposals" ||
       url.pathname.startsWith("/api/proposals/")
     ) {
-      return handleProposalsApi(request, env);
+      try {
+        return await handleProposalsApi(request, env, ctx);
+      } catch (error) {
+        return storageError("proposals", error);
+      }
     }
 
     if (PREPARING[host]) {
