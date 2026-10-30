@@ -12,6 +12,67 @@
     "source": "systemd"
   },
   {
+    "id": "build-20261030T162859Z-7544",
+    "date": "2026-10-30T16:28:59Z",
+    "type": "build",
+    "title": "branch-test",
+    "body": [],
+    "commit": "93fd17e",
+    "version": "26.1.2",
+    "source": "build-check"
+  },
+  {
+    "id": "build-20261030T162847Z-2b6a",
+    "date": "2026-10-30T16:28:47Z",
+    "type": "build",
+    "title": "新ビルド検出: 93fd17e をstagingに保存中",
+    "body": [
+      "chg: 93fd17e fix(deploy): build-check notify under set -u (lines array)",
+      "version: 26.1.2-jetchain-20261030 / tests: 117 passed",
+      "jar sha256: 1b2ec31ad91b0fc1… → staging directory",
+      "反映は deploy/promote-jar.sh --confirm で実行します"
+    ],
+    "commit": "93fd17e",
+    "version": "26.1.2-jetchain-20261030",
+    "source": "build-check"
+  },
+  {
+    "id": "build-20261030T162754Z-6942",
+    "date": "2026-10-30T16:27:54Z",
+    "type": "build",
+    "title": "テストビルドイベント",
+    "body": [
+      "tests: 117 passed"
+    ],
+    "commit": "abf40c0",
+    "version": "26.1.2-test",
+    "source": "MifronPlugin"
+  },
+  {
+    "id": "pipeline-20261030T162612Z-09d7",
+    "date": "2026-10-30T16:26:12Z",
+    "type": "pipeline",
+    "title": "パイプライン単位の失敗: mifron-notify-failure.service",
+    "body": [
+      "systemd unit mifron-notify-failure.service failed (mifron-notify-failure)"
+    ],
+    "commit": "",
+    "version": "",
+    "source": "systemd"
+  },
+  {
+    "id": "pipeline-20261030T162404Z-1508",
+    "date": "2026-10-30T16:24:04Z",
+    "type": "pipeline",
+    "title": "パイプライン単位の失敗: mifron-notify-failure.service",
+    "body": [
+      "systemd unit mifron-notify-failure.service failed (mifron-notify-failure)"
+    ],
+    "commit": "",
+    "version": "",
+    "source": "systemd"
+  },
+  {
     "id": "pipeline-20261030T160000Z-pipe",
     "date": "2026-10-30T16:00:00Z",
     "type": "pipeline",
