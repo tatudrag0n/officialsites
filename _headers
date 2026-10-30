@@ -5,3 +5,6 @@
   X-Frame-Options: SAMEORIGIN
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src 'self' https://discord.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=31536000
+
+/mifron/updates/updates.json
+  Cache-Control: public, max-age=300, stale-while-revalidate=120
