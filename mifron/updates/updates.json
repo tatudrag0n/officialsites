@@ -1,5 +1,17 @@
 [
   {
+    "id": "pipeline-20261031T132705Z-f7b4",
+    "date": "2026-10-31T13:27:05Z",
+    "type": "pipeline",
+    "title": "パイプライン単位の失敗: mifron-notify-failure.service",
+    "body": [
+      "systemd unit mifron-notify-failure.service failed (mifron-notify-failure)"
+    ],
+    "commit": "",
+    "version": "",
+    "source": "systemd"
+  },
+  {
     "id": "pipeline-20261030T163005Z-189d",
     "date": "2026-10-30T16:30:05Z",
     "type": "pipeline",
