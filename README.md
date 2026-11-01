@@ -82,6 +82,15 @@ Mifronは「ゲームやデジタルサービスを開発するインディー�
 - Minecraft の説明文は MifronPlugin の実装に合わせて更新されます。変更するときは `minecraft.html` を正本とし、トップページへ説明を書き戻さないでください。
 - 旧トップページのアンカー（`/join`, `/worlds`, `/ffa`, `/economy`, `/shop` など）は `_redirects` で `minecraft.html` の該当セクションへ転送します。
 
+## MifronPluginとの仕様同期
+
+サイトに載せている仕様由来の数値（扇状メニューの項目数・クエスト件数・レリック種数）は、`tatudrag0n/MifronPlugin` のコードと仕様書から生成します。
+
+- `tools/sync-spec.mjs` が MifronPlugin の `src/main/resources/quests.yml`・`docs/SPECIFICATION.md`・`pom.xml` を読み、`mifron/data/spec.json` と `mifron/index.html`・`mifron/minecraft.html` の `<b data-spec="…">` の中身を更新します。
+- `.github/workflows/sync-mifron-spec.yml` が6時間ごと（および手動実行）にスクリプトを回し、差分があれば `chore/sync-mifron-spec` ブランチへ push して PR を作ります。main へ直接 push しないのは、リポジトリ側で main への直 push が拒否される設定だからです。
+- 手元で確認する場合: `MIFRON_PLUGIN_DIR=../MifronPlugin node tools/sync-spec.mjs`。`--check` を付けると差分の有無だけを判定し、乖離があれば exit 1 で終わります。
+- 同期対象を増やすときは、ページ側で `<b data-spec="quests">39件</b>` のように `data-spec` を付けた要素に書いてください。スクリプトはこの要素の中身だけを書き換えます。
+
 ## スタイルシートの構成
 
 Mifronの各ページは、共通デザインシステムを統合した `mifron/assets/styles.css` と、ページ固有の `quests.css` / `proposals.css` / `admin.css` / `store.css` を読み込みます。MCTポータルはルートの `assets/styles.css` を使うため、共通デザインを変更するときは両方のファイルへ反映してください（Mifronサイトは独立して公開できるよう、`mifron/` 配下で完結させています）。

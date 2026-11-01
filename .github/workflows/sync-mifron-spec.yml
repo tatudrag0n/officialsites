@@ -1,0 +1,77 @@
+name: Sync Mifron plugin spec
+
+# MifronPlugin が更新されたら、サイトに載せている仕様由来の数値を追従させる。
+# 直接 main へ push できないリポジトリ設定のため、差分があるときだけ
+# chore/sync-mifron-spec ブランチへ push して PR を作る（人間がマージする）。
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # 6時間ごと（JST 3:00 / 9:00 / 15:00 / 21:00）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-mifron-spec
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Checkout MifronPlugin
+        uses: actions/checkout@v4
+        with:
+          repository: tatudrag0n/MifronPlugin
+          path: .mifron-plugin
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sync spec numbers
+        env:
+          MIFRON_PLUGIN_DIR: ${{ github.workspace }}/.mifron-plugin
+        run: node tools/sync-spec.mjs
+
+      - name: Open or update pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- mifron; then
+            echo 'サイトは最新です。更新なし。'
+            exit 0
+          fi
+
+          branch=chore/sync-mifron-spec
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$branch"
+          git add mifron/data/spec.json mifron/index.html mifron/minecraft.html
+          git commit -m 'chore: MifronPlugin の仕様にサイトの数値を同期'
+          git push --force origin "$branch"
+
+          if gh pr list --head "$branch" --state open --json number -q '.[0].number' | grep -q .; then
+            echo "既存の PR を更新しました: $branch"
+          else
+            gh pr create \
+              --base main \
+              --head "$branch" \
+              --title 'chore: MifronPlugin の仕様にサイトの数値を同期' \
+              --body "$(printf '%s\n' \
+                'MifronPlugin の最新の仕様から、サイトに載せている数値を同期しました。' \
+                '' \
+                '- `mifron/data/spec.json`（プラグインのバージョン・コミット・メニュー項目数・クエスト件数・レリック種数）' \
+                '- `mifron/index.html` / `mifron/minecraft.html` の `<b data-spec="…">` の中身' \
+                '' \
+                '自動生成のため、内容を確認してマージしてください。' \
+                '手元で追従させる場合: `MIFRON_PLUGIN_DIR=../MifronPlugin node tools/sync-spec.mjs`')"
+          fi
