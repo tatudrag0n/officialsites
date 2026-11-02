@@ -90,10 +90,10 @@ function request(path, init = {}) {
   return new Request(`https://mifron.mct-official.com${path}`, init);
 }
 
-function postJson(path, body) {
+function postJson(path, body, headers = {}) {
   return request(path, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -242,7 +242,8 @@ test("提案への投票は up/down/none を O(1) で集計する", async () => 
       records: [{ id: "prop_p1", title: "P1", upvotes: 0 }],
     }),
   });
-  const env = { PROPOSALS: kv };
+  const env = { PROPOSALS: kv, INGAME_KEY: "test-key" };
+  const gameHeaders = { "x-mifron-key": "test-key" };
 
   const up = await call(
     env,
@@ -250,15 +251,15 @@ test("提案への投票は up/down/none を O(1) で集計する", async () => 
       proposalId: "prop_p1",
       vote: "up",
       voter: "v1",
-    })
+    }, gameHeaders)
   );
   assert.equal(up.status, 200);
-  assert.deepEqual(await readJson(up), {
-    success: true,
-    id: "prop_p1",
-    count: { up: 1, down: 0 },
-    myVote: "up",
-  });
+  const upBody = await readJson(up);
+  assert.equal(upBody.success, true);
+  assert.equal(upBody.id, "prop_p1");
+  assert.deepEqual(upBody.count, { up: 1, down: 0 });
+  assert.equal(upBody.myVote, "up");
+  assert.equal(upBody.score, 1);
   assert.equal(JSON.parse(kv.store.get("__tally:proposals")).prop_p1.up, 1);
   assert.deepEqual(JSON.parse(kv.store.get("__votes:proposals:v1")), {
     prop_p1: "up",
@@ -270,7 +271,7 @@ test("提案への投票は up/down/none を O(1) で集計する", async () => 
       proposalId: "prop_p1",
       vote: "up",
       voter: "v1",
-    })
+    }, gameHeaders)
   );
   assert.deepEqual((await readJson(again)).count, { up: 1, down: 0 });
 
@@ -280,16 +281,17 @@ test("提案への投票は up/down/none を O(1) で集計する", async () => 
       proposalId: "prop_p1",
       vote: "down",
       voter: "v1",
-    })
+    }, gameHeaders)
   );
-  assert.deepEqual(await readJson(down), {
-    success: true,
-    id: "prop_p1",
-    count: { up: 0, down: 1 },
-    myVote: "down",
-  });
+  const downBody = await readJson(down);
+  assert.equal(downBody.success, true);
+  assert.deepEqual(downBody.count, { up: 0, down: 1 });
+  assert.equal(downBody.myVote, "down");
 
-  const state = await call(env, request("/api/proposals/votes?voter=v1"));
+  const state = await call(
+    env,
+    request("/api/proposals/votes?voter=v1", { headers: gameHeaders })
+  );
   assert.deepEqual(await readJson(state), {
     counts: { prop_p1: { up: 0, down: 1 } },
     mine: { prop_p1: "down" },
@@ -301,14 +303,12 @@ test("提案への投票は up/down/none を O(1) で集計する", async () => 
       proposalId: "prop_p1",
       vote: "none",
       voter: "v1",
-    })
+    }, gameHeaders)
   );
-  assert.deepEqual(await readJson(none), {
-    success: true,
-    id: "prop_p1",
-    count: { up: 0, down: 0 },
-    myVote: null,
-  });
+  const noneBody = await readJson(none);
+  assert.equal(noneBody.success, true);
+  assert.deepEqual(noneBody.count, { up: 0, down: 0 });
+  assert.equal(noneBody.myVote, null);
   assert.equal(JSON.parse(kv.store.get("__tally:proposals")).prop_p1, undefined);
   assert.deepEqual(JSON.parse(kv.store.get("__votes:proposals:v1")), {});
 });
@@ -320,18 +320,64 @@ test("クエスト投票は提案の集計キーと混ざらない", async () =>
   });
 
   const response = await call(
-    { QUESTS: kv },
+    { QUESTS: kv, INGAME_KEY: "test-key" },
     postJson("/api/quests/vote", {
       questId: "quest_q1",
       vote: "up",
       voter: "v1",
-    })
+    }, { "x-mifron-key": "test-key" })
   );
   assert.equal(response.status, 200);
   assert.deepEqual((await readJson(response)).count, { up: 1, down: 0 });
   assert.ok(kv.store.has("__tally:quests"));
   assert.ok(kv.store.has("__votes:quests:v1"));
   assert.equal(kv.store.has("__tally:proposals"), false);
+});
+
+test("管理APIはトークン必須で、強制承認と監査ログが動く", async () => {
+  useFreshCache();
+  const kv = createKv({
+    "__index:proposals": JSON.stringify({
+      updatedAt: Date.now(),
+      records: [{ id: "prop_p2", title: "P2", status: "open", upvotes: 0 }],
+    }),
+    prop_p2: JSON.stringify({
+      id: "prop_p2",
+      title: "P2",
+      status: "open",
+      upvotes: 0,
+    }),
+  });
+  const env = { PROPOSALS: kv, ADMIN_TOKEN: "secret" };
+  const auth = { authorization: "Bearer secret" };
+
+  assert.equal((await call(env, request("/api/admin/proposals"))).status, 401);
+
+  const list = await call(env, request("/api/admin/proposals", { headers: auth }));
+  assert.equal(list.status, 200);
+  const listBody = await readJson(list);
+  assert.equal(listBody.proposals.length, 1);
+  assert.deepEqual(listBody.thresholds, { minUp: 5, minRatio: 0.6 });
+
+  const blocked = await call(
+    env,
+    postJson("/api/admin/proposals/prop_p2/decision", { action: "approve" }, auth)
+  );
+  assert.equal(blocked.status, 409);
+
+  const forced = await call(
+    env,
+    postJson(
+      "/api/admin/proposals/prop_p2/decision",
+      { action: "forceapprove", note: "test", actor: "A" },
+      auth
+    )
+  );
+  assert.equal(forced.status, 200);
+  const forcedBody = await readJson(forced);
+  assert.equal(forcedBody.proposal.status, "approved");
+  assert.equal(forcedBody.proposal.decision.forced, true);
+  assert.equal(forcedBody.audit[0].action, "forceapprove");
 });
 
 test("GET /api/proposals は tally の upvotes を一覧へ重ねる", async () => {
@@ -350,8 +396,8 @@ test("GET /api/proposals は tally の upvotes を一覧へ重ねる", async () 
   const response = await call({ PROPOSALS: kv }, request("/api/proposals"));
   assert.equal(response.status, 200);
   assert.deepEqual(await readJson(response), [
-    { id: "prop_p1", title: "P1", upvotes: 4 },
-    { id: "prop_p2", title: "P2", upvotes: 7 },
+    { id: "prop_p1", title: "P1", upvotes: 4, downvotes: 2, score: 2 },
+    { id: "prop_p2", title: "P2", upvotes: 7, downvotes: 0, score: 7 },
   ]);
 });
 

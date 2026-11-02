@@ -238,6 +238,14 @@ const PROPOSAL_INDEX_KEY = "__index:proposals";
 const QUEST_TALLY_KEY = "__tally:quests";
 const PROPOSAL_TALLY_KEY = "__tally:proposals";
 const VOTER_KEY_PREFIX = "__votes:";
+const PROPOSAL_AUDIT_KEY = "__audit:proposals";
+const PROPOSAL_AUDIT_LIMIT = 200;
+const VOTER_COOKIE = "mf_voter";
+const VOTER_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+const PROPOSAL_DECISIONS = ["approve", "forceapprove", "reject", "reopen"];
+const DEFAULT_APPROVE_MIN_UP = 5;
+const DEFAULT_APPROVE_MIN_RATIO = 0.6;
+const SITE_ORIGIN = "https://mct-official.com";
 
 function jsonResponse(body, status = 200, headers = {}) {
   return new Response(JSON.stringify(body), {
@@ -537,19 +545,234 @@ async function applyVote(namespace, tallyKey, voterSection, voter, id, vote) {
   return { count, myVote: next };
 }
 
+function timingSafeEqual(a, b) {
+  const encoder = new TextEncoder();
+  const left = encoder.encode(String(a));
+  const right = encoder.encode(String(b));
+  let diff = left.length ^ right.length;
+  const length = Math.max(left.length, right.length);
+  for (let index = 0; index < length; index += 1) {
+    diff |= (left[index] || 0) ^ (right[index] || 0);
+  }
+  return diff === 0;
+}
+
+function randomVoterId() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function parseCookies(request) {
+  const header = request.headers.get("Cookie") || "";
+  const cookies = {};
+  for (const part of header.split(";")) {
+    const separator = part.indexOf("=");
+    if (separator <= 0) continue;
+    const name = part.slice(0, separator).trim();
+    if (!name) continue;
+    cookies[name] = decodeURIComponent(part.slice(separator + 1).trim());
+  }
+  return cookies;
+}
+
+function voterCookieHeader(voter) {
+  return `${VOTER_COOKIE}=${voter}; Path=/; Max-Age=${VOTER_COOKIE_MAX_AGE}; HttpOnly; Secure; SameSite=Lax`;
+}
+
+/* 投票者IDはサーバーが発行する Cookie を正とする。ゲームサーバーからの代理投票だけは
+   X-Mifron-Key が一致したときに限り、クライアント指定のIDを受理する。 */
+function resolveVoter(request, env, requested) {
+  const gameKey = env.INGAME_KEY || "";
+  const provided = request.headers.get("X-Mifron-Key") || "";
+  if (gameKey && provided && timingSafeEqual(gameKey, provided)) {
+    const claimed = cleanVoter(requested);
+    if (claimed) return { voter: claimed, issue: false };
+  }
+  const existing = cleanVoter(parseCookies(request)[VOTER_COOKIE] || "");
+  if (existing) return { voter: existing, issue: false };
+  return { voter: randomVoterId(), issue: true };
+}
+
+function requireAdmin(request, env) {
+  const token = env.ADMIN_TOKEN || "";
+  if (!token) return jsonResponse({ error: "admin disabled" }, 503);
+  const header = request.headers.get("Authorization") || "";
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match || !timingSafeEqual(token, match[1].trim())) {
+    return jsonResponse({ error: "unauthorized" }, 401);
+  }
+  return null;
+}
+
+function proposalPublicUrl(id) {
+  return `${SITE_ORIGIN}/mifron/proposals/detail.html?id=${encodeURIComponent(id)}`;
+}
+
+/* 提案者ごとの票（__votes:proposals:<voter>）を走査して集計を引き直す。
+   投票時は集計キーを差分更新しているため、管理判断の前にはこの再集計を通す。 */
+async function recountProposalVotes(namespace) {
+  const counts = {};
+  let cursor;
+  let scanned = 0;
+  do {
+    const page = await namespace.list({
+      prefix: `${VOTER_KEY_PREFIX}proposals:`,
+      cursor,
+      limit: 1000,
+    });
+    for (const key of page.keys) {
+      if (scanned >= LEGACY_LIST_LIMIT) break;
+      scanned += 1;
+      const record = await readJson(namespace, key.name, null);
+      if (!isPlainObject(record)) continue;
+      for (const [id, vote] of Object.entries(record)) {
+        if (vote !== "up" && vote !== "down") continue;
+        const entry = counts[id] || { up: 0, down: 0 };
+        entry[vote] += 1;
+        counts[id] = entry;
+      }
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor && scanned < LEGACY_LIST_LIMIT);
+  await namespace.put(PROPOSAL_TALLY_KEY, JSON.stringify(counts));
+  return counts;
+}
+
+async function appendProposalAudit(namespace, entry) {
+  const raw = await readJson(namespace, PROPOSAL_AUDIT_KEY, []);
+  const list = Array.isArray(raw) ? raw : [];
+  list.unshift(entry);
+  await namespace.put(
+    PROPOSAL_AUDIT_KEY,
+    JSON.stringify(list.slice(0, PROPOSAL_AUDIT_LIMIT))
+  );
+  return list.slice(0, PROPOSAL_AUDIT_LIMIT);
+}
+
+async function notifyDiscord(env, payload) {
+  const url = env.DISCORD_WEBHOOK_URL || "";
+  if (!url) return false;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      console.warn("discord webhook responded", response.status);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.warn("discord webhook failed", error && error.message);
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const PROPOSAL_TYPE_LABELS = {
+  feature: "機能提案",
+  bug: "バグ報告",
+  quest: "クエスト提案",
+  deletion: "削除提案",
+  other: "その他",
+};
+
+function proposalDiscordCard(proposal) {
+  const url = proposalPublicUrl(proposal.id);
+  return {
+    username: "Mifron 提案",
+    embeds: [
+      {
+        title: `📝 ${proposal.title}`,
+        description: (proposal.description || "").slice(0, 200),
+        url,
+        color: 0x5865f2,
+        fields: [
+          { name: "種別", value: PROPOSAL_TYPE_LABELS[proposal.type] || proposal.type, inline: true },
+          { name: "優先度", value: proposal.priority || "medium", inline: true },
+          { name: "提案者", value: proposal.author || "匿名", inline: true },
+        ],
+        footer: { text: "正式な票はサイトで1人1票。Discord は議論の場です。" },
+        timestamp: proposal.createdAt,
+      },
+    ],
+    components: [
+      {
+        type: 1,
+        components: [
+          { type: 2, style: 5, label: "サイトで投票する", url },
+        ],
+      },
+    ],
+  };
+}
+
+const DECISION_STYLES = {
+  approve: { label: "承認", color: 0x2ecc71 },
+  forceapprove: { label: "管理者による強制承認", color: 0xe67e22 },
+  reject: { label: "却下", color: 0xe74c3c },
+  reopen: { label: "審査に戻す", color: 0x95a5a6 },
+};
+
+function decisionDiscordCard(proposal, decision) {
+  const style = DECISION_STYLES[decision.action] || DECISION_STYLES.reopen;
+  const total = decision.up + decision.down;
+  const ratio = total ? Math.round((decision.up / total) * 100) : 0;
+  const url = proposalPublicUrl(proposal.id);
+  return {
+    username: "Mifron 提案",
+    embeds: [
+      {
+        title: `【${style.label}】${proposal.title}`,
+        url,
+        color: style.color,
+        fields: [
+          { name: "賛成 / 反対", value: `${decision.up} / ${decision.down}（賛成率 ${ratio}%）`, inline: true },
+          { name: "判断", value: decision.actor || "管理者", inline: true },
+          { name: "理由", value: (decision.note || "（記載なし）").slice(0, 500) },
+        ],
+        footer: { text: "サイトの提案ページから詳細を確認できます。" },
+        timestamp: decision.decidedAt,
+      },
+    ],
+    components: [
+      {
+        type: 1,
+        components: [{ type: 2, style: 5, label: "提案を見る", url }],
+      },
+    ],
+  };
+}
+
 async function handleVoteApi(request, env, ctx, options) {
   const { namespace, tallyKey, voterSection, idField } = options;
   const url = new URL(request.url);
-  const voter = cleanVoter(url.searchParams.get("voter"));
+  const requestedVoter = cleanVoter(url.searchParams.get("voter"));
+  const cookieVoter = cleanVoter(parseCookies(request)[VOTER_COOKIE] || "");
 
   if (request.method === "GET") {
-    if (!voter) {
-      return cachedJson(request, ctx, () =>
-        readVoteState(namespace, tallyKey, voterSection)
+    const keyed = Boolean(env.INGAME_KEY) &&
+      timingSafeEqual(env.INGAME_KEY, request.headers.get("X-Mifron-Key") || "");
+    const who = keyed ? requestedVoter : cookieVoter;
+    if (who) {
+      return jsonResponse(
+        await readVoteState(namespace, tallyKey, voterSection, who)
       );
     }
-    return jsonResponse(
-      await readVoteState(namespace, tallyKey, voterSection, voter)
+    if (requestedVoter) {
+      // 旧クライアント（?voter=）には集計だけを返す。以後の票はサーバー発行IDで扱う。
+      return jsonResponse(
+        await readVoteState(namespace, tallyKey, voterSection)
+      );
+    }
+    return cachedJson(request, ctx, () =>
+      readVoteState(namespace, tallyKey, voterSection)
     );
   }
 
@@ -571,14 +794,22 @@ async function handleVoteApi(request, env, ctx, options) {
   const vote = ["up", "down", "none"].includes(body.vote) ? body.vote : "";
   if (!vote) return jsonResponse({ error: "Invalid vote" }, 400);
 
-  // ログイン機構がないため、端末ごとの匿名IDを投票者IDとして使う。
-  const who =
-    cleanVoter(body.voter) ||
-    voter ||
-    cleanVoter(request.headers.get("CF-Connecting-IP") || "") ||
-    "anonymous";
+  // 1人1票を担保するため、投票者IDはサーバー発行の Cookie を正とする。
+  // ゲームサーバーが代理投票する場合だけ X-Mifron-Key で上書きを許可する。
+  const resolved = resolveVoter(request, env, body.voter || requestedVoter);
 
-  const result = await applyVote(namespace, tallyKey, voterSection, who, id, vote);
+  if (await enforceRateLimit(request, namespace, `${voterSection}-votes`, 60)) {
+    return jsonResponse({ error: "Too many requests. Try again later." }, 429);
+  }
+
+  const result = await applyVote(
+    namespace,
+    tallyKey,
+    voterSection,
+    resolved.voter,
+    id,
+    vote
+  );
 
   purgeApiCache(
     ctx,
@@ -588,12 +819,20 @@ async function handleVoteApi(request, env, ctx, options) {
       : ["/api/proposals", "/api/proposals/votes"]
   );
 
-  return jsonResponse({
-    success: true,
-    id,
-    count: result.count,
-    myVote: result.myVote,
-  });
+  const headers = resolved.issue
+    ? { "set-cookie": voterCookieHeader(resolved.voter) }
+    : {};
+  return jsonResponse(
+    {
+      success: true,
+      id,
+      count: result.count,
+      myVote: result.myVote,
+      score: Math.max(0, Number(result.count.up) || 0) - Math.max(0, Number(result.count.down) || 0),
+    },
+    200,
+    headers
+  );
 }
 
 // Proposal notifications are emailed to the Mifron operations inbox.
@@ -774,10 +1013,129 @@ async function readProposals(namespace) {
   ]);
   const tally = isPlainObject(tallyRaw) ? tallyRaw : {};
   return records.map((record) => {
-    const counts = record && tally[record.id];
-    if (!counts) return record;
-    return { ...record, upvotes: Math.max(0, Number(counts.up) || 0) };
+    if (!isPlainObject(record)) return record;
+    const counts = isPlainObject(tally[record.id]) ? tally[record.id] : null;
+    // 集計キーに載っていない提案は、レコード側の値（旧データ）をそのまま使う。
+    const up = counts
+      ? Math.max(0, Number(counts.up) || 0)
+      : Math.max(0, Number(record.upvotes) || 0);
+    const down = counts
+      ? Math.max(0, Number(counts.down) || 0)
+      : Math.max(0, Number(record.downvotes) || 0);
+    return { ...record, upvotes: up, downvotes: down, score: up - down };
   });
+}
+
+async function handleAdminProposalsApi(request, env, ctx) {
+  if (!env.PROPOSALS) return jsonResponse({ error: "Storage unavailable" }, 503);
+  const denied = requireAdmin(request, env);
+  if (denied) return denied;
+
+  const pathname = new URL(request.url).pathname;
+  const decisionMatch = pathname.match(
+    /^\/api\/admin\/proposals\/([A-Za-z0-9_.:-]{1,80})\/decision$/
+  );
+
+  if (request.method === "GET" && pathname === "/api/admin/proposals") {
+    const [proposals, auditRaw] = await Promise.all([
+      readProposals(env.PROPOSALS),
+      readJson(env.PROPOSALS, PROPOSAL_AUDIT_KEY, []),
+    ]);
+    return jsonResponse({
+      proposals,
+      audit: Array.isArray(auditRaw) ? auditRaw : [],
+      thresholds: {
+        minUp: Number(env.APPROVE_MIN_UP || DEFAULT_APPROVE_MIN_UP),
+        minRatio: Number(env.APPROVE_MIN_RATIO || DEFAULT_APPROVE_MIN_RATIO),
+      },
+    });
+  }
+
+  if (request.method === "POST" && decisionMatch) {
+    const id = decisionMatch[1];
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return jsonResponse({ error: "Invalid JSON body" }, 400);
+    }
+    if (!isPlainObject(body)) return jsonResponse({ error: "Invalid body" }, 400);
+
+    const action = typeof body.action === "string" ? body.action.trim().toLowerCase() : "";
+    if (!PROPOSAL_DECISIONS.includes(action)) {
+      return jsonResponse({ error: "Invalid action" }, 400);
+    }
+    const actor = cleanText(body.actor, 64) || "管理者";
+    const note = cleanText(body.note, 500);
+
+    const record = await readJson(env.PROPOSALS, id, null);
+    if (!isPlainObject(record)) return jsonResponse({ error: "Not found" }, 404);
+
+    // 判断の前に票を引き直し、差分更新のずれを持ち込まない。
+    const tally = await recountProposalVotes(env.PROPOSALS);
+    const counts = isPlainObject(tally[id]) ? tally[id] : { up: 0, down: 0 };
+    const up = Math.max(0, Number(counts.up) || 0);
+    const down = Math.max(0, Number(counts.down) || 0);
+    const total = up + down;
+    const ratio = total ? up / total : 0;
+    const minUp = Number(env.APPROVE_MIN_UP || DEFAULT_APPROVE_MIN_UP);
+    const minRatio = Number(env.APPROVE_MIN_RATIO || DEFAULT_APPROVE_MIN_RATIO);
+
+    if (action === "approve" && (up < minUp || ratio < minRatio)) {
+      return jsonResponse(
+        {
+          error: "approval threshold not met",
+          up,
+          down,
+          ratio,
+          required: { minUp, minRatio },
+        },
+        409
+      );
+    }
+
+    const status =
+      action === "reject" ? "rejected" : action === "reopen" ? "open" : "approved";
+    const decidedAt = new Date().toISOString();
+    const decision = {
+      status,
+      action,
+      actor,
+      note,
+      forced: action === "forceapprove",
+      up,
+      down,
+      ratio,
+      decidedAt,
+    };
+    const updated = {
+      ...record,
+      status,
+      upvotes: up,
+      downvotes: down,
+      score: up - down,
+      decision,
+    };
+
+    await env.PROPOSALS.put(id, JSON.stringify(updated));
+    const audit = await appendProposalAudit(env.PROPOSALS, {
+      id,
+      title: record.title,
+      action,
+      actor,
+      note,
+      up,
+      down,
+      forced: decision.forced,
+      at: decidedAt,
+    });
+    purgeApiCache(ctx, request, ["/api/proposals", "/api/proposals/votes"]);
+    await notifyDiscord(env, decisionDiscordCard(record, decision));
+
+    return jsonResponse({ success: true, proposal: updated, audit });
+  }
+
+  return jsonResponse({ error: "Method not allowed" }, 405);
 }
 
 async function handleProposalsApi(request, env, ctx) {
@@ -790,6 +1148,31 @@ async function handleProposalsApi(request, env, ctx) {
       tallyKey: PROPOSAL_TALLY_KEY,
       voterSection: "proposals",
       idField: "proposalId",
+    });
+  }
+
+  const detailMatch = pathname.match(/^\/api\/proposals\/([A-Za-z0-9_.:-]{1,80})$/);
+  if (detailMatch && request.method === "GET") {
+    const record = await readJson(env.PROPOSALS, detailMatch[1], null);
+    if (!isPlainObject(record)) {
+      return jsonResponse({ error: "Not found" }, 404);
+    }
+    const voter = cleanVoter(parseCookies(request)[VOTER_COOKIE] || "");
+    const state = await readVoteState(
+      env.PROPOSALS,
+      PROPOSAL_TALLY_KEY,
+      "proposals",
+      voter
+    );
+    const counts = isPlainObject(state.counts[record.id]) ? state.counts[record.id] : null;
+    const up = Math.max(0, Number(counts && counts.up) || 0);
+    const down = Math.max(0, Number(counts && counts.down) || 0);
+    return jsonResponse({
+      ...record,
+      upvotes: up,
+      downvotes: down,
+      score: up - down,
+      myVote: state.mine[record.id] || null,
     });
   }
 
@@ -873,11 +1256,20 @@ async function handleProposalsApi(request, env, ctx) {
       ["備考", proposal.notes],
       ["ID", proposal.id],
       ["受信日時", proposal.createdAt],
-      ["詳細", `https://mifron.mct-official.com/proposals/detail.html?id=${proposal.id}`],
+      ["詳細", proposalPublicUrl(proposal.id)],
     ]
   );
 
-  return jsonResponse({ success: true, id: proposal.id, notified }, 201);
+  const discordPosted = await notifyDiscord(env, proposalDiscordCard(proposal));
+  if (discordPosted) {
+    proposal.discordPostedAt = new Date().toISOString();
+    await env.PROPOSALS.put(proposal.id, JSON.stringify(proposal));
+  }
+
+  return jsonResponse(
+    { success: true, id: proposal.id, notified, discord: discordPosted },
+    201
+  );
 }
 
 export default {
@@ -890,6 +1282,17 @@ export default {
         return await handleQuestsApi(request, env, ctx);
       } catch (error) {
         return storageError("quests", error);
+      }
+    }
+
+    if (
+      url.pathname === "/api/admin/proposals" ||
+      url.pathname.startsWith("/api/admin/proposals/")
+    ) {
+      try {
+        return await handleAdminProposalsApi(request, env, ctx);
+      } catch (error) {
+        return storageError("admin-proposals", error);
       }
     }
 
