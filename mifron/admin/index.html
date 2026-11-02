@@ -43,6 +43,36 @@
       </div>
     </section>
 
+    <section class="section" id="proposalAdmin">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">管理者</p>
+            <h2>提案の承認・強制承認</h2>
+          </div>
+          <p>サイトに届いた提案を、投票数を見ながら承認・却下できます。操作には管理者トークンが必要です。</p>
+        </div>
+        <div class="proposal-admin-auth">
+          <label class="proposal-admin-label" for="adminToken">管理者トークン</label>
+          <input id="adminToken" type="password" autocomplete="current-password" placeholder="ADMIN_TOKEN を入力">
+          <button type="button" class="btn primary" id="adminConnect">接続</button>
+          <button type="button" class="btn" id="adminDisconnect" hidden>切断</button>
+        </div>
+        <p class="vote-note" id="adminStatus" role="status" aria-live="polite"></p>
+        <div class="review-grid" id="proposalList">
+          <p class="review-loading">トークンを入力して接続してください。</p>
+        </div>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">履歴</p>
+            <h2>判断の記録</h2>
+          </div>
+          <p>承認・強制承認・却下・差し戻しの履歴です（新しい順、最大200件）。</p>
+        </div>
+        <ol class="proposal-audit" id="auditList"></ol>
+      </div>
+    </section>
+
     <section class="section" id="deletion">
       <div class="shell">
         <div class="section-head">

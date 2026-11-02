@@ -52,6 +52,48 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 - 要注意: 高評価比率 30% 以下（3票以上）
 - 削除提案の優先比率: 提案への高評価 ÷（提案への高評価 ＋ 対象クエストの低評価）
 
+## 提案の投票・承認・Discord連携
+
+提案ページ（`/mifron/proposals/detail.html?id=...`）の「賛成 / 反対」で投票します。**1人1票**で、同じボタンをもう一度押すと取り消し、反対側を押すと切り替わります。
+
+- 投票者ID: サーバーが発行する `mf_voter` Cookie（HttpOnly / Secure / SameSite=Lax、1年）を正とします。クライアントが `voter` を送っても、`X-Mifron-Key` が `INGAME_KEY` と一致する場合（ゲームサーバーからの代理投票）以外は無視されます。
+- 集計: 差分更新の集計キー（`__tally:proposals`）を表示に使い、**承認判断の直前**には `__votes:proposals:*` から再集計して数値を確定させます。
+- 既存の `localStorage` 投票者IDからの移行はしていません（2026-11 時点で票が0だったため）。Cookie 導入前の票は「自分の票」として表示されません。
+
+### 管理者による承認・強制承認
+
+`/mifron/admin/` の「提案の承認・強制承認」で、管理者トークン（`ADMIN_TOKEN`）を入れて接続すると、提案ごとに次の操作ができます。
+
+| 操作 | 条件 | 結果 |
+|---|---|---|
+| 承認 | 賛成 `APPROVE_MIN_UP`（既定5）以上 **かつ** 賛成率 `APPROVE_MIN_RATIO`（既定0.6）以上 | `status: approved` |
+| 強制承認 | 条件なし（管理者判断） | `status: approved` / `forced: true` |
+| 却下 | 条件なし | `status: rejected` |
+| 差し戻し | 条件なし | `status: open` |
+
+- 条件を満たさない「承認」は **409** を返し、不足している数値を画面に表示します（そのまま強制承認へ進めます）。
+- 操作はすべて `__audit:proposals` に記録します（誰が・いつ・理由・その時点の票数。最大200件）。
+- トークンはブラウザの `sessionStorage` にだけ保持し、URLやHTMLには残しません。未設定のあいだ `/api/admin/*` は **503** を返します。
+
+### Discord への通知
+
+`DISCORD_WEBHOOK_URL` を設定すると、次のタイミングで Webhook へ投稿します（未設定なら通知しないだけでAPIは通常どおり動作します）。
+
+- 新規提案: タイトル・種別・優先度・提案者・リンクボタン「サイトで投票する」
+- 承認 / 強制承認 / 却下 / 差し戻し: 色分けした埋め込みに賛成・反対・賛成率・判断者・理由
+
+Webhook は Discord の「チャンネル設定 → 連携サービス → ウェブフック」で作成し、URL を `npx wrangler secret put DISCORD_WEBHOOK_URL` で登録してください。**正式な票はサイト（とゲーム内）**で、Discord は議論と告知の場です（リアクションを票にするには Bot が必要なため、現状は非対応）。
+
+### 本番適用に必要な Secret
+
+```
+npx wrangler secret put ADMIN_TOKEN          # 管理画面・/api/admin/*
+npx wrangler secret put DISCORD_WEBHOOK_URL  # Discord 通知
+npx wrangler secret put INGAME_KEY           # ゲームサーバーからの代理投票（任意）
+```
+
+`APPROVE_MIN_UP` / `APPROVE_MIN_RATIO` は任意（未設定なら既定値）。ローカル確認は `.dev.vars`（gitignore 済み）に同じ名前で書きます。
+
 ## APIとKVの構成
 
 公開APIは `src/index.js` のWorkerが返します。Cloudflare KVの無料枠は list 1,000回/日と少ないため、一覧取得で `list` を繰り返さない構成にしています。

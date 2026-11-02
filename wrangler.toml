@@ -26,3 +26,17 @@ id = "6669782f077c4c699aad3eff402cc8da"
 #   npx wrangler email sending enable mct-official.com
 [[send_email]]
 name = "EMAIL"
+
+# Secrets（値はここに書かない。`npx wrangler secret put <NAME>` で設定する）
+#   ADMIN_TOKEN            サイト管理画面と /api/admin/* の Bearer トークン。
+#                          未設定のあいだ /api/admin/* は 503 を返す（安全側）。
+#   DISCORD_WEBHOOK_URL    提案の投稿・判断を Discord へ通知する Webhook。
+#                          未設定なら通知しないだけで、API は通常どおり動く。
+#   INGAME_KEY             ゲームサーバーが代理投票するときの X-Mifron-Key。
+#                          未設定ならクライアント指定の voter は無視される。
+# 任意のシークレット（未設定なら既定値）
+#   APPROVE_MIN_UP         承認に必要な賛成数（既定 5）
+#   APPROVE_MIN_RATIO      承認に必要な賛成率（既定 0.6）
+#   PROPOSAL_NOTIFY_TO     提案メールの宛先
+#   PROPOSAL_NOTIFY_FROM   提案メールの送信元
+
