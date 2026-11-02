@@ -653,10 +653,14 @@ async function appendProposalAudit(namespace, entry) {
 async function notifyDiscord(env, payload) {
   const url = env.DISCORD_WEBHOOK_URL || "";
   if (!url) return false;
+  // リンクボタン（components）を添付するには with_components が必要。
+  const endpoint = url.includes("?")
+    ? `${url}&with_components=true`
+    : `${url}?with_components=true`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const response = await fetch(url, {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
