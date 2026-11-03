@@ -224,11 +224,19 @@
           (tags ? '<section class="proposal-section"><h3>タグ</h3><div class="tag-list">' + tags + '</div></section>' : '') +
           (proposal.notes ? '<section class="proposal-section"><h3>追加情報</h3><p class="proposal-body">' + esc(proposal.notes).replace(/\n/g, '<br>') + '</p></section>' : '') +
           '<section class="proposal-section proposal-vote">' +
-            '<h3>この提案を支持する</h3>' +
-            '<p>賛成なら高評価を送れます。1端末につき1票で、もう一度押すと取り消せます。</p>' +
-            '<button type="button" class="btn primary" data-vote aria-pressed="false">' +
-              '<span aria-hidden="true">▲</span> 高評価（<span data-vote-count>' + esc(proposal.upvotes || 0) + '</span>）' +
-            '</button>' +
+            '<h3>この提案に投票する</h3>' +
+            '<p>賛成・反対を1人1票で投票できます。同じボタンをもう一度押すと取り消せます。</p>' +
+            '<div class="vote-actions">' +
+              '<button type="button" class="btn primary" data-vote="up" aria-pressed="false">' +
+                '<span aria-hidden="true">▲</span> 賛成（<span data-vote-up>' + esc(proposal.upvotes || 0) + '</span>）' +
+              '</button>' +
+              '<button type="button" class="btn" data-vote="down" aria-pressed="false">' +
+                '<span aria-hidden="true">▼</span> 反対（<span data-vote-down>' + esc(proposal.downvotes || 0) + '</span>）' +
+              '</button>' +
+            '</div>' +
+            '<p class="vote-score">スコア <strong data-vote-score>' +
+              esc((Number(proposal.upvotes) || 0) - (Number(proposal.downvotes) || 0)) +
+            '</strong>（賛成 <span data-vote-up-total>' + esc(proposal.upvotes || 0) + '</span> / 反対 <span data-vote-down-total>' + esc(proposal.downvotes || 0) + '</span>）</p>' +
             '<p class="vote-note" data-vote-note hidden role="status" aria-live="polite"></p>' +
           '</section>' +
           '<footer class="proposal-detail-footer">' +
@@ -237,11 +245,16 @@
           '</footer>' +
         '</article>';
 
-      var voteBtn = container.querySelector('[data-vote]');
+      var voteButtons = container.querySelectorAll('[data-vote]');
       var voteNote = container.querySelector('[data-vote-note]');
-      var voteCount = container.querySelector('[data-vote-count]');
-      var voter = voterId();
-      var voted = false;
+      var upSlots = container.querySelectorAll('[data-vote-up], [data-vote-up-total]');
+      var downSlots = container.querySelectorAll('[data-vote-down], [data-vote-down-total]');
+      var scoreSlot = container.querySelector('[data-vote-score]');
+      var myVote = null;
+      var counts = {
+        up: Number(proposal.upvotes) || 0,
+        down: Number(proposal.downvotes) || 0
+      };
 
       function setVoteNote(text, isError) {
         if (!voteNote) return;
@@ -250,52 +263,78 @@
         voteNote.textContent = text;
       }
 
-      function paintVote() {
-        if (!voteBtn) return;
-        voteBtn.classList.toggle('is-active', voted);
-        voteBtn.setAttribute('aria-pressed', voted ? 'true' : 'false');
+      function each(list, fn) {
+        Array.prototype.forEach.call(list, fn);
       }
 
-      if (voteBtn) {
-        fetch('/api/proposals/votes' + (voter ? '?voter=' + encodeURIComponent(voter) : ''), {
-          headers: { Accept: 'application/json' }
-        })
-          .then(function (response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
-          })
-          .then(function (data) {
-            var tally = data && data.counts && data.counts[proposal.id];
-            if (tally && voteCount) voteCount.textContent = String(tally.up);
-            voted = !!(data && data.mine && data.mine[proposal.id]);
-            paintVote();
-          })
-          .catch(function () { /* 集計が取得できない場合は現在の値を表示 */ });
+      function paintVote() {
+        each(voteButtons, function (button) {
+          var active = button.getAttribute('data-vote') === myVote;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        each(upSlots, function (slot) { slot.textContent = String(counts.up); });
+        each(downSlots, function (slot) { slot.textContent = String(counts.down); });
+        if (scoreSlot) scoreSlot.textContent = String(counts.up - counts.down);
+      }
 
-        voteBtn.addEventListener('click', function () {
-          voteBtn.disabled = true;
+      paintVote();
+
+      fetch('/api/proposals/' + encodeURIComponent(proposal.id), {
+        headers: { Accept: 'application/json' }
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then(function (data) {
+          counts.up = Number(data.upvotes) || 0;
+          counts.down = Number(data.downvotes) || 0;
+          myVote = data.myVote || null;
+          paintVote();
+        })
+        .catch(function () { /* 単体取得に失敗したら一覧の値のまま表示する */ });
+
+      each(voteButtons, function (button) {
+        button.addEventListener('click', function () {
+          var choice = button.getAttribute('data-vote');
+          var next = myVote === choice ? 'none' : choice;
+          each(voteButtons, function (other) { other.disabled = true; });
           setVoteNote('送信中…', false);
           fetch('/api/proposals/vote', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proposalId: proposal.id, vote: voted ? 'none' : 'up', voter: voter })
+            body: JSON.stringify({ proposalId: proposal.id, vote: next })
           })
             .then(function (response) {
               if (!response.ok) throw new Error('HTTP ' + response.status);
               return response.json();
             })
             .then(function (data) {
-              voted = !!(data && data.myVote);
-              if (voteCount) voteCount.textContent = String((data && data.count && data.count.up) || 0);
+              if (data && data.count) {
+                counts.up = Number(data.count.up) || 0;
+                counts.down = Number(data.count.down) || 0;
+              }
+              myVote = data && data.myVote ? data.myVote : null;
               paintVote();
-              setVoteNote(voted ? '高評価を記録しました。' : '高評価を取り消しました。', false);
+              setVoteNote(
+                next === 'up'
+                  ? '賛成票を記録しました。'
+                  : next === 'down'
+                    ? '反対票を記録しました。'
+                    : '投票を取り消しました。',
+                false
+              );
             })
             .catch(function () {
               setVoteNote('送信できませんでした。時間をおいて再試行してください。', true);
             })
-            .then(function () { voteBtn.disabled = false; });
+            .then(function () {
+              each(voteButtons, function (other) { other.disabled = false; });
+            });
         });
-      }
+      });
     }
 
     if (!id) { render(null); return; }

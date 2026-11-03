@@ -255,3 +255,227 @@
     init();
   }
 })();
+
+/* 提案の承認・強制承認（管理者トークン認証）
+   - トークンは sessionStorage に保持し、URL や DOM には残さない
+   - 一覧は GET /api/admin/proposals、判断は POST /api/admin/proposals/<id>/decision
+   外部ライブラリは使わない（CSP: script-src 'self'）。 */
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'mifron-admin-token';
+  var listEl = document.getElementById('proposalList');
+  if (!listEl) return;
+
+  var tokenInput = document.getElementById('adminToken');
+  var connectBtn = document.getElementById('adminConnect');
+  var disconnectBtn = document.getElementById('adminDisconnect');
+  var statusEl = document.getElementById('adminStatus');
+  var auditEl = document.getElementById('auditList');
+  var thresholds = { minUp: 5, minRatio: 0.6 };
+  var proposals = [];
+
+  var STATUS_LABELS = { open: '審査中', approved: '承認済み', rejected: '却下' };
+  var ACTION_LABELS = { approve: '承認', forceapprove: '強制承認', reject: '却下', reopen: '差し戻し' };
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function setStatus(text, isError) {
+    if (!statusEl) return;
+    statusEl.textContent = text || '';
+    statusEl.classList.toggle('is-error', !!isError);
+  }
+
+  function currentToken() {
+    return (sessionStorage.getItem(STORAGE_KEY) || '').trim();
+  }
+
+  function headers() {
+    return {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + currentToken()
+    };
+  }
+
+  function ratioText(item) {
+    var total = (Number(item.upvotes) || 0) + (Number(item.downvotes) || 0);
+    if (!total) return '0%';
+    return Math.round(((Number(item.upvotes) || 0) / total) * 100) + '%';
+  }
+
+  function render() {
+    if (!proposals.length) {
+      listEl.innerHTML = '<p class="review-loading">提案はまだありません。</p>';
+      return;
+    }
+    listEl.innerHTML = proposals
+      .map(function (item) {
+        var up = Number(item.upvotes) || 0;
+        var down = Number(item.downvotes) || 0;
+        var total = up + down;
+        var reachable = up >= thresholds.minUp && (total ? up / total : 0) >= thresholds.minRatio;
+        var status = item.status || 'open';
+        return (
+          '<article class="proposal-admin-card" data-id="' + esc(item.id) + '">' +
+            '<div class="proposal-admin-meta">' +
+              '<span class="proposal-admin-badge is-' + esc(status) + '">' + esc(STATUS_LABELS[status] || status) + '</span>' +
+              '<span>賛成 ' + up + ' / 反対 ' + down + '（' + ratioText(item) + '）</span>' +
+              '<span>承認条件 ' + (reachable ? '充足' : '未達') + '</span>' +
+              '<span>' + esc(item.type || 'feature') + ' / ' + esc(item.priority || 'medium') + '</span>' +
+            '</div>' +
+            '<h3>' + esc(item.title) + '</h3>' +
+            '<p class="proposal-admin-meta">' + esc((item.description || '').slice(0, 240)) + '</p>' +
+            '<p class="proposal-admin-meta"><a href="../proposals/detail.html?id=' + encodeURIComponent(item.id) + '">提案ページを開く</a></p>' +
+            '<div class="proposal-admin-actions">' +
+              '<input class="proposal-note" data-note placeholder="理由（任意）" maxlength="500">' +
+              '<input data-actor placeholder="判断者（任意）" maxlength="64" value="管理者">' +
+              '<button type="button" class="btn primary" data-action="approve">承認</button>' +
+              '<button type="button" class="btn" data-action="forceapprove">強制承認</button>' +
+              '<button type="button" class="btn" data-action="reject">却下</button>' +
+              '<button type="button" class="btn" data-action="reopen">差し戻し</button>' +
+            '</div>' +
+          '</article>'
+        );
+      })
+      .join('');
+  }
+
+  function renderAudit(audit) {
+    if (!auditEl) return;
+    if (!audit || !audit.length) {
+      auditEl.innerHTML = '<li class="review-loading">まだ判断の記録はありません。</li>';
+      return;
+    }
+    auditEl.innerHTML = audit
+      .map(function (entry) {
+        return (
+          '<li><strong>' + esc(ACTION_LABELS[entry.action] || entry.action) + '</strong> ' +
+            esc(entry.title || entry.id) +
+            '（賛成 ' + (entry.up || 0) + ' / 反対 ' + (entry.down || 0) + '）' +
+            ' / ' + esc(entry.actor || '管理者') +
+            (entry.note ? ' — ' + esc(entry.note) : '') +
+            '<time>' + esc(entry.at || '') + '</time></li>'
+        );
+      })
+      .join('');
+  }
+
+  function load() {
+    if (!currentToken()) {
+      setStatus('トークンを入力してください。', true);
+      return;
+    }
+    setStatus('読み込み中…', false);
+    fetch('/api/admin/proposals', { headers: headers() })
+      .then(function (response) {
+        if (response.status === 401) throw new Error('トークンが違います。');
+        if (response.status === 503) throw new Error('管理者機能が未有効です（ADMIN_TOKEN が未設定）。');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        proposals = Array.isArray(data.proposals) ? data.proposals : [];
+        if (data.thresholds) thresholds = data.thresholds;
+        render();
+        renderAudit(data.audit);
+        setStatus(proposals.length + '件の提案を読み込みました。', false);
+        if (disconnectBtn) disconnectBtn.hidden = false;
+      })
+      .catch(function (error) {
+        setStatus(error.message || '読み込みに失敗しました。', true);
+      });
+  }
+
+  function decide(card, action) {
+    var id = card.getAttribute('data-id');
+    var noteField = card.querySelector('[data-note]');
+    var actorField = card.querySelector('[data-actor]');
+    var buttons = card.querySelectorAll('[data-action]');
+    Array.prototype.forEach.call(buttons, function (button) { button.disabled = true; });
+    setStatus('送信中…', false);
+    fetch('/api/admin/proposals/' + encodeURIComponent(id) + '/decision', {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({
+        action: action,
+        note: noteField ? noteField.value : '',
+        actor: actorField ? actorField.value : '管理者'
+      })
+    })
+      .then(function (response) {
+        return response.json().then(function (body) { return { status: response.status, body: body }; });
+      })
+      .then(function (result) {
+        var body = result.body || {};
+        if (result.status === 409) {
+          var required = body.required || thresholds;
+          setStatus(
+            '承認条件を満たしていません（賛成 ' + (body.up || 0) + ' / 必要 ' + (required.minUp || 5) +
+              '、賛成率 ' + Math.round((body.ratio || 0) * 100) + '%）。強制承認を使えます。',
+            true
+          );
+        } else if (result.status >= 400) {
+          setStatus(body.error || 'HTTP ' + result.status, true);
+        } else {
+          setStatus((ACTION_LABELS[action] || action) + 'しました。', false);
+          if (body.audit) renderAudit(body.audit);
+        }
+        return load();
+      })
+      .catch(function () { setStatus('送信に失敗しました。', true); })
+      .then(function () {
+        Array.prototype.forEach.call(buttons, function (button) { button.disabled = false; });
+      });
+  }
+
+  if (connectBtn) {
+    connectBtn.addEventListener('click', function () {
+      var value = tokenInput ? tokenInput.value.trim() : '';
+      if (!value) { setStatus('トークンを入力してください。', true); return; }
+      sessionStorage.setItem(STORAGE_KEY, value);
+      if (tokenInput) tokenInput.value = '';
+      load();
+    });
+  }
+
+  if (disconnectBtn) {
+    disconnectBtn.addEventListener('click', function () {
+      sessionStorage.removeItem(STORAGE_KEY);
+      proposals = [];
+      listEl.innerHTML = '<p class="review-loading">トークンを入力して接続してください。</p>';
+      if (auditEl) auditEl.innerHTML = '';
+      disconnectBtn.hidden = true;
+      setStatus('切断しました。', false);
+    });
+  }
+
+  listEl.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest) return;
+    var button = target.closest('[data-action]');
+    if (!button) return;
+    var card = button.closest('.proposal-admin-card');
+    if (!card) return;
+    decide(card, button.getAttribute('data-action'));
+  });
+
+  if (tokenInput) {
+    tokenInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (connectBtn) connectBtn.click();
+      }
+    });
+  }
+
+  if (currentToken()) load();
+})();
+
