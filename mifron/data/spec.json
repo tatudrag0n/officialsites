@@ -1,9 +1,9 @@
 {
   "source": "tatudrag0n/MifronPlugin",
-  "commit": "4e6ad74",
-  "committedAt": "2026-11-01",
+  "commit": "f479487",
+  "committedAt": "2026-11-04",
   "pluginVersion": "26.1.2",
-  "menuItems": 9,
+  "menuItems": 10,
   "quests": 39,
   "relics": 23
 }
