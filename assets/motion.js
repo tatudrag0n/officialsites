@@ -1,5 +1,4 @@
-/* MCT motion — 調査（imozuru: game-gadget-animation）で確認した定番の実装
-   出典: Codrops「Magnetic Buttons」/ NN/g「100–500ms・ease-out」/ MDN prefers-reduced-motion
+/* MCT motion
    - キネティック見出し: h1 を行（1語の英字なら文字）単位に分割してライズ入場
    - 磁力ボタン: translate プロパティ（既存の transform ホバーと合成）でポインタへ追従
    - スポットライト: カード上の --mx / --my を更新（描画は CSS 側）

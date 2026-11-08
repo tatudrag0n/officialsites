@@ -70,7 +70,7 @@ jobs:
                 'MifronPlugin の最新の仕様から、サイトに載せている数値を同期しました。' \
                 '' \
                 '- `mifron/data/spec.json`（プラグインのバージョン・コミット・メニュー項目数・クエスト件数・レリック種数）' \
-                '- `mifron/index.html` / `mifron/minecraft.html` の `<b data-spec="…">` の中身' \
+                '- `mifron/index.html` / `mifron/minecraft.html` の `<b data-spec="...">` の中身' \
                 '' \
                 '自動生成のため、内容を確認してマージしてください。' \
                 '手元で追従させる場合: `MIFRON_PLUGIN_DIR=../MifronPlugin node tools/sync-spec.mjs`')"
