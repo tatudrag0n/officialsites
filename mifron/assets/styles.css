@@ -1247,7 +1247,7 @@ html:has(body.studio-page) { scroll-padding-top: 140px; }
 /* ============================================================
    モーション: ゲーム/ガジェットブランドの調査（imozuru）の反映
    - スクロール駆動: 進行バー / ヒーローの退出 / 統計の数え上げ
-   - 見出しライズ入場: 100–500ms・ease-out（NN/g）、JS が分割（motion.js）
+   - 見出しライズ入場: 100〜500ms・ease-out（NN/g）、JS が分割（motion.js）
    - 磁力ボタン（Codrops）/ スポットライト（NN/g microinteractions）
    - reduced-motion では全無効（MDN / A List Apart）
    ============================================================ */

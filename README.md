@@ -34,10 +34,10 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 
 各サイトのヒーローには、装飾目的のミュート・ループ動画（8秒・音声なし）を自前ホストで埋め込んでいます。CSP は `default-src 'self'` のため、外部の動画サービスには埋め込まず、すべてリポジトリ内のファイルを使います。`prefers-reduced-motion` 設定時やデータ節約モードでは再生せず、ポスター画像のみを表示します。
 
-- `assets/hero-loop.{mp4,webm}` … MCTポータルのヒーロー（白ベース）
-- `mifron/assets/hero-loop.{mp4,webm}` … MifronスタジオとMinecraftページのヒーロー（濃紺）
-- `mifron/assets/minecraft-loop.{mp4,webm}` … Minecraftページの紹介動画セクション（緑）
-- `tatudragon/assets/hero-loop.{mp4,webm}` … tatudragonのヒーロー（白ベース＋ローズ）
+- `assets/hero-loop.{mp4,webm}: MCTポータルのヒーロー（白ベース）
+- `mifron/assets/hero-loop.{mp4,webm}: MifronスタジオとMinecraftページのヒーロー（濃紺）
+- `mifron/assets/minecraft-loop.{mp4,webm}: Minecraftページの紹介動画セクション（緑）
+- `tatudragon/assets/hero-loop.{mp4,webm}: tatudragonのヒーロー（白ベース＋ローズ）
 - いずれも `*-poster.webp` をポスターとして併置し、動画の読み込み前と省モーション設定時に表示します。
 
 映像は `tools/render_hero_videos.py` で再生成できます（Pillow / numpy / imageio-ffmpeg が必要）。`tools/` は `.assetsignore` で公開対象から外しています。`tatudragon` は従来通りJavaScriptを使わず、CSSのみでポスター表示に切り替えます。
@@ -128,7 +128,7 @@ Mifronは「ゲームやデジタルサービスを開発するインディー�
 
 サイトに載せている仕様由来の数値（扇状メニューの項目数・クエスト件数・レリック種数）は、`tatudrag0n/MifronPlugin` のコードと仕様書から生成します。
 
-- `tools/sync-spec.mjs` が MifronPlugin の `src/main/resources/quests.yml`・`docs/SPECIFICATION.md`・`pom.xml` を読み、`mifron/data/spec.json` と `mifron/index.html`・`mifron/minecraft.html` の `<b data-spec="…">` の中身を更新します。
+- `tools/sync-spec.mjs` が MifronPlugin の `src/main/resources/quests.yml`・`docs/SPECIFICATION.md`・`pom.xml` を読み、`mifron/data/spec.json` と `mifron/index.html`・`mifron/minecraft.html` の `<b data-spec="...">` の中身を更新します。
 - `.github/workflows/sync-mifron-spec.yml` が6時間ごと（および手動実行）にスクリプトを回し、差分があれば `chore/sync-mifron-spec` ブランチへ push して PR を作ります。main へ直接 push しないのは、リポジトリ側で main への直 push が拒否される設定だからです。
 - 手元で確認する場合: `MIFRON_PLUGIN_DIR=../MifronPlugin node tools/sync-spec.mjs`。`--check` を付けると差分の有無だけを判定し、乖離があれば exit 1 で終わります。
 - 同期対象を増やすときは、ページ側で `<b data-spec="quests">39件</b>` のように `data-spec` を付けた要素に書いてください。スクリプトはこの要素の中身だけを書き換えます。
@@ -155,8 +155,8 @@ GitHub Actions にはデプロイ用ワークフローを置きません。同�
 
 ### リポジトリ設定
 
-- Repository Variable `CLOUDFLARE_ACCOUNT_ID` … Cloudflare アカウントID（秘密ではない）
-- Repository Variable `MIFRON_PAGES_PROJECT` … 現行デプロイ経路では参照していません
+- Repository Variable `CLOUDFLARE_ACCOUNT_ID`: Cloudflare アカウントID（秘密ではない）
+- Repository Variable `MIFRON_PAGES_PROJECT`: 現行デプロイ経路では参照していません
 
 環境 secret `production` / `CLOUDFLARE_API_TOKEN` は、デプロイ経路が無くなったため現在未使用です。必要なら削除してください（古い認証情報は放置しない方が安全です）。
 

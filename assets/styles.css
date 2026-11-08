@@ -892,7 +892,7 @@ h3 { font-size: 19px; font-weight: 700; }
 /* ============================================================
    モーション: ゲーム/ガジェットブランドの調査（imozuru）の反映
    - スクロール駆動: 進行バー / ヒーローの退出（Chrome docs / Argyle / ICS）
-   - 見出しライズ入場: 100–500ms・ease-out（NN/g）、JS が行分割（motion.js）
+   - 見出しライズ入場: 100〜500ms・ease-out（NN/g）、JS が行分割（motion.js）
    - 磁力ボタン（Codrops）/ スポットライト（NN/g microinteractions）
    - reduced-motion では全無効（MDN / A List Apart）
    ============================================================ */
