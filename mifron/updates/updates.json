@@ -1,5 +1,19 @@
 [
   {
+    "id": "deploy-20261114T071901Z-8248",
+    "date": "2026-11-14T07:19:01Z",
+    "type": "deploy",
+    "title": "アップデート反映: 26.1.2-swimpose3-20261031 (c4c6c77)",
+    "body": [
+      "MifronPlugin provenance: origin/main",
+      "テスト: 127 passed passed",
+      "ロールバック保管: mifronplugin-preview-20261114T071827Z.jar"
+    ],
+    "commit": "c4c6c77",
+    "version": "26.1.2-swimpose3-20261031",
+    "source": "promote"
+  },
+  {
     "id": "pipeline-20261030T163005Z-189d",
     "date": "2026-10-30T16:30:05Z",
     "type": "pipeline",
