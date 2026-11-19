@@ -56,7 +56,7 @@ Mifronの公開APIはCloudflare KVを使います。無料枠は read 100,000/�
 - `systemctl is-active minecraft.service minoru-bot.service` が両方 `active`
 - `mifronplugin-deploy.timer`、`minoru-deploy.timer`、`mifron-backup.timer` が `enabled` かつ `active`
 - 最新バックアップのSHA-256検証が成功
-- AIは `AI_ENABLED=false`、OpenAIキー未設定のまま
+- 生成AI系の機能は無効（`AI_ENABLED=false`）で、外部AIサービスのキー未設定のまま
 - GitHub token、Webhook、決済秘密値がログへ出ていない
 - 支援販売を有効化する場合だけ、決済事業者とWebhookを疎通確認
 - 公開URLで新しいHTML、CSP、HSTS、Canary要素を確認
@@ -64,7 +64,7 @@ Mifronの公開APIはCloudflare KVを使います。無料枠は read 100,000/�
 ## してはいけない操作
 
 - 秘密値をGit、Issue、Discord、ログへ保存する
-- AI/Codexに本番秘密・VM shell・mainへの直接変更権限を与える
+- 自動化ツールや外部の生成AIに、本番秘密・VM shell・mainへの直接変更権限を与える
 - 支援特典にPvP性能、MP倍率、ショップ優遇を付ける
 - GitHubのIssueやPRだけを根拠に本番完了と判断する（必ず `Verify production sites` の実測で判断する）
 - Workflow失敗時にSecretsをログへ出力して調査する

@@ -361,7 +361,7 @@
             esc(entry.title || entry.id) +
             '（賛成 ' + (entry.up || 0) + ' / 反対 ' + (entry.down || 0) + '）' +
             ' / ' + esc(entry.actor || '管理者') +
-            (entry.note ? ' — ' + esc(entry.note) : '') +
+            (entry.note ? ' / ' + esc(entry.note) : '') +
             '<time>' + esc(entry.at || '') + '</time></li>'
         );
       })

@@ -8,13 +8,13 @@ CSP が `default-src 'self'` のため、動画はすべて自前ホストする
 ループ端で映像が継ぎ目なくつながる。
 
 生成物（リポジトリにコミットするもの）:
-  assets/hero-loop.{mp4,webm} + assets/hero-poster.webp            … MCT ポータル（白）
+  assets/hero-loop.{mp4,webm} + assets/hero-poster.webp            -> MCT ポータル（白）
   mifron/assets/hero-loop.{mp4,webm} + mifron/assets/hero-poster.webp
-                                                                    … Mifron スタジオ（濃紺）
+                                                                    -> Mifron スタジオ（濃紺）
   mifron/assets/minecraft-loop.{mp4,webm} + mifron/assets/minecraft-poster.webp
-                                                                    … Mifron Minecraft 紹介（緑）
+                                                                    -> Mifron Minecraft 紹介（緑）
   tatudragon/assets/hero-loop.{mp4,webm} + tatudragon/assets/hero-poster.webp
-                                                                    … tatudragon（白＋ローズ）
+                                                                    -> tatudragon（白＋ローズ）
 
 使い方:
   python3 -m venv .venv-video

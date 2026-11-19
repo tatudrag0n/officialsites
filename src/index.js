@@ -28,7 +28,7 @@ function preparationResponse(name) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07090d">
 <meta name="description" content="${description}">
-<title>${name} — MCT Official</title>
+<title>${name} | MCT Official</title>
 <style>
 :root{--accent:${accent};--accent-soft:${accentSoft};--bg:#07090d;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.11);--muted:#9aa3b2;--text:#f4f7fb}
 *{box-sizing:border-box}
