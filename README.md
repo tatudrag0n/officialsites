@@ -34,10 +34,10 @@ MCTのメインサイトです。Mifron・CREWMATE・TEXROOT・開発者ペー�
 
 各サイトのヒーローには、装飾目的のミュート・ループ動画（8秒・音声なし）を自前ホストで埋め込んでいます。CSP は `default-src 'self'` のため、外部の動画サービスには埋め込まず、すべてリポジトリ内のファイルを使います。`prefers-reduced-motion` 設定時やデータ節約モードでは再生せず、ポスター画像のみを表示します。
 
-- `assets/hero-loop.{mp4,webm}: MCTポータルのヒーロー（白ベース）
-- `mifron/assets/hero-loop.{mp4,webm}: MifronスタジオとMinecraftページのヒーロー（濃紺）
-- `mifron/assets/minecraft-loop.{mp4,webm}: Minecraftページの紹介動画セクション（緑）
-- `tatudragon/assets/hero-loop.{mp4,webm}: tatudragonのヒーロー（白ベース＋ローズ）
+- `assets/hero-loop.{mp4,webm}`: MCTポータルのヒーロー（白ベース）
+- `mifron/assets/hero-loop.{mp4,webm}`: MifronスタジオとMinecraftページのヒーロー（濃紺）
+- `mifron/assets/minecraft-loop.{mp4,webm}`: Minecraftページの紹介動画セクション（緑）
+- `tatudragon/assets/hero-loop.{mp4,webm}`: tatudragonのヒーロー（白ベース＋ローズ）
 - いずれも `*-poster.webp` をポスターとして併置し、動画の読み込み前と省モーション設定時に表示します。
 
 映像は `tools/render_hero_videos.py` で再生成できます（Pillow / numpy / imageio-ffmpeg が必要）。`tools/` は `.assetsignore` で公開対象から外しています。`tatudragon` は従来通りJavaScriptを使わず、CSSのみでポスター表示に切り替えます。
