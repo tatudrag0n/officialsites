@@ -1042,6 +1042,8 @@ html:has(body.studio-page) { background: #0b0c10; }
 .project-art.mc { background: linear-gradient(135deg, #1d3b2a 0%, #2f7a4a 52%, #8fd36b 100%); }
 .project-art.games { background: linear-gradient(135deg, #2a2450 0%, #5646ff 58%, #8b7bff 100%); }
 .project-art.apps { background: linear-gradient(135deg, #1d2333 0%, #3c4a70 58%, #7f92c7 100%); }
+.project-art.oni { background: radial-gradient(120% 120% at 82% 8%, rgba(255, 150, 90, .5), transparent 58%), linear-gradient(135deg, #20090d 0%, #6d1620 55%, #ff6b4a 100%); }
+.project-art.disc { background: radial-gradient(120% 120% at 18% 12%, rgba(120, 255, 235, .42), transparent 62%), linear-gradient(135deg, #062026 0%, #0d5d68 55%, #6fe7d5 100%); }
 .project-mark { font-size: 12px; font-weight: 700; letter-spacing: .2em; color: rgba(255,255,255,.86); }
 .project-status {
   display: inline-flex; align-items: center; gap: 8px;
