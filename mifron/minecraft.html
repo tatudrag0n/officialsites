@@ -129,7 +129,7 @@
         <div class="feature-grid">
           <article class="feature"><span class="tag">STEP 1</span><h3>Discordに参加</h3><p>招待リンクから参加します。参加認証、イベント告知、提案と投票はすべてDiscordで行われます。</p></article>
           <article class="feature"><span class="tag">STEP 2</span><h3>6桁コードで認証</h3><p>初回接続時のキック画面に6桁コードが表示されます。Discordの認証チャンネルへ数字だけ送信してください。</p></article>
-          <article class="feature"><span class="tag">STEP 3</span><h3>再接続して遊ぶ</h3><p>認証完了後、もう一度接続するとそのまま遊べます。初回は体験チュートリアルへ案内され、終了後は <strong>/travel</strong> で hub・survival へ移動できます。</p></article>
+          <article class="feature"><span class="tag">STEP 3</span><h3>再接続して遊ぶ</h3><p>認証完了後、もう一度接続するとそのまま遊べます。初回は体験チュートリアルへ案内され、卒業すると自動でSurvival（生活ワールド）へ送られます。</p></article>
         </div>
         <div class="notice">
           <strong>より詳しい操作はチュートリアルにまとめています</strong>
@@ -142,7 +142,7 @@
     <div class="stat-ribbon" role="group" aria-label="サーバー概要">
       <div><b data-spec="menu-items">10項目</b><span>扇状メニュー</span></div>
       <div><b data-spec="quests">39件</b><span>クエスト</span></div>
-      <div><b data-spec="relics">22種</b><span>レリック</span></div>
+      <div><b data-spec="relics">31種</b><span>レリック</span></div>
       <div><b>Java / Bedrock</b><span>Geyser連携対応</span></div>
     </div>
 
@@ -154,7 +154,7 @@
             <p class="eyebrow">ワールド</p>
             <h2>遊び場を選ぶ</h2>
           </div>
-          <p>移動は <strong>/travel &lt;hub|survival&gt;</strong> が便利です。既定500MP・クールダウン60分です。接続中のワールド一覧は <strong>/mf list</strong> で確認できます。</p>
+          <p>チュートリアル卒業後は自動でSurvivalへ送られます。接続中のワールド一覧は <strong>/mf list</strong> で確認できます。</p>
         </div>
         <div class="feature-grid">
           <article class="feature"><span class="tag">Survival</span><h3>生活ワールド</h3><p>メインの生活ワールド。拠点（hub）もここにあります。TNTと溶岩は使えず、SHOPはこのワールド限定です。</p></article>
@@ -223,11 +223,6 @@
               <li>双方が確定すると成立。MP上限は100万MP</li>
             </ul>
           </article>
-          <article class="system-panel">
-            <span class="tag">Travel</span>
-            <h3>ファストトラベル (/travel)</h3>
-            <p>hub・survival へすぐ移動できます。既定500MP・クールダウン60分です。</p>
-          </article>
         </div>
       </div>
     </section>
@@ -250,7 +245,7 @@
           <article class="feature"><span class="tag">目標</span><h3>はじめての目標</h3><p>メニュー、採掘64、売却、チャンク保護、クエスト受取の5項目。達成すると各300MPを1回だけ受け取れます。</p></article>
           <article class="feature"><span class="tag">取引 / 投票 / ログボ</span><h3>その他の項目</h3><p>取引申込、投票サイト、連続ログイン状況を開けます。</p></article>
           <article class="feature"><span class="tag">チュートリアル</span><h3>基本操作をやり直す</h3><p>体験チュートリアルをもう一度開きます。初参加時の案内が終わっていても、いつでも確認できます。</p></article>
-          <article class="feature"><span class="tag">フレンド</span><h3>申請と一覧</h3><p>フレンドの申請・承認・削除ができます。<strong>/friend add|accept|remove</strong> でも操作できます。個人宛のチャットは廃止しているため、1対1の会話はDiscordを使ってください。</p></article>
+          <article class="feature"><span class="tag">ガイド</span><h3>遊び方ガイドを取り出す</h3><p>MP・SHOP・提案・投票・取引などの遊び方をまとめた本「Mifron はじめの一歩」を取り出します。<strong>/mf guide</strong> でも受け取れます。</p></article>
         </div>
         <div class="notice">
           <strong>ゲーム内チャットは全体のみです</strong>
@@ -270,14 +265,14 @@
           <p>素材の入手・クラフト時にごく低確率でレリックへ変化します。Elite討伐ドロップやチュートリアル配布でも入手でき、売買はできません。</p>
         </div>
         <div class="feature-grid">
-          <article class="feature"><span class="tag">全適用の魔導書</span><h3>任意のエンチャントを付与</h3><p>GUIから任意のエンチャントをオフハンドへ最大レベルで付与できます。</p></article>
+          <article class="feature"><span class="tag">アルテミス</span><h3>獲物を追う3本の矢（CD5秒）</h3><p>右クリックで獲物を追う3本の矢を放ちます。</p></article>
           <article class="feature"><span class="tag">残響の結晶</span><h3>ソニックビーム（CD8秒）</h3><p>右クリックでソニックビームを放ちます。</p></article>
           <article class="feature"><span class="tag">ファイアーボール</span><h3>ガストの火球（CD3秒）</h3><p>右クリックでガストの火球を撃ち出します。</p></article>
-          <article class="feature"><span class="tag">錬金の砥石</span><h3>エンチャントを本にして返す</h3><p>設置した砥石で剥がしたエンチャントを本にして返還します。</p></article>
-          <article class="feature"><span class="tag">拘束の鎖</span><h3>MOBを拘束する</h3><p>左クリックでMOBを拘束してAIを停止します。右クリック（空中）で延長モードに切り替わります。</p></article>
+          <article class="feature"><span class="tag">金剛の砥石</span><h3>エンチャントを本にして返す</h3><p>設置した砥石で剥がしたエンチャントを本にして返還します。</p></article>
+          <article class="feature"><span class="tag">拘束の鎖</span><h3>MOBを拘束する</h3><p>左クリックで最大30ブロック先のMOBを拘束してAIを停止します。再左クリックで解放し、スニーク＋左クリックで全解除します。右クリックでは外れません。</p></article>
           <article class="feature"><span class="tag">巨人の心臓</span><h3>25秒間 巨大化</h3><p>使うと25秒間、体が3倍の大きさになります。</p></article>
           <article class="feature"><span class="tag">竜の吐息</span><h3>指向性ブレス（CD6秒）</h3><p>前方へダメージと炎上を伴うブレスを放ちます。</p></article>
-          <article class="feature"><span class="tag">常夜渡りの時計</span><h3>夜を朝へスキップ</h3><p>右クリックで夜を朝へ進めます。</p></article>
+          <article class="feature"><span class="tag">ときを刻む時計</span><h3>状態を保存して復元する</h3><p>右クリックで現在の状態を保存し、もう一度右クリックでその状態へ戻ります。</p></article>
           <article class="feature accent-feature"><span class="tag">朽ちた剣</span><h3>全エンチャントMAXで真価を発揮</h3><p>全エンチャントを最大まで付けた時に真価を発揮する、最レアの剣です。</p></article>
         </div>
         <div class="notice">
@@ -299,7 +294,7 @@
             <p class="eyebrow">クエスト</p>
             <h2>毎日の目標が報酬になる</h2>
           </div>
-          <p>全部で39件。デイリーは候補から5件、ウィークリーは5件が期間ごとに選ばれ、マンスリーは固定表示、スペシャルは条件発生型です。各タイプの「完全達成」を取ると追加報酬があり、反復・AFKの報酬は抑制されます。</p>
+          <p>全部で39件。デイリーは候補から5件、ウィークリーは5件が期間ごとに選ばれ、マンスリーは固定表示、スペシャルは条件発生型です。各タイプの「完全達成」を取ると追加報酬があり、同じ行動の繰り返しによる報酬稼ぎは抑制されます。</p>
         </div>
         <div class="feature-grid">
           <article class="feature"><span class="tag">Daily</span><h3>デイリー（毎日5件+完全達成）</h3><p>採掘、建築、討伐、農業、取引、探索、釣りなどから毎日5件が抽選されます。5件を全達成すると「完全達成」の追加報酬があります。</p></article>
