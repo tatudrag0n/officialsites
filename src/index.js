@@ -16,6 +16,11 @@ function preparationResponse(name) {
   const copy = "準備中で、公開日は決まっていません。いま公開しているMCTの活動は、ゲームスタジオのMifronです。";
   // 公式Xアカウントは CREWMATE のみ。未開設のブランドはリンクを出さない。
   const xAccount = isCrewmate ? { url: "https://x.com/mct_crewmate", label: "@mct_crewmate" } : null;
+  // CREWMATE のロゴ（ワードマーク）。このホストは全パスを準備中ページで返すため、
+  // 画像は MCT 本体の assets から絶対URLで読む。
+  const heading = isCrewmate
+    ? `<img class="logo" src="https://mct-official.com/assets/crewmate-wordmark.png" alt="CREWMATE" width="1434" height="316">`
+    : name;
 
   const html = `<!doctype html>
 <html lang="ja">
@@ -40,6 +45,7 @@ a{color:inherit}
 main{width:min(1140px,calc(100% - 40px));margin:auto;flex:1;display:grid;align-items:center;padding:64px 0 88px}
 .hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:clamp(36px,7vw,88px);align-items:center}
 h1{font-size:clamp(52px,9vw,100px);line-height:1.05;letter-spacing:.01em;margin:0 0 22px;font-weight:700}
+h1 .logo{display:block;width:min(560px,100%);height:auto}
 .lead{font-size:clamp(18px,2.2vw,24px);line-height:1.6;margin:0;font-weight:600}
 .copy{color:var(--muted);line-height:1.8;max-width:620px;margin:16px 0 0;font-size:15px}
 .panel{border:1px solid var(--line-strong);background:var(--card);border-radius:3px;padding:24px}
@@ -76,7 +82,7 @@ footer{width:calc(100% - 28px);flex-direction:column;gap:6px}
 <main>
 <section class="hero">
   <div>
-    <h1>${name}</h1>
+    <h1>${heading}</h1>
     <p class="lead">${lead}</p>
     <p class="copy">${copy}</p>
     <div class="actions">
