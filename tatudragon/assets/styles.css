@@ -650,3 +650,7 @@ input, select, textarea { border-radius: 3px; }
 
 .channel-card, .about-card { box-shadow: none !important; }
 .channel-tag { border-radius: 3px; }
+
+/* 横はみ出し対策（2026-11-24）: ヒーローのグロー（.hero::after、左右-12%）が
+   ページのスクロール領域を広げ、スマホで右側に空白ができていた */
+.hero { overflow-x: clip; }

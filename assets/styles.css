@@ -1016,3 +1016,7 @@ input, select, textarea { border-radius: 3px; }
 .brand-card, .value-card, .feature, .about-card, .summary-card, .quick-card { box-shadow: none !important; }
 .brand-card h3 .brand-logo { height: 30px; width: auto; }
 .brand .brand-icon { height: 34px; width: auto; }
+
+/* 横はみ出し対策（2026-11-24）: ヒーローのグロー（.hero::after、左右-12%）が
+   ページのスクロール領域を広げ、スマホで右側に空白ができていた */
+.hero { overflow-x: clip; }
