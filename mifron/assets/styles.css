@@ -56,7 +56,7 @@
   --discord: #5865f2;
 
   --sans: "Chakra Petch", "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, system-ui, sans-serif;
-  --radius: 14px;
+  --radius: 3px;
   --shell-pad: 20px;
 }
 
@@ -1497,3 +1497,46 @@ html:has(body.studio-page) { scroll-padding-top: 140px; }
 .studio-page .featured-system li { color: #3f3517; }
 .studio-page .featured-system h3 { color: #241f0c; }
 .studio-page .featured-system .tag { color: #241f0c; border-color: #241f0c; }
+
+/* ============================================================
+   見た目の見直し（2026-11-24）
+   方針: Minecraftのブロックのように、フラットで角のある形に統一する。
+   - 角丸は 3px。影とグラデーションは装飾に使わない
+   - スクロール出現、磁力ボタン、スポットライト等の動きは付けない
+   - ホバーの反応は「浮く」ではなく枠の色で示す
+   ============================================================ */
+.reveal { animation: none !important; }
+.hero-grid { animation: none !important; }
+body::after { content: none !important; animation: none !important; }
+.hero .kicker, .hero .lead, .hero .hero-actions, .hero .hero-status,
+.m-line-inner.is-in, .m-char.is-in { animation: none !important; }
+.hero h1 em::after { display: none !important; }
+h1 em { color: inherit; }
+.m-spot::after { display: none !important; }
+.section-head h2::after, .contact-panel h2::after { display: none !important; }
+.footer::before { background: var(--line-strong); }
+.btn { border-radius: 3px; box-shadow: none !important; }
+.btn:hover { box-shadow: none !important; }
+.site-header { box-shadow: none !important; }
+.scroll-cue { display: none !important; }
+.tag, .kit-role, .tag-chip { border-radius: 3px; }
+.brand-card:hover, .quick-card:hover { transform: none; box-shadow: none !important; }
+input, select, textarea { border-radius: 3px; }
+
+.hero::after { background: none !important; }
+.hero::before { background: var(--mifron); }
+.stat-ribbon { background: #23213a; }
+.kicker::before { background: var(--ink); }
+.project-card:hover { transform: none; box-shadow: none !important; }
+.project-art.mc { background: #2f7a4a; }
+.project-art.games { background: #5646ff; }
+.project-art.apps { background: #3c4a70; }
+
+/* 見直しの追加分: 固有指定で残っていた角丸・影・見出しの色付けを消す */
+.hero h1 em { color: inherit; }
+.hero-status, .hero-card, .contact-panel, .news-item, .system-panel { box-shadow: none !important; }
+
+.project-card, .about-card, .video-frame, .contact-panel { border-radius: 3px; }
+.project-card, .feature, .summary-card { box-shadow: none !important; }
+.project-toc a { border-radius: 3px; }
+.project-status { border-radius: 3px; }
