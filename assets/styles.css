@@ -1014,3 +1014,4 @@ input, select, textarea { border-radius: 3px; }
 .hero-status, .hero-card, .contact-panel, .news-item, .system-panel { box-shadow: none !important; }
 
 .brand-card, .value-card, .feature, .about-card, .summary-card, .quick-card { box-shadow: none !important; }
+.brand-card h3 .brand-logo { height: 30px; width: auto; }
