@@ -51,7 +51,7 @@
   --discord: #5865f2;
 
   --sans: "Chakra Petch", "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, system-ui, sans-serif;
-  --radius: 14px;
+  --radius: 3px;
   --shell-pad: 20px;
 }
 
@@ -979,3 +979,38 @@ h3 { font-size: 19px; font-weight: 700; }
   @keyframes m-fade { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
   @keyframes m-underline { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
+
+/* ============================================================
+   見た目の見直し（2026-11-24）
+   方針: Minecraftのブロックのように、フラットで角のある形に統一する。
+   - 角丸は 3px。影とグラデーションは装飾に使わない
+   - スクロール出現、磁力ボタン、スポットライト等の動きは付けない
+   - ホバーの反応は「浮く」ではなく枠の色で示す
+   ============================================================ */
+.reveal { animation: none !important; }
+.hero-grid { animation: none !important; }
+body::after { content: none !important; animation: none !important; }
+.hero .kicker, .hero .lead, .hero .hero-actions, .hero .hero-status,
+.m-line-inner.is-in, .m-char.is-in { animation: none !important; }
+.hero h1 em::after { display: none !important; }
+h1 em { color: inherit; }
+.m-spot::after { display: none !important; }
+.section-head h2::after, .contact-panel h2::after { display: none !important; }
+.footer::before { background: var(--line-strong); }
+.btn { border-radius: 3px; box-shadow: none !important; }
+.btn:hover { box-shadow: none !important; }
+.site-header { box-shadow: none !important; }
+.scroll-cue { display: none !important; }
+.tag, .kit-role, .tag-chip { border-radius: 3px; }
+.brand-card:hover, .quick-card:hover { transform: none; box-shadow: none !important; }
+input, select, textarea { border-radius: 3px; }
+
+.hero::before { background: none !important; }
+.stat-ribbon { background: #16181d; }
+.kicker::before { background: var(--ink); }
+
+/* 見直しの追加分: 固有指定で残っていた角丸・影・見出しの色付けを消す */
+.hero h1 em { color: inherit; }
+.hero-status, .hero-card, .contact-panel, .news-item, .system-panel { box-shadow: none !important; }
+
+.brand-card, .value-card, .feature, .about-card, .summary-card, .quick-card { box-shadow: none !important; }
