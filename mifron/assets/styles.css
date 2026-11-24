@@ -1541,3 +1541,42 @@ input, select, textarea { border-radius: 3px; }
 .project-toc a { border-radius: 3px; }
 .project-status { border-radius: 3px; }
 .mct-logo-inline { height: 15px; width: auto; background: #fff; border-radius: 2px; padding: 1px 4px; vertical-align: -3px; }
+
+/* ============================================================
+   ライトテーマ化（2026-11-24）
+   - ブランドページ（studio-page）も MCT / CREWMATE と同じ明るい
+     配色にする。暗い面と、暗色前提で書かれた文字色をここで寄せる
+   ============================================================ */
+.studio-page {
+  --paper: #fafaf7;
+  --card: #ffffff;
+  --card-2: #f1f1ec;
+  --ink: #16181d;
+  --muted: #545962;
+  --line: #e3e4e0;
+  --line-strong: #c9cac5;
+  --mist: #f1f1ec;
+  --mifron: #5646ff;
+  --mifron-soft: #eeecff;
+  --gold: #d9a400;
+}
+html:has(body.studio-page) { background: #fafaf7; }
+.studio-page .site-header { background: rgba(250, 250, 247, .88); }
+.studio-page .lead { color: var(--muted); }
+.studio-page .eyebrow, .studio-page .kicker { color: var(--mifron); }
+.studio-page .hero-video { opacity: .55; }
+.studio-page .hero-media::after {
+  background: linear-gradient(180deg, rgba(250,250,247,.35) 0%, rgba(250,250,247,.78) 60%, var(--paper) 100%);
+}
+.studio-page .section.dark, .studio-page .dark, .dark { background: var(--mist); }
+.dark .section-head > p { color: var(--muted); }
+.dark .eyebrow, .dark .tag { color: var(--mifron); }
+.system-panel { background: var(--card); border-color: var(--line); }
+.system-panel p { color: var(--muted); }
+.system-panel ul { color: var(--ink); }
+.stat-ribbon { background: var(--mist); color: var(--ink); }
+.stat-ribbon > div { border-color: var(--line); }
+.stat-ribbon span { color: var(--muted); }
+.stat-ribbon b { color: var(--ink); }
+.studio-page .brand .brand-icon { border-radius: 3px; }
+.dark { color: var(--ink); }
