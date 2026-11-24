@@ -1540,3 +1540,4 @@ input, select, textarea { border-radius: 3px; }
 .project-card, .feature, .summary-card { box-shadow: none !important; }
 .project-toc a { border-radius: 3px; }
 .project-status { border-radius: 3px; }
+.mct-logo-inline { height: 15px; width: auto; background: #fff; border-radius: 2px; padding: 1px 4px; vertical-align: -3px; }

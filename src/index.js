@@ -27,6 +27,7 @@ function preparationResponse(name) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#fafaf7">
+<link rel="icon" href="https://mct-official.com/assets/mct-icon.png">
 <meta name="description" content="${description}">
 <title>${name} | MCT Official</title>
 <style>
