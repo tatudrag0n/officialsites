@@ -1580,3 +1580,7 @@ html:has(body.studio-page) { background: #fafaf7; }
 .stat-ribbon b { color: var(--ink); }
 .studio-page .brand .brand-icon { border-radius: 3px; }
 .dark { color: var(--ink); }
+
+/* 横はみ出し対策（2026-11-24）: ヒーローのグロー（.hero::after、左右-12%）が
+   ページのスクロール領域を広げ、スマホで右側に空白ができていた */
+.hero { overflow-x: clip; }
