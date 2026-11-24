@@ -6,18 +6,14 @@ const PREPARING = {
 function preparationResponse(name) {
   const isCrewmate = name === "CREWMATE";
   const description = isCrewmate
-    ? "クリエイター、コミュニティ、制作活動をつなぐプロジェクト。"
-    : "PC・テクノロジー、プロダクト、実験的なアイデアを扱うブランド。";
-  const eyebrow = isCrewmate ? "CREATIVE COMMUNITY / 01" : "TECH & PRODUCTS / 02";
-  const accent = isCrewmate ? "#a8ff4d" : "#6ee7ff";
-  const accentSoft = isCrewmate ? "rgba(168,255,77,.12)" : "rgba(110,231,255,.12)";
+    ? "CREWMATEはMCTのクリエイター向けコミュニティです。準備中で、公開日は決まっていません。"
+    : "TEXROOTはPCや電化製品を扱うMCTのブランドです。準備中で、公開日は決まっていません。";
+  const accent = isCrewmate ? "#03624c" : "#c25e00";
   const indexLabel = isCrewmate ? "CREW" : "TEX";
-  const copy = isCrewmate
-    ? "つくる人が集まり、作品とプロジェクトが動き出す場所へ。"
-    : "技術を試し、プロダクトに変え、次の体験をつくる場所へ。";
-  const secondary = isCrewmate
-    ? "制作・発信・コラボレーションを支えるサービスを準備しています。"
-    : "PC・テクノロジー領域を中心に、新しいプロダクトを準備しています。";
+  const lead = isCrewmate
+    ? "MCTのクリエイター向けコミュニティです。"
+    : "PCや電化製品を扱う、MCTのブランドです。";
+  const copy = "準備中で、公開日は決まっていません。いま公開しているMCTの活動は、ゲームスタジオのMifronです。";
   // 公式Xアカウントは CREWMATE のみ。未開設のブランドはリンクを出さない。
   const xAccount = isCrewmate ? { url: "https://x.com/mct_crewmate", label: "@mct_crewmate" } : null;
 
@@ -26,110 +22,63 @@ function preparationResponse(name) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07090d">
+<meta name="theme-color" content="#fafaf7">
 <meta name="description" content="${description}">
 <title>${name} | MCT Official</title>
 <style>
-:root{--accent:${accent};--accent-soft:${accentSoft};--bg:#07090d;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.11);--muted:#9aa3b2;--text:#f4f7fb}
+:root{--accent:${accent};--paper:#fafaf7;--card:#fff;--ink:#16181d;--muted:#545962;--line:#e3e4e0;--line-strong:#c9cac5}
 *{box-sizing:border-box}
-html{background:var(--bg)}
-body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(900px 500px at 80% 0%,var(--accent-soft),transparent 62%),radial-gradient(700px 450px at 0% 100%,rgba(255,255,255,.035),transparent 65%),var(--bg)}
+html{background:var(--paper)}
+body{margin:0;min-height:100vh;color:var(--ink);background:var(--paper);font-family:"Chakra Petch","Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",Meiryo,system-ui,sans-serif;line-height:1.8}
 a{color:inherit}
 .page{min-height:100vh;display:flex;flex-direction:column}
-.nav{width:min(1180px,calc(100% - 40px));margin:auto;padding:24px 0;display:flex;justify-content:space-between;align-items:center}
-.brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;letter-spacing:.16em}
-.mark{width:30px;height:30px;border:1px solid var(--line);border-radius:9px;display:grid;place-items:center;background:var(--panel);color:var(--accent);font-size:11px}
-.nav-link{text-decoration:none;color:#aeb6c3;font-size:13px}
-.nav-link:hover{color:#fff}
-main{width:min(1180px,calc(100% - 40px));margin:auto;flex:1;display:grid;align-items:center;padding:48px 0 80px}
-.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:clamp(36px,7vw,96px);align-items:end}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.18em}
-.eyebrow:before{content:"";width:24px;height:1px;background:var(--accent)}
-h1{font-size:clamp(64px,12vw,148px);line-height:.82;letter-spacing:-.075em;margin:24px 0 34px;font-weight:850}
-.lead{font-size:clamp(20px,2.4vw,30px);line-height:1.45;letter-spacing:-.025em;max-width:760px;margin:0}
-.copy{color:var(--muted);line-height:1.8;max-width:650px;margin:20px 0 0;font-size:15px}
-.panel{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border-radius:24px;padding:26px;backdrop-filter:blur(14px);box-shadow:0 24px 80px rgba(0,0,0,.25)}
-.status{display:flex;align-items:center;justify-content:space-between;padding-bottom:22px;border-bottom:1px solid var(--line)}
-.status strong{font-size:13px;letter-spacing:.08em}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent)}
-.meta{display:grid;gap:18px;padding-top:22px}
+.nav{width:min(1140px,calc(100% - 40px));margin:auto;padding:18px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.mark{width:30px;height:30px;border:1px solid var(--ink);border-radius:3px;display:grid;place-items:center;background:var(--ink);color:#fff;font-size:10px;font-weight:700}
+.nav-link{text-decoration:none;color:var(--muted);font-size:13px;font-weight:600}
+.nav-link:hover{color:var(--ink);text-decoration:underline}
+main{width:min(1140px,calc(100% - 40px));margin:auto;flex:1;display:grid;align-items:center;padding:64px 0 88px}
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:clamp(36px,7vw,88px);align-items:center}
+h1{font-size:clamp(52px,9vw,100px);line-height:1.05;letter-spacing:.01em;margin:0 0 22px;font-weight:700}
+.lead{font-size:clamp(18px,2.2vw,24px);line-height:1.6;margin:0;font-weight:600}
+.copy{color:var(--muted);line-height:1.8;max-width:620px;margin:16px 0 0;font-size:15px}
+.panel{border:1px solid var(--line-strong);background:var(--card);border-radius:3px;padding:24px}
+.status{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px}
+.mark-sq{width:9px;height:9px;background:var(--accent);flex:none}
+.meta{display:grid;gap:12px;padding-top:16px}
 .meta-row{display:flex;justify-content:space-between;gap:20px;font-size:13px}
-.meta-row span:first-child{color:#727c8b}
+.meta-row span:first-child{color:var(--muted)}
 .meta-row span:last-child{text-align:right}
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-decoration:none;font-size:13px;font-weight:750;transition:.18s ease}
-.btn.primary{background:var(--text);color:#07090d;border-color:var(--text)}
-.btn:hover{transform:translateY(-1px);border-color:var(--accent)}
-footer{width:min(1180px,calc(100% - 40px));margin:auto;padding:20px 0 28px;color:#687180;font-size:11px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:3px;border:1px solid var(--ink);background:var(--card);color:var(--ink);text-decoration:none;font-size:14px;font-weight:700}
+.btn.primary{background:var(--ink);color:#fff}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+footer{width:min(1140px,calc(100% - 40px));margin:auto;padding:20px 0 26px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
 footer a{text-decoration:none}
+footer a:hover{text-decoration:underline}
 @media(max-width:760px){
-.nav{width:min(100% - 28px,1180px);padding:18px 0}
-main{width:min(100% - 28px,1180px);padding:44px 0 60px}
-.hero{grid-template-columns:1fr;align-items:start}
-h1{font-size:clamp(64px,22vw,110px);margin:22px 0 28px}
-.panel{padding:22px}
-footer{width:min(100% - 28px,1180px);flex-direction:column}
+.nav{width:calc(100% - 28px);padding:16px 0}
+main{width:calc(100% - 28px);padding:48px 0 64px}
+.hero{grid-template-columns:1fr;gap:32px}
+h1{font-size:clamp(44px,15vw,72px)}
+.panel{padding:20px}
+footer{width:calc(100% - 28px);flex-direction:column;gap:6px}
 }
-
-/* Clarity-first preparation pages */
-:root{--accent:${accent};--accent-soft:${accentSoft};--bg:#fff;--panel:#f7f8fa;--line:#dfe1e5;--muted:#626771;--text:#16181d}
-*{box-sizing:border-box}
-html{background:#fff}
-body{margin:0;min-height:100vh;color:var(--text);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;background:#fff;line-height:1.8;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-.page{min-height:100vh;display:flex;flex-direction:column}
-.nav{width:min(1180px,calc(100% - 40px));margin:auto;padding:18px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.04em}
-.mark{width:30px;height:30px;border:1px solid #16181d;border-radius:6px;display:grid;place-items:center;background:#16181d;color:#fff;font-size:10px}
-.nav-link{text-decoration:none;color:#626771;font-size:11px;font-weight:600}
-main{width:min(1180px,calc(100% - 40px));margin:auto;flex:1;display:grid;align-items:center;padding:72px 0 92px}
-.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:clamp(40px,7vw,88px);align-items:center}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;color:#626771;font-size:9px;font-weight:700;letter-spacing:.13em}
-.eyebrow:before{content:"";width:22px;height:2px;background:#16181d}
-h1{font-size:clamp(56px,9vw,108px);line-height:1;letter-spacing:-.075em;margin:20px 0 24px;font-weight:700}
-.lead{font-size:clamp(19px,2.1vw,27px);line-height:1.6;letter-spacing:-.025em;max-width:700px;margin:0;font-weight:600}
-.copy{color:var(--muted);line-height:1.8;max-width:650px;margin:16px 0 0;font-size:13px}
-.panel{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:24px;box-shadow:none}
-.status{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.status strong{font-size:11px;letter-spacing:.08em}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-.meta{display:grid;gap:14px;padding-top:18px}
-.meta-row{display:flex;justify-content:space-between;gap:20px;font-size:12px}
-.meta-row span:first-child{color:#858991}.meta-row span:last-child{text-align:right}
-.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 17px;border-radius:6px;border:1px solid #16181d;background:#fff;color:#16181d;text-decoration:none;font-size:11px;font-weight:700;transition:.18s ease}
-.btn.primary{background:#16181d;color:#fff;border-color:#16181d}.btn:hover{transform:translateY(-1px)}
-footer{width:min(1180px,calc(100% - 40px));margin:auto;padding:20px 0 26px;color:#777b83;font-size:10px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
-footer a{text-decoration:none;color:inherit}
-@media(max-width:760px){.nav{width:min(100% - 28px,1180px);padding:16px 0}main{width:min(100% - 28px,1180px);padding:54px 0 68px}.hero{grid-template-columns:1fr;gap:36px}h1{font-size:clamp(52px,16vw,78px);margin:18px 0 22px}.lead{font-size:18px}.panel{padding:20px}footer{width:min(100% - 28px,1180px);flex-direction:column}}
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
-:root{--bg:#f7f7f4;--panel:#fff;--line:#d8d9dc;--muted:#676a72;--text:#111216}
-body{background:var(--bg);font-family:Inter,"Noto Sans JP","Helvetica Neue",sans-serif;letter-spacing:-.01em}
-.nav{padding:22px 0;border-bottom:1px solid var(--line)}
-.brand{letter-spacing:.1em}.mark{border-radius:2px;background:#111216;color:#fff;border-color:#111216}.nav-link{color:#676a72;font-size:11px;font-weight:700}
-main{padding:76px 0 100px}.eyebrow{color:#676a72;font-size:9px;letter-spacing:.16em}.eyebrow:before{background:#111216}
-h1{font-weight:700;letter-spacing:-.085em}.lead{font-weight:600;letter-spacing:-.035em}
-.copy{font-size:13px;color:var(--muted)}
-.panel{background:#fff;border:1px solid var(--line);border-radius:2px;box-shadow:none}
-.btn{border-radius:2px;border-color:#111216;background:#fff;color:#111216}.btn.primary{background:#111216;color:#fff;border-color:#111216}
-.status{border-color:var(--line)}.meta-row span:first-child{color:#888b92}
-footer{color:#676a72;border-color:var(--line)}
-@media(max-width:760px){main{padding:52px 0 64px}}
 </style>
 </head>
 <body>
 <div class="page">
 <header class="nav">
-  <div class="brand"><span class="mark">${indexLabel}</span><span>MCT / OFFICIAL</span></div>
-  <a class="nav-link" href="https://mct-official.com/">MCT Official ↗</a>
+  <div class="brand"><span class="mark">${indexLabel}</span><span>MCT</span></div>
+  <a class="nav-link" href="https://mct-official.com/">MCT公式サイト</a>
 </header>
 <main>
 <section class="hero">
   <div>
-    <span class="eyebrow">${eyebrow}</span>
     <h1>${name}</h1>
-    <p class="lead">${copy}</p>
-    <p class="copy">${secondary}</p>
+    <p class="lead">${lead}</p>
+    <p class="copy">${copy}</p>
     <div class="actions">
       <a class="btn primary" href="https://mct-official.com/">MCT公式サイト</a>
       <a class="btn" href="https://mifron.mct-official.com/">Mifronを見る</a>
@@ -137,11 +86,11 @@ footer{color:#676a72;border-color:var(--line)}
     </div>
   </div>
   <aside class="panel">
-    <div class="status"><strong>PROJECT STATUS</strong><span class="dot" aria-label="準備中"></span></div>
+    <div class="status"><span class="mark-sq" aria-hidden="true"></span>準備中</div>
     <div class="meta">
-      <div class="meta-row"><span>STATUS</span><span>準備中</span></div>
-      <div class="meta-row"><span>PROJECT</span><span>${name}</span></div>
-      <div class="meta-row"><span>OPERATED BY</span><span>MCT</span></div>
+      <div class="meta-row"><span>ブランド</span><span>${name}</span></div>
+      <div class="meta-row"><span>運営</span><span>MCT</span></div>
+      <div class="meta-row"><span>公開日</span><span>未定</span></div>
     </div>
   </aside>
 </section>
