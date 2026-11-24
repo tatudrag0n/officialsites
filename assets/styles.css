@@ -1015,3 +1015,4 @@ input, select, textarea { border-radius: 3px; }
 
 .brand-card, .value-card, .feature, .about-card, .summary-card, .quick-card { box-shadow: none !important; }
 .brand-card h3 .brand-logo { height: 30px; width: auto; }
+.brand .brand-icon { height: 34px; width: auto; }
